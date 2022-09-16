@@ -46,5 +46,5 @@ The language will enable users to create a diagram with:
 
 ## Example Input
 
-see exampleInput.txt in project directory
+see exampleInput.txt and exampleSpec.txt in project directory
 
