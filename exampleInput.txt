@@ -1,6 +1,25 @@
 ====== user input is just to show a feasible example, it is NOT AT ALL FINAL ========
 
+# means a comment
 
+# Components:
+# A street
+{
+    type: streetType,
+    name: streetName,
+    shape: streetShape,
+    startPos: startPos,
+    endPos: endPos 
+}
+
+# A stop sign
+{
+    type: stop-sign
+    pos: middlePos
+}
+
+
+# A function
 function street(streetName, streetType, streetShape, startPos, endPos) {
     return {
             type: streetType,
@@ -19,11 +38,6 @@ var middlePos = (0,0);
 
 straightStreet("Donald St", middlePos, (0,5);
 street("Highway 99", "highway", "straight", middlePos, (100,100));
-
-{
-    type: stop-sign
-    pos: middlePos
-}
 
 ================== would build the same map as the following input ===================
 

@@ -2,17 +2,35 @@
 
 ## Brief Project Description
 In a general sense, our DSL will be used to create a simple map rendering from user input. 
-This will be targeted towards city/street planners.
+This will be targeted towards city/street planners. It is also targeted to hardcore simulation game ethuthiastes.
 
 ## Language Features
 The language will enable users to create a diagram with:
-- Straight streets
-- Curved streets
-- Highways
-- Stop signs
-- Stop lights
-- The ability to define functions
-- The ability to define variables
+- Components:
+  - Streets:
+    - Shape: straight, curved
+    - Direction: bi-direction, single direction
+    - Type: regular, highway, ramp, bridge
+    - Name
+    - Coordinates: startPos, endPos
+  - Control elements:
+    - Stop signs
+    - Traffic lights
+  - Transit features:
+    - Bus stops
+    - Train stops
+  - Inhabitant:
+    - Car
+    - Bus
+    - Train
+- Variables:
+  - Single or Group together components
+  - Allows mutation?
+  - Allows explicit deep or shallow copy
+- Control flow:
+  - If/elif/else
+  - Loops
+- Functions:
 
 
 ## Feedback from TA Discussion
@@ -21,11 +39,9 @@ The language will enable users to create a diagram with:
 
 
 ## Follow-up Features (Stretch Goals)
-- Buildings
-- Parks
-- Roundabouts
+- Advanced road types (e.g. roundabouts)
+- Buildings, parks, bodies of water
 - Traffic Simulations
-- Loops for developing multiple streets at once
 
 
 ## Example Input
