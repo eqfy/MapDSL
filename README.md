@@ -1,8 +1,8 @@
 # Project1Group9
 
 ## Brief Project Description
-In a general sense, our DSL will be used to create a simple map rendering from user input. 
-This will be targeted towards city/street planners. It is also targeted to hardcore simulation game ethuthiastes.
+In a general sense, our DSL will be used to create a simple map rendering from user input. Google Map's API will be used to help render the map. For the first iteration, we plan to only have the ability to define different maps consisting of roads and related trafic control elements that satisfy the DSL requirements. If we still have time after that, we plan to add other features like simple simulations of traffic, buildings, transit systems etc. This language will be targeted towards city/street planners. It is also targeted to hardcore simulation game ethuthiastes.
+
 
 ## Language Features
 The language will enable users to create a diagram with:
@@ -24,9 +24,8 @@ The language will enable users to create a diagram with:
     - Bus
     - Train
 - Variables:
-  - Single or Group together components
-  - Allows mutation?
-  - Allows explicit deep or shallow copy
+  - Single components or a list of components
+  - Allows mutation
 - Control flow:
   - If/elif/else
   - Loops
