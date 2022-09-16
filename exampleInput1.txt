@@ -23,7 +23,7 @@ street("Highway 99", "highway", "straight", middlePos, (100,100));
     pos: middlePos
 }
 
-================== would build the same map as the following input ===================
+================== would build the same map as the following user input ===================
 
 {
         type: "street",
