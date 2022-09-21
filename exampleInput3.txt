@@ -1,0 +1,87 @@
+DEFINITIONS
+        function createBlock(nwPosition, blockSize, northStreetName, eastStreetName, southStreetName, westStreetName) {
+                variable nePosition = (nwPosition.x + blockSize, nwPosition.y);
+                variable sePosition = (nwPosition.x + blockSize, nwPosition.y - blockSize);
+                variable swPosition = (nwPosition.x - blockSize, nwPosition.y);
+                return
+                    {
+                        type: "street",
+                        name: northStreetName,
+                        shape: "straight",
+                        startPosition: nwPosition,
+                        endPosition: nePosition
+                    }
+                    {
+                        type: "street",
+                        name: eastStreetName,
+                        shape: "straight",
+                        startPosition: nePosition,
+                        endPosition: sePosition
+                    }
+                    {
+                        type: "street",
+                        name: southStreetName,
+                        shape: "straight",
+                        startPosition: sePosition,
+                        endPosition: swPosition
+                    }
+                    {
+                        type: "street",
+                        name: westStreetName,
+                        shape: "straight",
+                        startPosition: swPosition,
+                        endPosition: nwPosition
+                    }
+        }
+
+        function createTrafficLight(trafficLightPosition) = {
+                return
+                    {
+                        type: "traffic light",
+                        position: trafficLightPosition
+                    }
+        }
+
+        variable centerPosition = (0,0);
+        variable defaultBlockSize = 5;
+
+END_DEFINITIONS
+
+OUTPUT
+        createBlock(centerPosition, defaultBlockSize, "North St", "East St", "South St", "West St");
+        createBlock((0, defaultBlockSize), defaultBlockSize, "North St", "West St", "South St", "2nd West Street");
+        {
+            type: "highway",
+            name: "North St Highway",
+            shape: "straight",
+            startPosition:(-100, 0),
+            endPosition: (0,0)
+        }
+        createTrafficLight(centerPosition);
+        {
+            type: "stop sign",
+            position: (0 + defaultBlockSize, 0)
+        }
+        {
+            type: "bus stop",
+            position: (-50, 0)
+        }
+END_OUTPUT
+
+// This would create the following map
+
+
+=====North St Highway======<bus stop>=============<lights>----------<stop sign>----North St--
+                                                    |                  |                    |
+                                                    |                  |                    |
+                                                    |                  |                    |
+                                                    |                  |                    |
+                                                    |                  |                    |
+                                                    |-------South St---|--------------------|
+                                                    ^                  ^                    ^
+                                                  East St             West St            2nd West St
+
+
+
+
+
