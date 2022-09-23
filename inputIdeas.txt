@@ -1,0 +1,181 @@
+## Language Features
+The language will enable users to create a diagram with:
+- Components:
+  - Streets:
+    - Shape: straight, curved
+    - Type: regular, highway, ramp, bridge
+    - Name
+    - Coordinates: startPos, endPos
+  - Control elements:
+    - Stop signs
+    - Traffic lights
+  - Transit features:
+    - Bus stops
+    - Train stops
+- Variables:
+  - Single components or a list of components
+  - Allows mutation
+- Control flow
+  - Loops
+  - If/Else
+- Functions
+
+[list of street names]
+
+for each streetname
+    CREATE street straight called streetname starting (x + 5, y + 5) to (x + 10, y + 10)
+    y = y + 10;
+    x = x + 10;
+
+
+
+
+
+}
+
+functionMap<functionName, functionNode>
+
+
+straight northStreetName nwPosition nePosition
+
+{
+    type: straight
+    name: northStreet
+    start: x
+    end: y
+}
+
+buildStreetOnMap(type, name, start, end) {
+    googleMapsApi.render(type, name, start end);
+}
+
+
+
+
+// specs will describe to the user how to use this language!!
+
+
+CREATE straight street called BIGsouthStreetName from sePosition of length 10 in the north direction;
+
+[X,Y]
+(X,Y) <-- better, associates with a pairing, rather than a list of values
+
+to access the x coordinate of position kyleOnEarth, do kyleOnEarth.x <---- simple to understand
+to access the y coordinate of position kyleOnEarth, do kyleOnEarth.y <---- simple to understand
+
+to access the x coordinate of position kyleOnEarth, do kyleOnEarth[x] <---- simple to understand
+to access the y coordinate of position kyleOnEarth, do kyleOnEarth[y] <---- simple to understand
+
+X of kyleOnEarth
+
+DEFINITIONS
+
+// javascript vs typescript
+types = position, string, number, street
+
+street.name = somethingNew
+create street
+
+        FUNCTION createBlock(nwPosition, blockSize, northStreetName, eastStreetName, southStreetName, westStreetName) { <--- option 1
+                CREATE straight street called BIGnorthStreetName from nwPosition to nePosition;
+                CREATE straight street called BIGeastStreetName from nePosition to sePosition;
+                CREATE straight street called BIGsouthStreetName from sePosition to swPosition;
+                CREATE straight street called BIGwestStreetName from swPosition to nwPosition;
+
+                ASSIGN VARIABLE nePosition TO [nwPosition.x + blockSize, nwPosition.y];
+                VARIABLE sePosition = [nwPosition.x + blockSize, nwPosition.y - blockSize];
+                VARIABLE swPosition = [nwPosition.x - blockSize, nwPosition.y];
+
+                createTrafficLight([0,0]);
+        }
+
+        FUNCTION createEntireCity(nwPos1, nwPos2, nwPos3) {
+
+                createBlock()
+                create
+        }
+
+        FUNCTION createBasicStreet(streetName, streetType, startPos, endPos) {
+            create streetType street called streetName from startPos to endPos
+        }
+
+
+
+        FUNCTION <--- option 2
+            name: createBlock
+            inputs:
+            - blockSize of type INTEGER???? inferred types vs declared types?? Maybe just throw errors -- maybe declaring is just out of scope / too much / unnecessary
+            - nwPosition of type POSITION
+            statements: list of statements
+            -
+            - ...22
+        END_FUNCTION
+
+        createBlock(centerPosition, defaultBlockSize, "North St", "East St", "South St", "West St");
+
+        FUNCTION
+
+        FUNCTION createTrafficLight(trafficLightPosition) = {
+                CREATE traffic light at trafficLightPosition;
+        }
+
+        FUNCTION createTrafficLight(trafficLightPosition) = {
+                CREATE traffic light at trafficLightPosition;
+        }
+
+        CONSTANT centerPosition = [0,0];
+        CONSTANT defaultBlockSize = 5;
+
+END_DEFINITIONS
+
+OUTPUT
+        createBlock(centerPosition, defaultBlockSize, "North St", "East St", "South St", "West St");
+
+        CALL/DO createBlock with inputs centerPosition, defaultBlockSize, "North St", "East St", "South St", "West St";
+        CALL/DO createBlock : value_1, value_2, value_3 ??
+
+        VARIABLE kyle = 6;
+        createBlock([defaultBlockSize, 0], defaultBlockSize, "North St", "West St", "South St", "2nd West Street");
+        CREATE straight highway called "North St Highway" from [-100,0] to [0,0];
+        createTrafficLight(centerPosition);
+        CREATE four way stop at [0 + defaultBlockSize, 0];
+        CREATE bus stop at [-50, 0];
+END_OUTPUT
+
+// This would create the following map
+
+draw a line and put a name on top of it
+
+renderStreet(type = highway | street | path, startPos, endPos, name);
+addMarker(type = ...., position);
+addImage(filepath/url, position, size);
+                                                   (0,0)
+=====North St Highway======<bus stop>=============<lights>----------<4 way stop>----North St--
+                                                    |                  |                    |
+                                                    |                  |                    |
+                                                    |                  |                    |
+                                                    |                  |                    |
+                                                    |                  |                    |
+                                                    |-------South St---|--------------------|
+                                                    ^                  ^                    ^
+                                                  East St             West St            2nd West St
+
+
+
+DEFINITIONS
+
+END_DEFINITIONS
+
+OUTPUT
+        CREATE straight street called northStreetName from nwPosition to nePosition;
+                        CREATE straight street called eastStreetName from nePosition to sePosition;
+                        CREATE straight street called southStreetName from sePosition to swPosition;
+                        CREATE straight street called westStreetName from swPosition to nwPosition;
+        createBlock([defaultBlockSize, 0], defaultBlockSize, "North St", "West St", "South St", "2nd West Street");
+        CREATE straight highway called "North St Highway" from [-100,0] to [0,0];
+        createTrafficLight(centerPosition);
+        CREATE four way stop at [0 + defaultBlockSize, 0];
+        CREATE bus stop at [-50, 0];
+END_OUTPUT
+
+

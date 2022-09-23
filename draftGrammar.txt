@@ -1,3 +1,5 @@
+// GRAMMAR CURRENTLY IGNORES WHITESPACE (will handle later)
+
 program : definitionBlock? outputBlock;
 definitionBlock : 'DEFINITIONS' (functionDeclaration | variableDeclaration)* 'END_DEFINITION';
 outputBlock : 'OUTPUT' outputStatement* 'END_OUTPUT';
