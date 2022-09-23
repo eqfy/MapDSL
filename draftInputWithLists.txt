@@ -1,0 +1,72 @@
+DEFINITIONS
+
+        FUNCTION createBlock(nwPosition, blockSize, northStreetName, eastStreetName, southStreetName, westStreetName) {
+                VARIABLE nePosition = (nwPosition.x + blockSize, nwPosition.y);
+                VARIABLE sePosition = (nePosition.x, nePosition.y - blockSize);
+                VARIABLE swPosition = (nwPosition.x, nwPosition.y - blockSize);
+
+                CREATE straight street named northStreetName from nwPosition to nePosition;
+                CREATE straight street named eastStreetName from nePosition to sePosition;
+                CREATE straight street named southStreetName from sePosition to swPosition;
+                CREATE straight street named westStreetName from swPosition to nwPosition;
+        }
+
+        FUNCTION createTrafficLight(position) {
+                CREATE traffic light at position;
+        }
+END_DEFINITIONS
+
+OUTPUT
+        VARIABLE centerPosition = (0,0);
+        VARIABLE defaultBlockSize = 5;
+
+        VARIABLE blockNWPos = centerPosition;
+        VARIABLE northStName = "North St";
+        VARIABLE southStName = "South St";
+        VARIABLE westStNames = ["West St", "East St", "2nd East St"];
+        VARIABLE eastStNames = ["East St", "2nd East St", "3rd East St"];
+
+        LOOP 3 TIMES
+               createBlock(blockNWPos, defaultBlockSize, northStName, eastStNames[LOOP#], southStName, westStNames[LOOP#]);
+               blockNWPos = (blockNWPos.x + defaultBlockSize, blockNWPos.y);
+        END_POS
+
+        CREATE straight highway named "North St Highway" from (-100,0) to (0,0);
+        createTrafficLight(centerPosition);
+        CREATE four way stop at (0 + defaultBlockSize, 0);
+        CREATE bus stop at (-50, 0);
+
+        VARIABLE southStLightPosition = (centerPosition.x, centerPosition.y - 5);
+
+        LOOP 4 TIMES
+            createTrafficLight(southStLightPosition);
+            southStLightPosition = (southStLightPosition.x + defaultBlockSize, southStLightPosition.y);
+        END_LOOP
+END_OUTPUT
+
+// This would create the following map
+
+
+(-100,0)                                           (0,0)
+=====North St Highway======<bus stop>=============<lights>--------------<4 way stop>--------North St----------------------------
+                                                    |                        |                        |                        |
+                                                    |                        |                        |                        |
+                                                    |                        |                        |                        |
+                                                    |                        |                        |                        |
+                                                    |                        |                        |                        |
+                                                <lights>----South St------<lights>-----------------<lights>-----------------<lights>
+                                                    ^                        ^                        ^                        ^
+                                                  West St                  East St                 2nd East St             3rd East St
+
+
+
+
+
+
+yes
+no
+yes
+no
+no
+yes
+
