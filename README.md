@@ -3,11 +3,13 @@
 ## Milestone 2
 
 ### Questions for TA / Feedback from TA
-1. lorem
-2. lorem 2
-3. lorem 3
-4. lorem 4
-
+1. Whitespace
+2. Sufficient? 
+   - If NO
+      1. IF ELSE
+      2. LOOPS <--- YES
+3. 
+  
 ### Summary of Progress
 lorem
 

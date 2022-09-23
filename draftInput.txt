@@ -23,11 +23,18 @@ END_DEFINITIONS
 
 OUTPUT
         createBlock(centerPosition, defaultBlockSize, "North St", "East St", "South St", "West St");
-        createBlock((defaultBlockSize, 0), defaultBlockSize, "North St", "West St", "South St", "2nd West Street");
+        createBlock((defaultBlockSize, 0), defaultBlockSize, "North St", "2nd East St", "South St", "East St");
         CREATE straight highway named "North St Highway" from (-100,0) to (0,0);
         createTrafficLight(centerPosition);
         CREATE four way stop at (0 + defaultBlockSize, 0);
         CREATE bus stop at (-50, 0);
+
+        VARIABLE eastStreetLightPosition = (centerPosition.x, centerPosition.y - 5);
+
+        LOOP 3 TIMES
+            createTrafficLight(eastStreetLightPosition);
+            eastStreetLightPosition = (eastStreetLightPosition.x + defaultBlockSize, eastStreetLightPosition.y);
+        END_LOOP
 END_OUTPUT
 
 
@@ -39,15 +46,15 @@ END_OUTPUT
 
 
 (-100,0)                                           (0,0)
-=====North St Highway======<bus stop>=============<lights>----------<4 way stop>----North St--
-                                                    |                  |                    |
-                                                    |                  |                    |
-                                                    |                  |                    |
-                                                    |                  |                    |
-                                                    |                  |                    |
-                                                    |-------South St---|--------------------|
-                                                    ^                  ^                    ^
-                                                  East St             West St            2nd West St
+=====North St Highway======<bus stop>=============<lights>--------------<4 way stop>--------North St---
+                                                    |                        |                        |
+                                                    |                        |                        |
+                                                    |                        |                        |
+                                                    |                        |                        |
+                                                    |                        |                        |
+                                                <lights>----South St------<lights>-----------------<lights>
+                                                    ^                        ^                        ^
+                                                  West St                  East St                 2nd East St
 
 
 
