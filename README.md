@@ -13,7 +13,7 @@
 - Rough timeline finished
 
 ### Timeline / Division of Work
-See XXX.pdf in project dir
+See Timeline + Tasks.pdf in project dir
 
 
 ### Example Input
