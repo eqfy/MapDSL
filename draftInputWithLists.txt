@@ -14,16 +14,17 @@ DEFINITIONS
         FUNCTION createTrafficLight(position) {
                 CREATE traffic light at position;
         }
-
-
-        VARIABLE centerPosition = (0,0);
-        VARIABLE defaultBlockSize = 5;
-
 END_DEFINITIONS
 
 OUTPUT
+        VARIABLE centerPosition = (0,0);
+        VARIABLE defaultBlockSize = 5;
+        VARIABLE northStName = "North St";
+        VARIABLE eastStName = "East St";
+        VARIABLE westStNames = ["West St", "Second West St", "Third West St"];
+        VARIABLE eastStNames = ["East St", "West St", "Second West St"];
         createBlock(centerPosition, defaultBlockSize, "North St", "East St", "South St", "West St");
-        createBlock((defaultBlockSize, 0), defaultBlockSize, "North St", "2nd East St", "South St", "East St Street");
+        createBlock((defaultBlockSize, 0), defaultBlockSize, "North St", "West St", "South St", "2nd West Street");
         CREATE straight highway named "North St Highway" from (-100,0) to (0,0);
         createTrafficLight(centerPosition);
         CREATE four way stop at (0 + defaultBlockSize, 0);
@@ -46,15 +47,15 @@ END_OUTPUT
 
 
 (-100,0)                                           (0,0)
-=====North St Highway======<bus stop>=============<lights>--------------<4 way stop>--------North St---
-                                                    |                        |                        |
-                                                    |                        |                        |
-                                                    |                        |                        |
-                                                    |                        |                        |
-                                                    |                        |                        |
-                                                <lights>----South St------<lights>-----------------<lights>
-                                                    ^                        ^                        ^
-                                                  West St                  East St                 2nd East St
+=====North St Highway======<bus stop>=============<lights>--------------<4 way stop>--------North St----------------------------
+                                                    |                        |                        |                        |
+                                                    |                        |                        |                        |
+                                                    |                        |                        |                        |
+                                                    |                        |                        |                        |
+                                                    |                        |                        |                        |
+                                                <lights>----South St------<lights>-----------------<lights>---------------------
+                                                    ^                        ^                        ^                        ^
+                                                  East St                  West St                 2nd West St
 
 
 

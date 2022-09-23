@@ -15,7 +15,7 @@ expression : POSITION_COORDINATE | NUMBER| VARIABLE_NAME | ((POSITION_COORDINATE
 position : OPEN_PAREN expression COMMA expression CLOSE_PAREN;
 position_coordinate : VARIABLE_NAME CHAIN_OP COORDINATE;
 
-SHAPE = "straight" | "curved";
+SHAPE : "straight" | "curved";
 COORDINATE : ('x' | 'y');
 CHAIN_OP : '\.';
 NAMED : 'named';
