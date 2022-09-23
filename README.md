@@ -3,18 +3,17 @@
 ## Milestone 2
 
 ### Questions for TA / Feedback from TA
-1. Whitespace
-2. Sufficient? 
-   - If NO
-      1. IF ELSE
-      2. LOOPS <--- YES
-3. 
+- whitespace can be handled easily through a few different options (kyle took a photo)
+- would be good to include loops if we are not allowing recursion
+- would be good to include comments on our draft inputs to describe each component
   
 ### Summary of Progress
-lorem
+- Features almost finalized
+- Grammar almost finalized
+- Rough timeline finished
 
 ### Timeline / Division of Work
-lorem
+
 
 ### Example Input
 
