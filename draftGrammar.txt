@@ -2,12 +2,15 @@
 
 program : definitionBlock? outputBlock;
 definitionBlock : 'DEFINITIONS' (functionDeclaration | variableDeclaration)* 'END_DEFINITION';
-outputBlock : 'OUTPUT' outputStatement* 'END_OUTPUT';
+outputBlock : 'OUTPUT' (statement | loopBlock)* 'END_OUTPUT';
 
-functionDeclaration : 'FUNCTION' FUNCTION_NAME OPEN_PAREN VARIABLE_NAME (COMMA VARIABLE_NAME)* CLOSE_PAREN OPEN_CURLY (variableDeclaration | outputStatement)* CLOSE_CURLY;
-variableDeclaration :'VARIABLE' NAME '=' (expression | position | STRING) SEMICOLON;
+functionDeclaration : 'FUNCTION' FUNCTION_NAME OPEN_PAREN VARIABLE_NAME (COMMA VARIABLE_NAME)* CLOSE_PAREN OPEN_CURLY (statement)* CLOSE_CURLY;
+variableDeclaration :'VARIABLE' variableAssignment;
+variableAssignment : NAME '=' (expression | position | STRING) SEMICOLON;
 
-outputStatement: CREATE (markerOutput | streetOutput) SEMICOLON;
+statement: (variableDeclaration | variableAssignment | outputStatement | functionCall) SEMICOLON;
+functionCall: FUNCTION_NAME OPEN_PAREN VARIABLE_NAME (COMMA VARIABLE_NAME)* CLOSE_PAREN;
+outputStatement: CREATE (markerOutput | streetOutput);
 marketOutput : (BUS_STOP | STOP_SIGN | TRAFFIC_LIGHT | TRAIN_STOP) AT position;
 streetOutput : SHAPE (HIGHWAY | STREET) NAMED STRING FROM position TO position;
 
