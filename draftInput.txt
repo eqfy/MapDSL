@@ -50,12 +50,7 @@ buildStreetOnMap(type, name, start, end) {
 }
 
 
-file: definitionBlock outputBlock;
-definitionBlock: "DEFINITIONS" (functionDeclaration | constantDeclaration)* "END_DEFINITION"
-functionDeclaration: 'FUNCTION' \s* NAME (vars);
-variableDeclaration = "VARIABLE" NAME "=" expression;
-expression = position | number;
-NAME: [A-Za-z]+;
+
 
 // specs will describe to the user how to use this language!!
 
@@ -104,6 +99,8 @@ create street
             create streetType street called streetName from startPos to endPos
         }
 
+
+
         FUNCTION <--- option 2
             name: createBlock
             inputs:
@@ -111,8 +108,10 @@ create street
             - nwPosition of type POSITION
             statements: list of statements
             -
-            - ...
+            - ...22
         END_FUNCTION
+
+        createBlock(centerPosition, defaultBlockSize, "North St", "East St", "South St", "West St");
 
         FUNCTION
 

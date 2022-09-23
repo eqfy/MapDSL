@@ -1,9 +1,0 @@
-====== more english DSL feasible example, it is NOT AT ALL FINAL ========
-
-# allow comments
-Create a 2000 x 1000 canvas
-Create a straight road called Thunderbird from (1, 1) to (1, 10) and save as street
-Create a rectangular 20 x 20 building at (100, 100) and save as school
-Use school at  [(200, 200) but called university, (200, 300) but called high school, (200, 400)]
-Use street at (200, 300) but called Wesbrook
-Create a straight road from university to high school
