@@ -1,0 +1,38 @@
+lexer grammar MapGeneratorLexer;
+
+DEFINITIONS: 'DEFINITIONS';
+COORDINATE : [xy];
+CHAIN_OP : '.';
+TO: 'to';
+FROM: 'from';
+AT : 'at';
+OPEN_CURLY : '{';
+CLOSE_CURLY : '}';
+OPEN_PAREN : '(';
+CLOSE_PAREN : ')';
+COMMA : ',';
+HIGHWAY: 'highway';
+STREET: 'street';
+BRIDGE: 'bridge';
+POSITIVE_NUMBER : [0-9]+;
+NEGATIVE_NUMBER: '-' POSITIVE_NUMBER;
+TIMES: 'TIMES';
+VARIABLE_NAME: [A-Za-z]+;
+CREATE: 'CREATE';
+FUNCTION_NAME: VARIABLE_NAME;
+WS : [\r\n\t ] -> channel(HIDDEN);
+SEMICOLON: ';';
+BUS_STOP : 'bus stop';
+STOP_SIGN : 'stop sign';
+TRAFFIC_LIGHT : 'traffic light';
+TRAIN_STOP : 'train stop';
+OUTPUT: 'OUTPUT';
+END_OUTPUT: 'END_OUTPUT';
+END_DEFINITION: 'END_DEFINITION';
+LOOP: 'LOOP';
+END_LOOP: 'END_LOOP';
+FUNCTION: 'FUNCTION';
+VARIABLE: 'VARIABLE';
+EQ: '=';
+OPERATOR: [+-];
+
