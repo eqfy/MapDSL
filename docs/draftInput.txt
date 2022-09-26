@@ -3,15 +3,15 @@
 DEFINITIONS
 
         // this is an example of a user defined function where they can create map items, or call other functions
-        FUNCTION createBlock(nwPosition, blockSize, northStreetName, eastStreetName, southStreetName, westStreetName) {
+        FUNCTION createBlock(nwPosition, blockSize) {
                 VARIABLE nePosition = (nwPosition.x + blockSize, nwPosition.y);
                 VARIABLE sePosition = (nePosition.x, nePosition.y - blockSize);
                 VARIABLE swPosition = (nwPosition.x, nwPosition.y - blockSize);
 
-                CREATE straight street named northStreetName from nwPosition to nePosition;
-                CREATE straight street named eastStreetName from nePosition to sePosition;
-                CREATE straight street named southStreetName from sePosition to swPosition;
-                CREATE straight street named westStreetName from swPosition to nwPosition;
+                CREATE street from nwPosition to nePosition;
+                CREATE street from nePosition to sePosition;
+                CREATE street from sePosition to swPosition;
+                CREATE street from swPosition to nwPosition;
         }
 
         FUNCTION createTrafficLight(position) {
