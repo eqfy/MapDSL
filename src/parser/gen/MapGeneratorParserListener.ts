@@ -10,15 +10,21 @@ import { OutputBlockContext } from "./MapGeneratorParser";
 import { StatementContext } from "./MapGeneratorParser";
 import { LoopBlockContext } from "./MapGeneratorParser";
 import { VariableAssignmentContext } from "./MapGeneratorParser";
-import { VariableDeclarationContext } from "./MapGeneratorParser";
-import { VariableDeclarationStatementContext } from "./MapGeneratorParser";
+import { LocalVariableDeclarationContext } from "./MapGeneratorParser";
+import { GlobalVariableDeclarationContext } from "./MapGeneratorParser";
 import { FunctionCallContext } from "./MapGeneratorParser";
 import { CreateCallContext } from "./MapGeneratorParser";
 import { MarkerOutputContext } from "./MapGeneratorParser";
 import { StreetOutputContext } from "./MapGeneratorParser";
 import { ExpressionContext } from "./MapGeneratorParser";
+import { LeftExpressionValueContext } from "./MapGeneratorParser";
 import { PositionContext } from "./MapGeneratorParser";
-import { NumberContext } from "./MapGeneratorParser";
+import { BodyElementContext } from "./MapGeneratorParser";
+import { GlobalBodyElementContext } from "./MapGeneratorParser";
+import { PositionAccessContext } from "./MapGeneratorParser";
+import { FunctionNameContext } from "./MapGeneratorParser";
+import { ParameterNameContext } from "./MapGeneratorParser";
+import { VariableNameContext } from "./MapGeneratorParser";
 
 
 /**
@@ -104,26 +110,26 @@ export interface MapGeneratorParserListener extends ParseTreeListener {
 	exitVariableAssignment?: (ctx: VariableAssignmentContext) => void;
 
 	/**
-	 * Enter a parse tree produced by `MapGeneratorParser.variableDeclaration`.
+	 * Enter a parse tree produced by `MapGeneratorParser.localVariableDeclaration`.
 	 * @param ctx the parse tree
 	 */
-	enterVariableDeclaration?: (ctx: VariableDeclarationContext) => void;
+	enterLocalVariableDeclaration?: (ctx: LocalVariableDeclarationContext) => void;
 	/**
-	 * Exit a parse tree produced by `MapGeneratorParser.variableDeclaration`.
+	 * Exit a parse tree produced by `MapGeneratorParser.localVariableDeclaration`.
 	 * @param ctx the parse tree
 	 */
-	exitVariableDeclaration?: (ctx: VariableDeclarationContext) => void;
+	exitLocalVariableDeclaration?: (ctx: LocalVariableDeclarationContext) => void;
 
 	/**
-	 * Enter a parse tree produced by `MapGeneratorParser.variableDeclarationStatement`.
+	 * Enter a parse tree produced by `MapGeneratorParser.globalVariableDeclaration`.
 	 * @param ctx the parse tree
 	 */
-	enterVariableDeclarationStatement?: (ctx: VariableDeclarationStatementContext) => void;
+	enterGlobalVariableDeclaration?: (ctx: GlobalVariableDeclarationContext) => void;
 	/**
-	 * Exit a parse tree produced by `MapGeneratorParser.variableDeclarationStatement`.
+	 * Exit a parse tree produced by `MapGeneratorParser.globalVariableDeclaration`.
 	 * @param ctx the parse tree
 	 */
-	exitVariableDeclarationStatement?: (ctx: VariableDeclarationStatementContext) => void;
+	exitGlobalVariableDeclaration?: (ctx: GlobalVariableDeclarationContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `MapGeneratorParser.functionCall`.
@@ -181,6 +187,17 @@ export interface MapGeneratorParserListener extends ParseTreeListener {
 	exitExpression?: (ctx: ExpressionContext) => void;
 
 	/**
+	 * Enter a parse tree produced by `MapGeneratorParser.leftExpressionValue`.
+	 * @param ctx the parse tree
+	 */
+	enterLeftExpressionValue?: (ctx: LeftExpressionValueContext) => void;
+	/**
+	 * Exit a parse tree produced by `MapGeneratorParser.leftExpressionValue`.
+	 * @param ctx the parse tree
+	 */
+	exitLeftExpressionValue?: (ctx: LeftExpressionValueContext) => void;
+
+	/**
 	 * Enter a parse tree produced by `MapGeneratorParser.position`.
 	 * @param ctx the parse tree
 	 */
@@ -192,14 +209,69 @@ export interface MapGeneratorParserListener extends ParseTreeListener {
 	exitPosition?: (ctx: PositionContext) => void;
 
 	/**
-	 * Enter a parse tree produced by `MapGeneratorParser.number`.
+	 * Enter a parse tree produced by `MapGeneratorParser.bodyElement`.
 	 * @param ctx the parse tree
 	 */
-	enterNumber?: (ctx: NumberContext) => void;
+	enterBodyElement?: (ctx: BodyElementContext) => void;
 	/**
-	 * Exit a parse tree produced by `MapGeneratorParser.number`.
+	 * Exit a parse tree produced by `MapGeneratorParser.bodyElement`.
 	 * @param ctx the parse tree
 	 */
-	exitNumber?: (ctx: NumberContext) => void;
+	exitBodyElement?: (ctx: BodyElementContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `MapGeneratorParser.globalBodyElement`.
+	 * @param ctx the parse tree
+	 */
+	enterGlobalBodyElement?: (ctx: GlobalBodyElementContext) => void;
+	/**
+	 * Exit a parse tree produced by `MapGeneratorParser.globalBodyElement`.
+	 * @param ctx the parse tree
+	 */
+	exitGlobalBodyElement?: (ctx: GlobalBodyElementContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `MapGeneratorParser.positionAccess`.
+	 * @param ctx the parse tree
+	 */
+	enterPositionAccess?: (ctx: PositionAccessContext) => void;
+	/**
+	 * Exit a parse tree produced by `MapGeneratorParser.positionAccess`.
+	 * @param ctx the parse tree
+	 */
+	exitPositionAccess?: (ctx: PositionAccessContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `MapGeneratorParser.functionName`.
+	 * @param ctx the parse tree
+	 */
+	enterFunctionName?: (ctx: FunctionNameContext) => void;
+	/**
+	 * Exit a parse tree produced by `MapGeneratorParser.functionName`.
+	 * @param ctx the parse tree
+	 */
+	exitFunctionName?: (ctx: FunctionNameContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `MapGeneratorParser.parameterName`.
+	 * @param ctx the parse tree
+	 */
+	enterParameterName?: (ctx: ParameterNameContext) => void;
+	/**
+	 * Exit a parse tree produced by `MapGeneratorParser.parameterName`.
+	 * @param ctx the parse tree
+	 */
+	exitParameterName?: (ctx: ParameterNameContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `MapGeneratorParser.variableName`.
+	 * @param ctx the parse tree
+	 */
+	enterVariableName?: (ctx: VariableNameContext) => void;
+	/**
+	 * Exit a parse tree produced by `MapGeneratorParser.variableName`.
+	 * @param ctx the parse tree
+	 */
+	exitVariableName?: (ctx: VariableNameContext) => void;
 }
 

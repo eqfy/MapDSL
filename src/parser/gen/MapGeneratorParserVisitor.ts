@@ -10,15 +10,21 @@ import { OutputBlockContext } from "./MapGeneratorParser";
 import { StatementContext } from "./MapGeneratorParser";
 import { LoopBlockContext } from "./MapGeneratorParser";
 import { VariableAssignmentContext } from "./MapGeneratorParser";
-import { VariableDeclarationContext } from "./MapGeneratorParser";
-import { VariableDeclarationStatementContext } from "./MapGeneratorParser";
+import { LocalVariableDeclarationContext } from "./MapGeneratorParser";
+import { GlobalVariableDeclarationContext } from "./MapGeneratorParser";
 import { FunctionCallContext } from "./MapGeneratorParser";
 import { CreateCallContext } from "./MapGeneratorParser";
 import { MarkerOutputContext } from "./MapGeneratorParser";
 import { StreetOutputContext } from "./MapGeneratorParser";
 import { ExpressionContext } from "./MapGeneratorParser";
+import { LeftExpressionValueContext } from "./MapGeneratorParser";
 import { PositionContext } from "./MapGeneratorParser";
-import { NumberContext } from "./MapGeneratorParser";
+import { BodyElementContext } from "./MapGeneratorParser";
+import { GlobalBodyElementContext } from "./MapGeneratorParser";
+import { PositionAccessContext } from "./MapGeneratorParser";
+import { FunctionNameContext } from "./MapGeneratorParser";
+import { ParameterNameContext } from "./MapGeneratorParser";
+import { VariableNameContext } from "./MapGeneratorParser";
 
 
 /**
@@ -79,18 +85,18 @@ export interface MapGeneratorParserVisitor<Result> extends ParseTreeVisitor<Resu
 	visitVariableAssignment?: (ctx: VariableAssignmentContext) => Result;
 
 	/**
-	 * Visit a parse tree produced by `MapGeneratorParser.variableDeclaration`.
+	 * Visit a parse tree produced by `MapGeneratorParser.localVariableDeclaration`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	visitVariableDeclaration?: (ctx: VariableDeclarationContext) => Result;
+	visitLocalVariableDeclaration?: (ctx: LocalVariableDeclarationContext) => Result;
 
 	/**
-	 * Visit a parse tree produced by `MapGeneratorParser.variableDeclarationStatement`.
+	 * Visit a parse tree produced by `MapGeneratorParser.globalVariableDeclaration`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	visitVariableDeclarationStatement?: (ctx: VariableDeclarationStatementContext) => Result;
+	visitGlobalVariableDeclaration?: (ctx: GlobalVariableDeclarationContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `MapGeneratorParser.functionCall`.
@@ -128,6 +134,13 @@ export interface MapGeneratorParserVisitor<Result> extends ParseTreeVisitor<Resu
 	visitExpression?: (ctx: ExpressionContext) => Result;
 
 	/**
+	 * Visit a parse tree produced by `MapGeneratorParser.leftExpressionValue`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitLeftExpressionValue?: (ctx: LeftExpressionValueContext) => Result;
+
+	/**
 	 * Visit a parse tree produced by `MapGeneratorParser.position`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -135,10 +148,45 @@ export interface MapGeneratorParserVisitor<Result> extends ParseTreeVisitor<Resu
 	visitPosition?: (ctx: PositionContext) => Result;
 
 	/**
-	 * Visit a parse tree produced by `MapGeneratorParser.number`.
+	 * Visit a parse tree produced by `MapGeneratorParser.bodyElement`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	visitNumber?: (ctx: NumberContext) => Result;
+	visitBodyElement?: (ctx: BodyElementContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `MapGeneratorParser.globalBodyElement`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitGlobalBodyElement?: (ctx: GlobalBodyElementContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `MapGeneratorParser.positionAccess`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitPositionAccess?: (ctx: PositionAccessContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `MapGeneratorParser.functionName`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitFunctionName?: (ctx: FunctionNameContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `MapGeneratorParser.parameterName`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitParameterName?: (ctx: ParameterNameContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `MapGeneratorParser.variableName`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitVariableName?: (ctx: VariableNameContext) => Result;
 }
 

@@ -13,8 +13,8 @@ DEFINITIONS
                 CREATE traffic light at position;
         }
 
-        VARIABLE centerPosition = (0,0);
-        VARIABLE defaultBlockSize = 5;
+        CONSTANT centerPosition = (0,0);
+        CONSTANT defaultBlockSize = 5;
 END_DEFINITIONS
 
 OUTPUT

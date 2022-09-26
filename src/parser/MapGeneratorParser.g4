@@ -5,23 +5,23 @@ options { tokenVocab=MapGeneratorLexer; }
 program: (definitionBlock )? outputBlock EOF;
 
 // Defintion Block
-definitionBlock: DEFINITIONS  (functionDeclaration | variableDeclarationStatement)*  END_DEFINITION;
-functionDeclaration: FUNCTION  NAME  OPEN_PAREN  NAME  (COMMA  NAME )* CLOSE_PAREN  OPEN_CURLY  (statement | loopBlock)*  CLOSE_CURLY;
+definitionBlock: DEFINITIONS  globalBodyElement+  END_DEFINITION;
+functionDeclaration: FUNCTION  functionName  OPEN_PAREN  parameterName  (COMMA  parameterName)* CLOSE_PAREN  OPEN_CURLY  bodyElement+  CLOSE_CURLY;
 
 // Output Block
-outputBlock: OUTPUT (statement | loopBlock)* END_OUTPUT;
-statement: (variableDeclaration | variableAssignment | createCall | functionCall)  SEMICOLON;
+outputBlock: OUTPUT bodyElement+ END_OUTPUT;
+statement: (localVariableDeclaration | variableAssignment | createCall | functionCall)  SEMICOLON;
 
 // Loop Block
-loopBlock: LOOP  POSITIVE_NUMBER  TIMES  statement*  END_LOOP;
+loopBlock: LOOP  POSITIVE_NUMBER  TIMES  statement+  END_LOOP;
 
 // Variables
-variableAssignment: NAME  EQ  expression;
-variableDeclaration: VARIABLE  NAME  EQ  expression;
-variableDeclarationStatement: variableDeclaration SEMICOLON;
+variableAssignment: variableName  EQ  expression;
+localVariableDeclaration: VARIABLE  variableName  EQ  expression;
+globalVariableDeclaration: CONSTANT variableName EQ expression SEMICOLON;
 
 // Calls
-functionCall: NAME  OPEN_PAREN  expression  (COMMA  expression )* CLOSE_PAREN;
+functionCall: functionName  OPEN_PAREN  expression  (COMMA  expression )* CLOSE_PAREN;
 createCall: CREATE  (markerOutput | streetOutput);
 
 // Outputs
@@ -29,6 +29,13 @@ markerOutput: (BUS_STOP | STOP_SIGN | TRAFFIC_LIGHT | TRAIN_STOP)  AT  position;
 streetOutput: (HIGHWAY | STREET | BRIDGE)  FROM  position  TO  position;
 
 // Misc.
-expression: (position | POSITION_ACCESS | number) | ((POSITION_ACCESS | number | NAME) OPERATOR expression); // should be recursive but couldnt get it to work -- need help here
-position: (OPEN_PAREN  expression  COMMA  expression  CLOSE_PAREN) | NAME;
-number: POSITIVE_NUMBER | NEGATIVE_NUMBER;
+expression: leftExpressionValue (OPERATOR expression)?;
+leftExpressionValue: (positionAccess | variableName | position | NEGATIVE_NUMBER | POSITIVE_NUMBER);
+position: (OPEN_PAREN  expression  COMMA  expression  CLOSE_PAREN) | variableName;
+bodyElement: (statement | loopBlock);
+globalBodyElement: (functionDeclaration | globalVariableDeclaration);
+positionAccess: NAME CHAIN_OP COORDINATE;
+// lazy hack to make it easier to differentiate between names while preventing using lexer modes
+functionName: NAME;
+parameterName: NAME;
+variableName: NAME;
