@@ -7,7 +7,9 @@ export default class MapBuilder {
     this.outputStatements = outputStatements;
   }
 
-  public render(): void {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  public render(): HTMLElement {
     console.log(this.outputStatements);
   }
 

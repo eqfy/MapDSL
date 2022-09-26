@@ -4,7 +4,7 @@ import { CharStreams, CommonTokenStream } from 'antlr4ts';
 import { MapGeneratorParser } from './parser/gen/MapGeneratorParser';
 import { ParseToASTVisitor } from './parser/ParseToASTVisitor';
 import { syncWriteFile } from './util/syncWriteFile';
-import MapBuilder from './frontend/MapBuilder';
+import MapBuilder from './fakeClient/MapBuilder';
 import OutputBuilder from './outputBuilder/OutputBuilder';
 import Program from './outputBuilder/Program';
 
