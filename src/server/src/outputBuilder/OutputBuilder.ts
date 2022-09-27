@@ -1,4 +1,4 @@
-import { OutputStatement, Position } from './OutputStatement';
+import { OutputStatement } from './OutputStatement';
 import Program from './Program';
 
 export default class OutputBuilder {
