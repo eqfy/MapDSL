@@ -4,7 +4,7 @@
   "repository": "https://github.students.cs.ubc.ca/CPSC410-2022W-T1/Project1Group9",
   "scripts": {
     "build": "concurrently \"npm:buildClient\" \"npm:buildServer\"",
-    "buildClient": "cd ./src/client/ && npm run build",
+    "buildClient": "mkdir -p public && cd ./src/client/ && npm run build",
     "buildServer": "cd ./src/server/ && npm run build",
     "start": "npm run build && node ./build/App.js",
     "lint": "eslint . --ext .ts",
