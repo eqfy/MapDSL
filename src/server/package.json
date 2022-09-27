@@ -3,7 +3,8 @@
   "description": "A dsl for map generation",
   "repository": "https://github.students.cs.ubc.ca/CPSC410-2022W-T1/Project1Group9",
   "scripts": {
-    "build": "npm run antlr && tsc -b",
+    "build": "tsc -b",
+    "buildWithAntlr": "npm run antlr && tsc -b",
     "antlr": "antlr4ts -visitor ./src/parser/MapGeneratorParser.g4 ./src/parser/MapGeneratorLexer.g4 -Xexact-output-dir -o ./src/parser/gen -package gen"
   }
 }
