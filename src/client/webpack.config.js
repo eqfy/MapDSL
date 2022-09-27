@@ -1,6 +1,7 @@
 const path = require('path');
 
 module.exports = {
+  mode: 'production',
   entry: './src/index.ts',
   module: {
     rules: [
@@ -8,6 +9,11 @@ module.exports = {
         test: /\.ts$/,
         include: path.resolve(__dirname, 'src'),
         use: 'ts-loader'
+      },
+      {
+        test: /\.html$/i,
+        include: path.resolve(__dirname, 'src'),
+        loader: 'html-loader'
       }
     ]
   },
@@ -15,8 +21,8 @@ module.exports = {
     extensions: ['.ts', '.js']
   },
   output: {
-    publicPath: 'public',
-    path: path.resolve(__dirname, 'public'),
+    publicPath: '../../public',
+    path: path.resolve(__dirname, '../../public'),
     filename: 'client-bundle.js'
   },
   optimization: {

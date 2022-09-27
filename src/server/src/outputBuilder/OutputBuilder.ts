@@ -1,4 +1,4 @@
-import { OutputStatement } from './OutputStatement';
+import { OutputStatement, Position } from './OutputStatement';
 import Program from './Program';
 
 export default class OutputBuilder {
@@ -9,8 +9,10 @@ export default class OutputBuilder {
   }
 
   public getAllOutputStatements(): OutputStatement[] {
-    return [];
+    const testData: OutputStatement = {
+      type: 'BusStop',
+      position: { x: 10, y: 10 }
+    };
+    return [testData];
   }
-
-  // Private methods
 }

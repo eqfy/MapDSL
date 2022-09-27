@@ -1,23 +1,16 @@
-import { readFileSync } from 'fs';
-import { MapGeneratorLexer } from './parser/gen/MapGeneratorLexer';
-import { CharStreams, CommonTokenStream } from 'antlr4ts';
-import { MapGeneratorParser } from './parser/gen/MapGeneratorParser';
-import { ParseToASTVisitor } from './parser/ParseToASTVisitor';
-import { syncWriteFile } from './util/syncWriteFile';
-import MapBuilder from './fakeClient/MapBuilder';
-import OutputBuilder from './outputBuilder/OutputBuilder';
-import Program from './outputBuilder/Program';
+import Server from './rest/Server';
 
-const content = readFileSync('./USER_INPUT.txt').toString();
-const lexer = new MapGeneratorLexer(CharStreams.fromString(content));
-const tokenStream = new CommonTokenStream(lexer);
-const parser = new MapGeneratorParser(tokenStream);
-const parseToASTVisitor = new ParseToASTVisitor();
-const programAST = parser.program().accept(parseToASTVisitor);
-const programInternalRepresentation = new Program(programAST);
-const outputBuilder = new OutputBuilder(programInternalRepresentation);
-const mapBuilder = new MapBuilder(outputBuilder.getAllOutputStatements());
-mapBuilder.render();
+export class App {
+  public initServer(port: number) {
+    const server = new Server(port);
+    return server.start().catch((err: Error) => {
+      console.error(`App::initServer() - ERROR: ${err.message}`);
+    });
+  }
+}
 
-// just for testing / a visual
-syncWriteFile('../../AST_OUTPUT.json', JSON.stringify(programAST, null, 4));
+console.info('App - starting');
+const app = new App();
+(async () => {
+  await app.initServer(1337);
+})();
