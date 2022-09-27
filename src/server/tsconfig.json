@@ -4,14 +4,21 @@
     "module": "commonjs",
     "lib": [
       "es6",
-      "dom"
+      "es2021"
+    ],
+    "typeRoots": [
+      "./node_modules/@types"
     ],
     "allowJs": true,
+    "rootDir": "src",
+    "outDir" : "../../build",
     "strict": true,
     "noImplicitAny": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
+    "skipLibCheck": true,
     "sourceMap": true
   },
+  "include": ["src"],
   "exclude": ["node_modules"]
 }
