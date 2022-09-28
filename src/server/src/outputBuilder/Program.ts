@@ -20,14 +20,14 @@ export default class Program {
   readonly outputBlock: OutputBlockNode;
   readonly globalConstants: Map<string, ConstantDeclaration>;
   readonly functionDeclarations: Map<string, FunctionDeclaration>;
-  readonly outputOrder: (StatementNode | LoopBlockNode)[];
+  readonly outputInOrder: (StatementNode | LoopBlockNode)[];
 
   constructor(program: ASTNode) {
     if (!this.isProgram(program)) throw new Error('Input must be a program!');
     this.program = program;
     this.definitionBlock = this.program.definitionBlock;
     this.outputBlock = this.program.outputBlock;
-    this.outputOrder = this.outputBlock.body;
+    this.outputInOrder = this.outputBlock.body;
     this.globalConstants = new Map<string, ConstantDeclaration>();
     this.functionDeclarations = new Map<string, FunctionDeclaration>();
     this.populateProgramInfo();
@@ -44,7 +44,7 @@ export default class Program {
   private actionOnNode(node: ASTNode | ASTTokenNode): void {
     if (isASTTokenNode(node)) return;
 
-    if (isVariableDeclarationNode(node)) {
+    if (isVariableDeclarationNode(node) && node.isGlobalConstant) {
       this.globalConstants.set(node.name.tokenValue, new ConstantDeclaration(node));
     }
 
