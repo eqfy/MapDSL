@@ -10,6 +10,7 @@ import { syncWriteFile } from '../util/syncWriteFile';
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import { CreateStatement } from '../outputBuilder/CreateStatement';
+import path from 'path';
 
 export default class Server {
   private readonly port: number;
@@ -24,7 +25,7 @@ export default class Server {
     this.registerMiddleware();
     this.registerRoutes();
 
-    this.express.use(express.static('./public'));
+    this.express.use(express.static('../../public'));
   }
 
   public start(): Promise<void> {
@@ -71,7 +72,7 @@ export default class Server {
   }
 
   private static getMapOutput(req: Request, res: Response) {
-    const content = readFileSync('./USER_INPUT.txt').toString();
+    const content = readFileSync(path.join(__dirname, '../USER_INPUT.txt')).toString();
     const lexer = new MapGeneratorLexer(CharStreams.fromString(content));
     const tokenStream = new CommonTokenStream(lexer);
     const parser = new MapGeneratorParser(tokenStream);
@@ -80,7 +81,6 @@ export default class Server {
     const programInternalRepresentation = new Program(programAST);
     const outputBuilder = new CreateStatementBuilder(programInternalRepresentation);
     const allOutputStatements: CreateStatement[] = outputBuilder.getAllOutputStatements();
-    syncWriteFile('../../AST_OUTPUT.json', JSON.stringify(programAST, null, 4)); // just for internal purposes
     res.status(200).json({ mapOutputs: allOutputStatements });
   }
 }

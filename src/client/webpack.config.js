@@ -27,5 +27,15 @@ module.exports = {
   },
   optimization: {
     minimize: false
+  },
+  devServer: {
+    historyApiFallback: true,
+    static: {
+      directory: path.join(__dirname, '../../public')
+    },
+    proxy: {
+      open: true,
+      '/': 'http://localhost:1337'
+    }
   }
 };
