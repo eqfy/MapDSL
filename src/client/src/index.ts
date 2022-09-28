@@ -1,32 +1,20 @@
 import { CreateStatement } from './CreateStatement';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 
-function getMapCreateStatements(): CreatStatement[] {
-  console.debug('test');
+// THIS IS WHERE YOU CAN ACCESS THE CREATE STATEMENTS
+// THIS IS WHERE YOU CAN ACCESS THE CREATE STATEMENTS
+function getMapCreateStatements(): CreateStatement[] {
   const xhr = new XMLHttpRequest();
   const url = '/map';
-  xhr.open('GET', url, true);
+  xhr.open('GET', url, false);
   xhr.setRequestHeader('Content-type', 'application/json');
-  xhr.onload = () => {
-    if (xhr.status === 200) {
-      return JSON.parse(xhr.response).result;
-    } else {
-      return JSON.parse(xhr.response).error;
-    }
-  };
-}
-
-function renderMap(outputStatements: CreateStatement[]) {
-  for (const statement of outputStatements) {
-    const para = document.createElement('p');
-    const node = document.createTextNode(JSON.stringify(statement));
-    para.appendChild(node);
-    document.getElementById('createStatements')?.appendChild(para);
-    console.log(JSON.stringify(statement));
+  xhr.send(null);
+  if (xhr.status === 200) {
+    return xhr.response;
+  } else {
+    console.error('request failed', xhr.response.error);
+    return [];
   }
 }
-
 /*
  * This demo demonstrates how to replace default map tiles with custom imagery.
  * In this case, the CoordMapType displays gray tiles annotated with the tile
@@ -81,8 +69,13 @@ function initMap(): void {
       streetViewControl: showStreetViewControl
     });
   });
-  const listOfOutputStatements = getMapCreateStatements();
-  console.log(listOfOutputStatements);
+
+  // THIS IS WHERE YOU CAN ACCESS THE CREATE STATEMENTS
+  // THIS IS WHERE YOU CAN ACCESS THE CREATE STATEMENTS
+  const listOfCreateStatements = getMapCreateStatements();
+  console.log(listOfCreateStatements);
+  // THIS IS WHERE YOU CAN ACCESS THE CREATE STATEMENTS
+  // THIS IS WHERE YOU CAN ACCESS THE CREATE STATEMENTS
 
   // Now attach the coordinate map type to the map's registry.
   map.mapTypes.set('coordinate', new CoordMapType(new google.maps.Size(256, 256)));

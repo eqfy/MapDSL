@@ -3,13 +3,13 @@ export interface Position {
   y: number;
 }
 
-interface StreetOutput {
+export interface StreetOutput {
   type: 'Highway' | 'Street' | 'Bridge';
   startPosition: Position;
   endPosition: Position;
 }
 
-interface MarkerOutput {
+export interface MarkerOutput {
   type: 'BusStop' | 'TrafficLight' | 'StopSign' | 'TrainStop';
   position: Position;
 }
