@@ -5,11 +5,11 @@ import { CharStreams, CommonTokenStream } from 'antlr4ts';
 import { MapGeneratorParser } from '../parser/gen/MapGeneratorParser';
 import { ParseToASTVisitor } from '../parser/ParseToASTVisitor';
 import Program from '../outputBuilder/Program';
-import OutputBuilder from '../outputBuilder/OutputBuilder';
+import CreateStatementBuilder from '../outputBuilder/CreateStatementBuilder';
 import { syncWriteFile } from '../util/syncWriteFile';
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
-import { OutputStatement } from '../outputBuilder/OutputStatement';
+import { CreateStatement } from '../outputBuilder/CreateStatement';
 
 export default class Server {
   private readonly port: number;
@@ -78,8 +78,8 @@ export default class Server {
     const parseToASTVisitor = new ParseToASTVisitor();
     const programAST = parser.program().accept(parseToASTVisitor);
     const programInternalRepresentation = new Program(programAST);
-    const outputBuilder = new OutputBuilder(programInternalRepresentation);
-    const allOutputStatements: OutputStatement[] = outputBuilder.getAllOutputStatements();
+    const outputBuilder = new CreateStatementBuilder(programInternalRepresentation);
+    const allOutputStatements: CreateStatement[] = outputBuilder.getAllOutputStatements();
     syncWriteFile('../../AST_OUTPUT.json', JSON.stringify(programAST, null, 4)); // just for internal purposes
     res.status(200).json({ mapOutputs: allOutputStatements });
   }

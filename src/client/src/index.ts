@@ -1,4 +1,4 @@
-import { OutputStatement } from './OutputStatement';
+import { CreateStatement } from './CreateStatement';
 
 function handleMapOutputStatements() {
   const xhr = new XMLHttpRequest();
@@ -16,7 +16,7 @@ function handleMapOutputStatements() {
   };
 }
 
-function renderMap(outputStatements: OutputStatement[]) {
+function renderMap(outputStatements: CreateStatement[]) {
   for (const statement of outputStatements) {
     const para = document.createElement('p');
     const node = document.createTextNode(JSON.stringify(statement));

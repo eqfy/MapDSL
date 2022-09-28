@@ -1,15 +1,15 @@
-import { OutputStatement } from './OutputStatement';
+import { CreateStatement } from './CreateStatement';
 import Program from './Program';
 
-export default class OutputBuilder {
+export default class CreateStatementBuilder {
   readonly program: Program;
 
   constructor(program: Program) {
     this.program = program;
   }
 
-  public getAllOutputStatements(): OutputStatement[] {
-    const testData: OutputStatement = {
+  public getAllOutputStatements(): CreateStatement[] {
+    const testData: CreateStatement = {
       type: 'BusStop',
       position: { x: 10, y: 10 }
     };

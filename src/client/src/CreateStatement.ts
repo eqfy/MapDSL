@@ -14,4 +14,4 @@ interface MarkerOutput {
   position: Position;
 }
 
-export type OutputStatement = StreetOutput | MarkerOutput;
+export type CreateStatement = StreetOutput | MarkerOutput;
