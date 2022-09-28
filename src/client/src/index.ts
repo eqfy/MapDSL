@@ -1,17 +1,18 @@
 import { CreateStatement } from './CreateStatement';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 
-function handleMapOutputStatements() {
+function getMapCreateStatements(): CreatStatement[] {
+  console.debug('test');
   const xhr = new XMLHttpRequest();
-  const url = '/';
-  xhr.open('GET', url, false);
+  const url = '/map';
+  xhr.open('GET', url, true);
   xhr.setRequestHeader('Content-type', 'application/json');
   xhr.onload = () => {
     if (xhr.status === 200) {
-      const listOfOutputStatements = JSON.parse(xhr.response).result;
-      return renderMap(listOfOutputStatements);
+      return JSON.parse(xhr.response).result;
     } else {
-      const err = JSON.parse(xhr.response).error;
-      return renderMap(err);
+      return JSON.parse(xhr.response).error;
     }
   };
 }
@@ -21,7 +22,8 @@ function renderMap(outputStatements: CreateStatement[]) {
     const para = document.createElement('p');
     const node = document.createTextNode(JSON.stringify(statement));
     para.appendChild(node);
-    document.body.appendChild(para);
+    document.getElementById('createStatements')?.appendChild(para);
+    console.log(JSON.stringify(statement));
   }
 }
 
@@ -63,7 +65,7 @@ class CoordMapType {
 function initMap(): void {
   const map = new google.maps.Map(document.getElementById('map') as HTMLElement, {
     zoom: 10,
-    center: { lat: 41.85, lng: -87.65 },
+    center: { lat: 0, lng: 0 },
     streetViewControl: false,
     mapTypeId: 'coordinate',
     mapTypeControlOptions: {
@@ -79,6 +81,8 @@ function initMap(): void {
       streetViewControl: showStreetViewControl
     });
   });
+  const listOfOutputStatements = getMapCreateStatements();
+  console.log(listOfOutputStatements);
 
   // Now attach the coordinate map type to the map's registry.
   map.mapTypes.set('coordinate', new CoordMapType(new google.maps.Size(256, 256)));
@@ -89,5 +93,6 @@ declare global {
     initMap: () => void;
   }
 }
+
 window.initMap = initMap;
 export {};

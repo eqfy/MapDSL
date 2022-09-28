@@ -68,19 +68,23 @@ export default class Server {
   }
 
   private registerRoutes() {
-    this.express.get('/', Server.getMapOutput);
+    this.express.get('/map', Server.getMapOutput);
   }
 
   private static getMapOutput(req: Request, res: Response) {
-    const content = readFileSync(path.join(__dirname, '../USER_INPUT.txt')).toString();
-    const lexer = new MapGeneratorLexer(CharStreams.fromString(content));
-    const tokenStream = new CommonTokenStream(lexer);
-    const parser = new MapGeneratorParser(tokenStream);
-    const parseToASTVisitor = new ParseToASTVisitor();
-    const programAST = parser.program().accept(parseToASTVisitor);
-    const programInternalRepresentation = new Program(programAST);
-    const outputBuilder = new CreateStatementBuilder(programInternalRepresentation);
-    const allOutputStatements: CreateStatement[] = outputBuilder.getAllOutputStatements();
-    res.status(200).json({ mapOutputs: allOutputStatements });
+    try {
+      const content = readFileSync(path.join(__dirname, '../USER_INPUT.txt')).toString();
+      const lexer = new MapGeneratorLexer(CharStreams.fromString(content));
+      const tokenStream = new CommonTokenStream(lexer);
+      const parser = new MapGeneratorParser(tokenStream);
+      const parseToASTVisitor = new ParseToASTVisitor();
+      const programAST = parser.program().accept(parseToASTVisitor);
+      const programInternalRepresentation = new Program(programAST);
+      const outputBuilder = new CreateStatementBuilder(programInternalRepresentation);
+      const allCreateStatements: CreateStatement[] = outputBuilder.getAllCreateStatements();
+      res.status(200).json({ result: allCreateStatements });
+    } catch (e: any) {
+      res.status(400).json({ error: e.message });
+    }
   }
 }

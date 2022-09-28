@@ -3,6 +3,6 @@
   "repository": "https://github.students.cs.ubc.ca/CPSC410-2022W-T1/Project1Group9",
   "scripts": {
     "build": "cp ./src/index.html ../../public && cp ./src/style.css ../../public && webpack",
-    "start": "webpack-dev-server"
+    "start": ""
   }
 }

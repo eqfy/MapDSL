@@ -23,19 +23,19 @@ module.exports = {
   output: {
     publicPath: '../../public',
     path: path.resolve(__dirname, '../../public'),
-    filename: 'client-bundle.js'
+    filename: 'bundle.js'
   },
   optimization: {
     minimize: false
-  },
-  devServer: {
-    historyApiFallback: true,
-    static: {
-      directory: path.join(__dirname, '../../public')
-    },
-    proxy: {
-      open: true,
-      '/': 'http://localhost:1337'
-    }
   }
+  // devServer: {
+  //   historyApiFallback: true,
+  //   static: {
+  //     directory: path.join(__dirname, '../../public')
+  //   },
+  //   proxy: {
+  //     open: true,
+  //     '/': 'http://localhost:1337'
+  //   }
+  // }
 };

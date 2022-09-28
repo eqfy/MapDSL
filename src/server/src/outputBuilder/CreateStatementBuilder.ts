@@ -8,7 +8,7 @@ export default class CreateStatementBuilder {
     this.program = program;
   }
 
-  public getAllOutputStatements(): CreateStatement[] {
+  public getAllCreateStatements(): CreateStatement[] {
     const testData: CreateStatement[] = [
       {
         type: 'Highway',
