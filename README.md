@@ -1,5 +1,29 @@
 # Project1Group9
 
+## Milestone 3
+
+### Mockup of concrete language design (as used for your first user study)
+Please see docs/documentation.txt for the document provided for the user study. This document describes the language, as well as gives a concrete example. Then provides the user a map and asks them to  draw it using our language. See docs/questionsForUserStudy.txt to see **examples** of the types of questions I asked the user.
+
+### Notes about first user study
+Our user was not exactly our target audience, however, he had the same level of technical knowledge our target audience would have. He had some experience with programming / moderate technical knowledge, but not extensively.
+
+He felt that the language was fairly straightforward to understand and use. I will note, however, that the file he created (to produce the example map) did not leverage some aspects of the language, such as CONSTANTS.
+
+### Any changes to original language design
+As of now, none.
+
+
+### Progress vs. roadmap; any changes to plans
+Compared to the docs/Timeline + Tasks.pdf provided in Milestone 2, we are ahead of schedule. The Grammar, parser, and ast creation is fully complete. And the project is set up with both a frontend and a backend, sending information back and forth through HTTP requests. 
+
+As for the backend: We are now implementing a visitor pattern to assist in visiting the AST nodes and further leveraging this to translate the input (which could have variables, functions, etc) into a simple list of CREATE statements (the statements that actually put things on the map, translated into a interfaced json object). 
+
+As for the frontend: We are now working on taking in a list of CREATE statements (the statements that actually put things on the map, translated into a interfaced json object), and then drawing them onto the map.
+
+These two teams are currently working entirely seperately. The frontend team should be done within a week, and we hope to have a small working demo by next Fridays meeting.
+
+
 ## Milestone 2
 
 ### Questions for TA / Feedback from TA

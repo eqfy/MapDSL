@@ -21,6 +21,9 @@ Designing a text file with the following language documentation will successfull
 <<Creating streets (or something similar)>>
 CREATE [street, highway, bridge] from position to position;
 
+<<Creating markers>
+CREATE [bus stop, stop sign, stop light, train stop] at position;
+
 
 <<Declaring a constant value>>
 CONSTANT constantName = expression;
