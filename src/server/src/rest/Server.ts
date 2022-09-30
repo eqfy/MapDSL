@@ -4,12 +4,8 @@ import { MapGeneratorLexer } from '../parser/gen/MapGeneratorLexer';
 import { CharStreams, CommonTokenStream } from 'antlr4ts';
 import { MapGeneratorParser } from '../parser/gen/MapGeneratorParser';
 import { ParseToASTVisitor } from '../parser/ParseToASTVisitor';
-import Program from '../outputBuilder/Program';
-import CreateStatementBuilder from '../outputBuilder/CreateStatementBuilder';
-import { syncWriteFile } from '../util/syncWriteFile';
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
-import { CreateStatement } from '../outputBuilder/CreateStatement';
 import path from 'path';
 import OutputBuilder from '../outputBuilder/OutputBuilder';
 import { OutputVisitor } from '../ast/OutputVisitor';
@@ -84,12 +80,6 @@ export default class Server {
       const parseToASTVisitor = new ParseToASTVisitor();
       const programAST = parser.program().accept(parseToASTVisitor);
 
-      // Non visitor pattern
-      // const programInternalRepresentation = new Program(programAST);
-      // const outputBuilder = new CreateStatementBuilder(programInternalRepresentation);
-      // const allCreateStatements: CreateStatement[] = outputBuilder.getAllCreateStatements();
-
-      // Visitor pattern
       const outputBuilder = new OutputBuilder();
       const outputVisitor = new OutputVisitor();
       programAST.accept(outputVisitor, getDefaultOutputVisitorContext(outputBuilder));

@@ -7,12 +7,12 @@ export default class OutputBuilder {
     this._result = [];
   }
 
-  public createRoad() {
+  public buildRoad() {
     // TODO
     // this.result.append(road)
   }
 
-  public createMarker() {
+  public buildMarker() {
     // TODO
     // this.result.append(marker)
   }
