@@ -37,21 +37,6 @@ export interface ProgramNode extends ASTNode {
   outputBlock: OutputBlockNode;
 }
 
-// export class ProgramNode implements ASTNode {
-//   type: ASTType = "Program";
-//   definitionBlock: DefinitionBlockNode;
-//   outputBlock: OutputBlockNode;
-
-//   constructor(definitionBlock: DefinitionBlockNode, outputBlock: OutputBlockNode) {
-//     this.definitionBlock = definitionBlock
-//     this.outputBlock = outputBlock
-//   }
-
-//   accept<T, U>(v: Visitor<T, U>, t: T): U {
-//     return v.visit(this, null)
-//   }
-// }
-
 export interface DefinitionBlockNode extends ASTNode {
   type: 'DefinitionBlock';
   // definitionStart: ASTTokenNode;

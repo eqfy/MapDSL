@@ -14,7 +14,7 @@ export default class OutputBuilder {
 
   public createMarker() {
     // TODO
-    // this.result.append(road)
+    // this.result.append(marker)
   }
 
   public get result(): CreateStatement[] {
