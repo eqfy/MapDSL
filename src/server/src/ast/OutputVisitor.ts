@@ -21,11 +21,11 @@ import { OutputVisitorContext } from './OutputVisitorContext';
 import { Visitor } from './Visitor';
 
 export class OutputVisitor implements Visitor<OutputVisitorContext> {
-  // Note, it is no longer necessary to check that n is a specific type of node
-  // Instead, the check is handled by the visitor pattern
-  // (specifically by using the correct function name)
   visitProgramNode(n: ProgramNode, t: OutputVisitorContext): void {
-    throw new Error('Method not implemented.');
+    // This might be the only type check needed for AST nodes
+    if (n.type !== 'Program') throw new Error('Input must be a program!');
+    n.definitionBlock?.accept(this, t)
+    n.outputBlock.accept(this, t)
   }
   visitDefinitionBlockNode(n: DefinitionBlockNode, t: OutputVisitorContext): void {
     throw new Error('Method not implemented.');
