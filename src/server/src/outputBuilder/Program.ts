@@ -9,7 +9,7 @@ import {
   OutputBlockNode,
   ProgramNode,
   StatementNode
-} from '../parser/AST';
+} from '../ast/AST';
 import { traverseAST } from '../util/traverseAST';
 import FunctionDeclaration from './FunctionDeclaration';
 import ConstantDeclaration from './ConstantDeclaration';

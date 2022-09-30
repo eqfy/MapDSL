@@ -1,4 +1,4 @@
-import { ASTNode, isASTNode, isASTTokenNode } from '../parser/AST';
+import { ASTNode, isASTNode, isASTTokenNode } from '../ast/AST';
 
 export function traverseAST(astNode: ASTNode, actionOnNode: (node: ASTNode) => void): void {
   if (!isASTNode(astNode)) return;

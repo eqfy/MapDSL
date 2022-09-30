@@ -4,13 +4,12 @@ import { MapGeneratorLexer } from '../parser/gen/MapGeneratorLexer';
 import { CharStreams, CommonTokenStream } from 'antlr4ts';
 import { MapGeneratorParser } from '../parser/gen/MapGeneratorParser';
 import { ParseToASTVisitor } from '../parser/ParseToASTVisitor';
-import Program from '../outputBuilder/Program';
-import CreateStatementBuilder from '../outputBuilder/CreateStatementBuilder';
-import { syncWriteFile } from '../util/syncWriteFile';
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
-import { CreateStatement } from '../outputBuilder/CreateStatement';
 import path from 'path';
+import OutputBuilder from '../outputBuilder/OutputBuilder';
+import { OutputVisitor } from '../ast/OutputVisitor';
+import { getDefaultOutputVisitorContext } from '../ast/OutputVisitorContext';
 
 export default class Server {
   private readonly port: number;
@@ -80,9 +79,12 @@ export default class Server {
       const parser = new MapGeneratorParser(tokenStream);
       const parseToASTVisitor = new ParseToASTVisitor();
       const programAST = parser.program().accept(parseToASTVisitor);
-      const programInternalRepresentation = new Program(programAST);
-      const outputBuilder = new CreateStatementBuilder(programInternalRepresentation);
-      const allCreateStatements: CreateStatement[] = outputBuilder.getAllCreateStatements();
+
+      const outputBuilder = new OutputBuilder();
+      const outputVisitor = new OutputVisitor();
+      programAST.accept(outputVisitor, getDefaultOutputVisitorContext(outputBuilder));
+      const allCreateStatements = outputBuilder.result;
+
       res.status(200).json({ result: allCreateStatements });
     } catch (e: any) {
       res.status(400).json({ error: e.message });

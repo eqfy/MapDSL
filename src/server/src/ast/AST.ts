@@ -1,9 +1,11 @@
 // all commented out properties will be implemented later if we need them for syntax highlighting or some other reason
 
 import { ASTTokenType, ASTType } from './ASTTypes';
+import { Visitor } from './Visitor';
 
 export interface ASTNode {
   type: ASTType | ASTTokenType;
+  accept<T, U>(v: Visitor<T, U>, t: T): U;
 }
 
 export function isASTNode(node: unknown): node is ASTNode {
@@ -90,12 +92,12 @@ export interface LoopBlockNode extends ASTNode {
 }
 
 export type ExpressionNode =
-  | {
+  | (ASTNode & {
       type: 'Expression';
       leftValue: ExpressionNode;
       operator: ASTTokenNode;
       rightValue: ExpressionNode;
-    }
+    })
   | PositionNode
   | PositionAccessNode
   | ASTTokenNode;

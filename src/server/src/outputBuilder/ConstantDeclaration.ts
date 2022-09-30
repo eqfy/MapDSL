@@ -1,4 +1,4 @@
-import { ExpressionNode, VariableDeclarationNode } from '../parser/AST';
+import { ExpressionNode, VariableDeclarationNode } from '../ast/AST';
 
 export default class ConstantDeclaration {
   readonly constantDeclaration: VariableDeclarationNode;
