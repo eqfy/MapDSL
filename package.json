@@ -9,6 +9,10 @@
     "start": "npm run build && concurrently \"npm:startClient\" \"npm:startServer\"",
     "startClient": "cd ./src/client/ && npm run start",
     "startServer": "cd ./src/server/ && npm run start",
+    "buildWin": "concurrently \"npm:buildClientWin\" \"npm:buildServerWin\"",
+    "buildClientWin": "if not exist public mkdir public && cd ./src/client/ && npm run build",
+    "buildServerWin": "if not exist build mkdir build && cd ./src/server/ && npm run build",
+    "startWin": "npm run buildWin && concurrently \"npm:startClient\" \"npm:startServer\"",
     "lint": "eslint . --ext .ts",
     "lint-and-fix": "eslint . --ext .ts --fix",
     "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write"
