@@ -16,7 +16,7 @@ import {
   StreetOutputNode,
   VariableAssignmentNode,
   VariableDeclarationNode
-} from './AST';
+} from '../ast/AST';
 import { MapGeneratorParserVisitor } from './gen/MapGeneratorParserVisitor';
 import { AbstractParseTreeVisitor } from 'antlr4ts/tree';
 import {
@@ -42,7 +42,7 @@ import {
   VariableAssignmentContext
 } from './gen/MapGeneratorParser';
 import { TerminalNode } from 'antlr4ts/tree/TerminalNode';
-import { ASTTokenType } from './ASTTypes';
+import { ASTTokenType } from '../ast/ASTTypes';
 
 export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> implements MapGeneratorParserVisitor<ASTNode> {
   visitProgram(ctx: ProgramContext): ProgramNode {
@@ -51,12 +51,18 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
       return {
         type: 'Program',
         definitionBlock: this.visitDefinitionBlock(definitionBlockCtx),
-        outputBlock: this.visitOutputBlock(ctx.outputBlock())
+        outputBlock: this.visitOutputBlock(ctx.outputBlock()),
+        accept(v, t) {
+          return v.visitProgramNode(this, t);
+        }
       };
     } else {
       return {
         type: 'Program',
-        outputBlock: this.visitOutputBlock(ctx.outputBlock())
+        outputBlock: this.visitOutputBlock(ctx.outputBlock()),
+        accept(v, t) {
+          return v.visitProgramNode(this, t);
+        }
       };
     }
   }
@@ -64,7 +70,10 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
   visitDefinitionBlock(ctx: DefinitionBlockContext): DefinitionBlockNode {
     return {
       type: 'DefinitionBlock',
-      body: this.getGlobalBody(ctx.globalBodyElement())
+      body: this.getGlobalBody(ctx.globalBodyElement()),
+      accept(v, t) {
+        return v.visitDefinitionBlockNode(this, t);
+      }
     };
   }
 
@@ -105,14 +114,20 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
       type: 'FunctionDeclaration',
       name: this.getTokenNode('FunctionName', ctx.functionName().NAME()),
       inputVariables: this.getInputVariables(ctx.parameterName()),
-      body: this.getLocalBody(ctx.bodyElement())
+      body: this.getLocalBody(ctx.bodyElement()),
+      accept(v, t) {
+        return v.visitFunctionDeclarationNode(this, t);
+      }
     };
   }
 
   visitOutputBlock(ctx: OutputBlockContext): OutputBlockNode {
     return {
       type: 'OutputBlock',
-      body: this.getLocalBody(ctx.bodyElement())
+      body: this.getLocalBody(ctx.bodyElement()),
+      accept(v, t) {
+        return v.visitOutputBlockNode(this, t);
+      }
     };
   }
 
@@ -145,7 +160,10 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
     return {
       type: 'LoopBlock',
       loopNumber: this.getTokenNode('LoopNumber', ctx.POSITIVE_NUMBER()),
-      body: this.getStatements(ctx.statement())
+      body: this.getStatements(ctx.statement()),
+      accept(v, t) {
+        return v.visitLoopBlockNode(this, t);
+      }
     };
   }
 
@@ -153,7 +171,10 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
     return {
       type: 'VariableAssignment',
       name: this.getTokenNode('VariableName', ctx.variableName().NAME()),
-      value: this.visitExpression(ctx.expression())
+      value: this.visitExpression(ctx.expression()),
+      accept(v, t) {
+        return v.visitVariableAssignmentNode(this, t);
+      }
     };
   }
 
@@ -167,7 +188,10 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
     return {
       type: 'FunctionCall',
       name: this.getTokenNode('FunctionName', ctx.functionName().NAME()),
-      inputValues: this.getExpressions(ctx.expression())
+      inputValues: this.getExpressions(ctx.expression()),
+      accept(v, t) {
+        return v.visitFunctionCallNode(this, t);
+      }
     };
   }
 
@@ -187,7 +211,10 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
 
     return {
       type: 'CreateCall',
-      value: value
+      value: value,
+      accept(v, t) {
+        return v.visitCreateCallNode(this, t);
+      }
     };
   }
 
@@ -216,7 +243,10 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
     return {
       type: 'MarkerOutput',
       markerType: this.getTokenNode('MarkerType', type),
-      position: this.visitPosition(ctx.position())
+      position: this.visitPosition(ctx.position()),
+      accept(v, t) {
+        return v.visitMarkerOutputNode(this, t);
+      }
     };
   }
 
@@ -241,7 +271,10 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
       type: 'StreetOutput',
       streetType: this.getTokenNode('StreetType', type),
       startPosition: this.visitPosition(ctx.position()[0]),
-      endPosition: this.visitPosition(ctx.position()[1])
+      endPosition: this.visitPosition(ctx.position()[1]),
+      accept(v, t) {
+        return v.visitStreetOutputNode(this, t);
+      }
     };
   }
 
@@ -260,7 +293,10 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
         type: 'Expression',
         leftValue: this.visitLeftExpressionValue(leftValueCtx),
         operator: this.getTokenNode('Operator', operatorCtx),
-        rightValue: this.visitExpression(expressionCtx)
+        rightValue: this.visitExpression(expressionCtx),
+        accept(v, t) {
+          return v.visitExpressionNode(this, t);
+        }
       };
     } else {
       throw new Error(
@@ -301,19 +337,30 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
     if (variableNameCtx) {
       return {
         type: 'Position',
-        variableName: this.getTokenNode('VariableName', variableNameCtx.NAME())
+        variableName: this.getTokenNode('VariableName', variableNameCtx.NAME()),
+        accept(v, t) {
+          return v.visitPositionNode(this, t);
+        }
       };
     } else {
       return {
         type: 'Position',
         xCoordinate: this.visitExpression(ctx.expression()[0]),
-        yCoordinate: this.visitExpression(ctx.expression()[1])
+        yCoordinate: this.visitExpression(ctx.expression()[1]),
+        accept(v, t) {
+          return v.visitPositionNode(this, t);
+        }
       };
     }
   }
 
   protected defaultResult(): ASTNode {
-    return { type: 'Program' };
+    return {
+      type: 'Program',
+      accept(v, t) {
+        return v.visitASTNode(this, t);
+      }
+    };
   }
 
   private getVariableDeclaration(
@@ -323,7 +370,10 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
       type: 'VariableDeclaration',
       isGlobalConstant: false,
       name: this.getTokenNode('VariableName', ctx.variableName().NAME()),
-      value: this.visitExpression(ctx.expression())
+      value: this.visitExpression(ctx.expression()),
+      accept(v, t) {
+        return v.visitVariableDeclarationNode(this, t);
+      }
     };
   }
 
@@ -351,6 +401,9 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
       range: {
         zeroIndexStart: terminalNode.symbol.startIndex,
         zeroIndexEnd: terminalNode.symbol.stopIndex
+      },
+      accept(v, t) {
+        return v.visitASTTokenNode(this, t);
       }
     };
   }
@@ -383,7 +436,10 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
     return {
       type: 'PositionAccess',
       variableName: this.getTokenNode('VariableName', ctx.NAME()),
-      coordinate: this.getTokenNode('Coordinate', ctx.COORDINATE())
+      coordinate: this.getTokenNode('Coordinate', ctx.COORDINATE()),
+      accept(v, t) {
+        return v.visitPositionAccessNode(this, t);
+      }
     };
   }
 }

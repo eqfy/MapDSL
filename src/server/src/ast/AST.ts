@@ -1,9 +1,11 @@
 // all commented out properties will be implemented later if we need them for syntax highlighting or some other reason
 
 import { ASTTokenType, ASTType } from './ASTTypes';
+import { Visitor } from './Visitor';
 
 export interface ASTNode {
   type: ASTType | ASTTokenType;
+  accept<T, U>(v: Visitor<T, U>, t: T): U;
 }
 
 export function isASTNode(node: unknown): node is ASTNode {
@@ -34,6 +36,21 @@ export interface ProgramNode extends ASTNode {
   definitionBlock?: DefinitionBlockNode;
   outputBlock: OutputBlockNode;
 }
+
+// export class ProgramNode implements ASTNode {
+//   type: ASTType = "Program";
+//   definitionBlock: DefinitionBlockNode;
+//   outputBlock: OutputBlockNode;
+
+//   constructor(definitionBlock: DefinitionBlockNode, outputBlock: OutputBlockNode) {
+//     this.definitionBlock = definitionBlock
+//     this.outputBlock = outputBlock
+//   }
+
+//   accept<T, U>(v: Visitor<T, U>, t: T): U {
+//     return v.visit(this, null)
+//   }
+// }
 
 export interface DefinitionBlockNode extends ASTNode {
   type: 'DefinitionBlock';
@@ -90,12 +107,12 @@ export interface LoopBlockNode extends ASTNode {
 }
 
 export type ExpressionNode =
-  | {
+  | (ASTNode & {
       type: 'Expression';
       leftValue: ExpressionNode;
       operator: ASTTokenNode;
       rightValue: ExpressionNode;
-    }
+    })
   | PositionNode
   | PositionAccessNode
   | ASTTokenNode;

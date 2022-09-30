@@ -5,7 +5,7 @@ import {
   isASTTokenNode,
   LoopBlockNode,
   StatementNode,
-} from '../parser/AST';
+} from '../ast/AST';
 import { traverseAST } from '../util/traverseAST';
 
 export default class FunctionDeclaration {
