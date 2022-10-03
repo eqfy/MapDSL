@@ -1,4 +1,5 @@
 import { CreateStatement } from './CreateStatement';
+import { Constants } from './constants';
 
 // THIS IS WHERE YOU CAN ACCESS THE CREATE STATEMENTS
 // THIS IS WHERE YOU CAN ACCESS THE CREATE STATEMENTS
@@ -26,24 +27,35 @@ function getMapCreateStatements(): CreateStatement[] {
 class CoordMapType {
   tileSize: google.maps.Size;
   maxZoom = 19;
-  name = 'Tile #s';
-  alt = 'Tile Coordinate Map Type';
+  name = 'Tiled';
+  alt = 'Tiled Coordinate Map Type';
+  tiled = true;
 
-  constructor(tileSize: google.maps.Size) {
+  // The coordinate map type configuration for the canvas
+  // Supports tiled (show grid + coordinates) and untiled. Green background is added regardless of variants
+  constructor(tileSize: google.maps.Size, tiled: boolean) {
     this.tileSize = tileSize;
+    this.tiled = tiled;
+    if (!tiled) {
+      this.name = 'Untiled';
+      this.alt = 'Untiled Coordinate Map Type';
+    }
   }
 
   getTile(coord: google.maps.Point, zoom: number, ownerDocument: Document): HTMLElement {
     const div = ownerDocument.createElement('div');
-
-    div.innerHTML = String(coord);
     div.style.width = this.tileSize.width + 'px';
     div.style.height = this.tileSize.height + 'px';
     div.style.fontSize = '10';
-    div.style.borderStyle = 'solid';
-    div.style.borderWidth = '1px';
-    div.style.borderColor = '#AAAAAA';
-    div.style.backgroundColor = '#E5E3DF';
+    
+    if (this.tiled) {
+      div.innerHTML = String(coord);
+      div.style.borderStyle = 'solid';
+      div.style.borderWidth = '1px';
+      div.style.borderColor = Constants.TILE_BORDER_COLOR;
+    }
+
+    div.style.backgroundColor = Constants.BACKGROUND_COLOR;
     return div;
   }
 
@@ -55,19 +67,11 @@ function initMap(): void {
     zoom: 10,
     center: { lat: 0, lng: 0 },
     streetViewControl: false,
-    mapTypeId: 'coordinate',
+    mapTypeId: 'tiled',
     mapTypeControlOptions: {
-      mapTypeIds: ['coordinate', 'roadmap'],
+      mapTypeIds: ['tiled', 'untiled'],
       style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
     }
-  });
-
-  map.addListener('maptypeid_changed', () => {
-    const showStreetViewControl = (map.getMapTypeId() as string) !== 'coordinate';
-
-    map.setOptions({
-      streetViewControl: showStreetViewControl
-    });
   });
 
   // THIS IS WHERE YOU CAN ACCESS THE CREATE STATEMENTS
@@ -77,8 +81,9 @@ function initMap(): void {
   // THIS IS WHERE YOU CAN ACCESS THE CREATE STATEMENTS
   // THIS IS WHERE YOU CAN ACCESS THE CREATE STATEMENTS
 
-  // Now attach the coordinate map type to the map's registry.
-  map.mapTypes.set('coordinate', new CoordMapType(new google.maps.Size(256, 256)));
+  // The tiled and untiled variants of our coordinate map - the roads/markers remain in place when switching variants
+  map.mapTypes.set('tiled', new CoordMapType(new google.maps.Size(256, 256), true));
+  map.mapTypes.set('untiled', new CoordMapType(new google.maps.Size(256, 256), false));
 }
 
 declare global {
