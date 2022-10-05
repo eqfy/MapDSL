@@ -1,3 +1,4 @@
+import { Canvas } from './canvas';
 import { CreateStatement } from './CreateStatement';
 
 // THIS IS WHERE YOU CAN ACCESS THE CREATE STATEMENTS
@@ -70,15 +71,16 @@ function initMap(): void {
     });
   });
 
+  // Now attach the coordinate map type to the map's registry.
+  map.mapTypes.set('coordinate', new CoordMapType(new google.maps.Size(256, 256)));
+
   // THIS IS WHERE YOU CAN ACCESS THE CREATE STATEMENTS
   // THIS IS WHERE YOU CAN ACCESS THE CREATE STATEMENTS
   const listOfCreateStatements = getMapCreateStatements();
   console.log(listOfCreateStatements);
-  // THIS IS WHERE YOU CAN ACCESS THE CREATE STATEMENTS
-  // THIS IS WHERE YOU CAN ACCESS THE CREATE STATEMENTS
 
-  // Now attach the coordinate map type to the map's registry.
-  map.mapTypes.set('coordinate', new CoordMapType(new google.maps.Size(256, 256)));
+  // Create a canvas with the map and list of CreateStatements
+  const canvas = new Canvas(map, listOfCreateStatements);
 }
 
 declare global {
