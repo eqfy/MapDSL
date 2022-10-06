@@ -39,10 +39,6 @@ class CoordMapType {
     }
   }
 
-  constructor(tileSize: google.maps.Size) {
-    this.tileSize = tileSize;
-  }
-
   // The render function for a tile
   getTile(coord: google.maps.Point, zoom: number, ownerDocument: Document): HTMLElement {
     const div = ownerDocument.createElement('div');
