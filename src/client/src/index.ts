@@ -1,3 +1,4 @@
+import { Canvas } from './canvas';
 import { CreateStatement } from './CreateStatement';
 import { Constants } from './constants';
 import { CoordinateConverter } from './coordinateConverter';
@@ -36,6 +37,10 @@ class CoordMapType {
       this.name = 'Untiled';
       this.alt = 'Untiled Coordinate Map Type';
     }
+  }
+
+  constructor(tileSize: google.maps.Size) {
+    this.tileSize = tileSize;
   }
 
   // The render function for a tile
@@ -90,12 +95,13 @@ function initMap(): void {
   // THIS IS WHERE YOU CAN ACCESS THE CREATE STATEMENTS
   const listOfCreateStatements = getMapCreateStatements();
   console.log(listOfCreateStatements);
-  // THIS IS WHERE YOU CAN ACCESS THE CREATE STATEMENTS
-  // THIS IS WHERE YOU CAN ACCESS THE CREATE STATEMENTS
 
   // The tiled and untiled variants of our coordinate map - the roads/markers remain in place when switching variants
   map.mapTypes.set('tiled', new CoordMapType(new google.maps.Size(256, 256), true));
   map.mapTypes.set('untiled', new CoordMapType(new google.maps.Size(256, 256), false));
+
+  // Create a canvas with the map and list of CreateStatements
+  const canvas = new Canvas(map, listOfCreateStatements);
 }
 
 declare global {
