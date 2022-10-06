@@ -23,10 +23,10 @@ export class Canvas {
             statements.forEach(function (statement: CreateStatement) {
                 if (isStreetOutput(statement)) {
                     // street
-                    streetOutputs.push(statement as StreetOutput);
+                    streetOutputs.push(statement);
                 } else if (isMarkerOutput(statement)) {
                     // marker
-                    markerOutputs.push(statement as MarkerOutput);
+                    markerOutputs.push(statement);
                 } else {
                     // stub for future stuff or invalid types
                 }
