@@ -1,7 +1,7 @@
 import { Canvas } from './canvas';
 import { CreateStatement } from './CreateStatement';
 import { Constants } from './constants';
-import { CoordinateConverter } from './coordinateConverter';
+import { CoordinateUtils } from './coordinateUtils';
 
 // THIS IS WHERE YOU CAN ACCESS THE CREATE STATEMENTS
 // THIS IS WHERE YOU CAN ACCESS THE CREATE STATEMENTS
@@ -43,22 +43,31 @@ class CoordMapType {
   getTile(coord: google.maps.Point, zoom: number, ownerDocument: Document): HTMLElement {
     const div = ownerDocument.createElement('div');
 
-    // render in terms of our coordinate system instead of the tiling one
-    const convertedCoord = CoordinateConverter.convertTileToCoordinate(coord, zoom);
-    div.innerHTML = `(${convertedCoord.x}, ${convertedCoord.y})`;
-
     div.style.width = this.tileSize.width + 'px';
     div.style.height = this.tileSize.height + 'px';
     div.style.fontSize = '10';
-    
+
+    // convert into our coordinate system for computation and rendering
+    const convertedCoord = CoordinateUtils.convertTileToCoordinate(coord, zoom);
+
+    const tileInCanvas = CoordinateUtils.isTileInCanvas(convertedCoord);
+
     if (this.tiled) {
-      div.innerHTML = String(coord);
-      div.style.borderStyle = 'solid';
-      div.style.borderWidth = '1px';
-      div.style.borderColor = Constants.TILE_BORDER_COLOR;
+      // if the tile coordinate is in-bound, the coordinate should be rendered
+      if (CoordinateUtils.isCoordinateInCanvas(convertedCoord)) {
+        div.innerHTML = `(${convertedCoord.x}, ${convertedCoord.y})`;
+      }
+
+      // render the border of in-bound tiles if configuration is tiled
+      if (tileInCanvas) {
+        div.style.borderStyle = 'solid';
+        div.style.borderWidth = '1px';
+        div.style.borderColor = Constants.TILE_BORDER_COLOR;
+      }
     }
 
-    div.style.backgroundColor = Constants.BACKGROUND_COLOR;
+    // tile colors are decided by whether it is in bound or not, regardless of whether configuration is tiled
+    div.style.backgroundColor = tileInCanvas ? Constants.CANVAS_BACKGROUND_COLOR : Constants.TILE_BORDER_COLOR;
     return div;
   }
 

@@ -1,7 +1,7 @@
 export class Constants {
     // Colors
-    static readonly BACKGROUND_COLOR = '#00E673';
-    static readonly TILE_BORDER_COLOR = '#AAAAAA';
+    static readonly CANVAS_BACKGROUND_COLOR = '#99FF99';
+    static readonly TILE_BORDER_COLOR = '#E6E6E6';
 
     // Zoom properties of the canvas
     static readonly DEFAULT_ZOOM = 11;

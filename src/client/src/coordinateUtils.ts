@@ -1,7 +1,7 @@
 import { Constants } from './constants';
 import { Position } from './CreateStatement';
 
-export class CoordinateConverter {
+export class CoordinateUtils {
     // Convert from our coordinate system to Google Maps LatLng system
     static convertCoordinateToLatLng(position: Position): google.maps.LatLngLiteral {
         const lng = Constants.MAX_CANVAS_LONGTITUDE * (-1 + 2 * position.x / Constants.CANVAS_WIDTH);
@@ -26,5 +26,15 @@ export class CoordinateConverter {
         // bottom left tile should have (0, 0), so any other tile could get the coordinates (in our system) using that as a reference
         // note that y has negation so that user can use coordinate system as a natural Quadrant 1 (y increases as the position goes up)
         return { x: (tileCoordinate.x - bottomLeftTileX) * ratio, y: (bottomLeftTileY - tileCoordinate.y) * ratio };
+    }
+
+    // Check if the whole tile is in canvas based on its top-left corner coordinate
+    static isTileInCanvas(coord: Position): boolean {
+        return coord.x >= 0 && coord.x < Constants.CANVAS_WIDTH && coord.y > 0 && coord.y <= Constants.CANVAS_HEIGHT;
+    }
+
+    // Check if a particular coordinate is canvas
+    static isCoordinateInCanvas(coord: Position): boolean {
+        return coord.x >= 0 && coord.x <= Constants.CANVAS_WIDTH && coord.y >= 0 && coord.y <= Constants.CANVAS_HEIGHT;
     }
 }
