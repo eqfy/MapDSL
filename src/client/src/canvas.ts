@@ -1,7 +1,4 @@
-import { CreateStatement, MarkerOutput, StreetOutput } from "./CreateStatement";
-
-const STREET_OUTPUT_TYPES = ['Highway', 'Street', 'Bridge'];
-const MARKER_OUTPUT_TYPES = ['BusStop', 'TrafficLight', 'StopSign', 'TrainStop'];
+import { CreateStatement, isMarkerOutput, isStreetOutput, MarkerOutput, StreetOutput } from "./CreateStatement";
 
 // The class with everything related to rendering
 // TODO: might refactor the map configuration from index.ts to here, currently just have it passed in when constructed
@@ -24,10 +21,10 @@ export class Canvas {
             const markerOutputs: MarkerOutput[] = [];
 
             statements.forEach(function (statement: CreateStatement) {
-                if (STREET_OUTPUT_TYPES.includes(statement.type)) {
+                if (isStreetOutput(statement)) {
                     // street
                     streetOutputs.push(statement as StreetOutput);
-                } else if (MARKER_OUTPUT_TYPES.includes(statement.type)) {
+                } else if (isMarkerOutput(statement)) {
                     // marker
                     markerOutputs.push(statement as MarkerOutput);
                 } else {
