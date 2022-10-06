@@ -1,3 +1,4 @@
+import { Canvas } from './canvas';
 import { CreateStatement } from './CreateStatement';
 import { Constants } from './constants';
 import { CoordinateConverter } from './coordinateConverter';
@@ -25,6 +26,10 @@ class CoordMapType {
   minZoom = Constants.MIN_ZOOM;
   name = 'Tile #s';
   alt = 'Tile Coordinate Map Type';
+
+  constructor(tileSize: google.maps.Size) {
+    this.tileSize = tileSize;
+  }
 
   // The render function for a tile
   getTile(coord: google.maps.Point, zoom: number, ownerDocument: Document): HTMLElement {
@@ -77,25 +82,16 @@ function initMap(): void {
     });
   });
 
+  // Now attach the coordinate map type to the map's registry.
+  map.mapTypes.set('coordinate', new CoordMapType(new google.maps.Size(256, 256)));
+
   // THIS IS WHERE YOU CAN ACCESS THE CREATE STATEMENTS
   // THIS IS WHERE YOU CAN ACCESS THE CREATE STATEMENTS
   const listOfCreateStatements = getMapCreateStatements();
   console.log(listOfCreateStatements);
-  // THIS IS WHERE YOU CAN ACCESS THE CREATE STATEMENTS
-  // THIS IS WHERE YOU CAN ACCESS THE CREATE STATEMENTS
 
-  // Now attach the coordinate map type to the map's registry.
-  map.mapTypes.set('coordinate', new CoordMapType());
-
-  // an example showing a polyline diagonally through 1 grid
-  // TODO: remove
-  new google.maps.Polyline({
-    path: [ CoordinateConverter.convertCoordinateToLatLng({x: 0, y: 0}), CoordinateConverter.convertCoordinateToLatLng({x: 128, y: 128})],
-    strokeColor: "#ff9900",
-    strokeOpacity: 1.0,
-    strokeWeight: 5,
-    map: map
-  });
+  // Create a canvas with the map and list of CreateStatements
+  const canvas = new Canvas(map, listOfCreateStatements);
 }
 
 declare global {
