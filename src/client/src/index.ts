@@ -1,7 +1,7 @@
 import { Canvas } from './canvas';
 import { CreateStatement } from './CreateStatement';
 import { Constants } from './constants';
-import { CoordinateConverter } from './coordinateConverter';
+import { CoordinateUtils } from './coordinateUtils';
 
 // THIS IS WHERE YOU CAN ACCESS THE CREATE STATEMENTS
 // THIS IS WHERE YOU CAN ACCESS THE CREATE STATEMENTS
@@ -24,28 +24,50 @@ class CoordMapType {
   tileSize = new google.maps.Size(Constants.TILE_SIDE_LENGTH, Constants.TILE_SIDE_LENGTH);
   maxZoom = Constants.MAX_ZOOM;
   minZoom = Constants.MIN_ZOOM;
-  name = 'Tile #s';
-  alt = 'Tile Coordinate Map Type';
+  name = 'Tiled';
+  alt = 'Tiled Coordinate Map Type';
+  tiled = true;
 
-  constructor(tileSize: google.maps.Size) {
+  // The coordinate map type configuration for the canvas
+  // Supports tiled (show grid + coordinates) and untiled. Green background is added regardless of variants
+  constructor(tileSize: google.maps.Size, tiled: boolean) {
     this.tileSize = tileSize;
+    this.tiled = tiled;
+    if (!tiled) {
+      this.name = 'Untiled';
+      this.alt = 'Untiled Coordinate Map Type';
+    }
   }
 
   // The render function for a tile
   getTile(coord: google.maps.Point, zoom: number, ownerDocument: Document): HTMLElement {
     const div = ownerDocument.createElement('div');
 
-    // render in terms of our coordinate system instead of the tiling one
-    const convertedCoord = CoordinateConverter.convertTileToCoordinate(coord, zoom);
-    div.innerHTML = `(${convertedCoord.x}, ${convertedCoord.y})`;
-
     div.style.width = this.tileSize.width + 'px';
     div.style.height = this.tileSize.height + 'px';
     div.style.fontSize = '10';
-    div.style.borderStyle = 'solid';
-    div.style.borderWidth = '1px';
-    div.style.borderColor = '#AAAAAA';
-    div.style.backgroundColor = '#E5E3DF';
+
+    // convert into our coordinate system for computation and rendering
+    const convertedCoord = CoordinateUtils.convertTileToCoordinate(coord, zoom);
+
+    const tileInCanvas = CoordinateUtils.isTileInCanvas(convertedCoord);
+
+    if (this.tiled) {
+      // if the tile coordinate is in-bound, the coordinate should be rendered
+      if (CoordinateUtils.isCoordinateInCanvas(convertedCoord)) {
+        div.innerHTML = `(${convertedCoord.x}, ${convertedCoord.y})`;
+      }
+
+      // render the border of in-bound tiles if configuration is tiled
+      if (tileInCanvas) {
+        div.style.borderStyle = 'solid';
+        div.style.borderWidth = '1px';
+        div.style.borderColor = Constants.TILE_BORDER_COLOR;
+      }
+    }
+
+    // tile colors are decided by whether it is in bound or not, regardless of whether configuration is tiled
+    div.style.backgroundColor = tileInCanvas ? Constants.CANVAS_BACKGROUND_COLOR : Constants.TILE_BORDER_COLOR;
     return div;
   }
 
@@ -57,9 +79,9 @@ function initMap(): void {
     zoom: Constants.DEFAULT_ZOOM,
     center: { lat: 0, lng: 0 },
     streetViewControl: false,
-    mapTypeId: 'coordinate',
+    mapTypeId: 'tiled',
     mapTypeControlOptions: {
-      mapTypeIds: ['coordinate', 'roadmap'],
+      mapTypeIds: ['tiled', 'untiled'],
       style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
     },
     restriction: {
@@ -74,21 +96,14 @@ function initMap(): void {
     }
   });
 
-  map.addListener('maptypeid_changed', () => {
-    const showStreetViewControl = (map.getMapTypeId() as string) !== 'coordinate';
-
-    map.setOptions({
-      streetViewControl: showStreetViewControl
-    });
-  });
-
-  // Now attach the coordinate map type to the map's registry.
-  map.mapTypes.set('coordinate', new CoordMapType(new google.maps.Size(256, 256)));
-
   // THIS IS WHERE YOU CAN ACCESS THE CREATE STATEMENTS
   // THIS IS WHERE YOU CAN ACCESS THE CREATE STATEMENTS
   const listOfCreateStatements = getMapCreateStatements();
   console.log(listOfCreateStatements);
+
+  // The tiled and untiled variants of our coordinate map - the roads/markers remain in place when switching variants
+  map.mapTypes.set('tiled', new CoordMapType(new google.maps.Size(256, 256), true));
+  map.mapTypes.set('untiled', new CoordMapType(new google.maps.Size(256, 256), false));
 
   // Create a canvas with the map and list of CreateStatements
   const canvas = new Canvas(map, listOfCreateStatements);
