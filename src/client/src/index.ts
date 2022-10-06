@@ -1,5 +1,7 @@
 import { Canvas } from './canvas';
 import { CreateStatement } from './CreateStatement';
+import { Constants } from './constants';
+import { CoordinateConverter } from './coordinateConverter';
 
 // THIS IS WHERE YOU CAN ACCESS THE CREATE STATEMENTS
 // THIS IS WHERE YOU CAN ACCESS THE CREATE STATEMENTS
@@ -16,28 +18,23 @@ function getMapCreateStatements(): CreateStatement[] {
     return [];
   }
 }
-/*
- * This demo demonstrates how to replace default map tiles with custom imagery.
- * In this case, the CoordMapType displays gray tiles annotated with the tile
- * coordinates.
- *
- * Try panning and zooming the map to see how the coordinates change.
- */
 
+// The coordinate map type configuration for the canvas
 class CoordMapType {
-  tileSize: google.maps.Size;
-  maxZoom = 19;
+  tileSize = new google.maps.Size(Constants.TILE_SIDE_LENGTH, Constants.TILE_SIDE_LENGTH);
+  maxZoom = Constants.MAX_ZOOM;
+  minZoom = Constants.MIN_ZOOM;
   name = 'Tile #s';
   alt = 'Tile Coordinate Map Type';
 
-  constructor(tileSize: google.maps.Size) {
-    this.tileSize = tileSize;
-  }
-
+  // The render function for a tile
   getTile(coord: google.maps.Point, zoom: number, ownerDocument: Document): HTMLElement {
     const div = ownerDocument.createElement('div');
 
-    div.innerHTML = String(coord);
+    // render in terms of our coordinate system instead of the tiling one
+    const convertedCoord = CoordinateConverter.convertTileToCoordinate(coord, zoom);
+    div.innerHTML = `(${convertedCoord.x}, ${convertedCoord.y})`;
+
     div.style.width = this.tileSize.width + 'px';
     div.style.height = this.tileSize.height + 'px';
     div.style.fontSize = '10';
@@ -53,13 +50,23 @@ class CoordMapType {
 
 function initMap(): void {
   const map = new google.maps.Map(document.getElementById('map') as HTMLElement, {
-    zoom: 10,
+    zoom: Constants.DEFAULT_ZOOM,
     center: { lat: 0, lng: 0 },
     streetViewControl: false,
     mapTypeId: 'coordinate',
     mapTypeControlOptions: {
       mapTypeIds: ['coordinate', 'roadmap'],
       style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
+    },
+    restriction: {
+      // a symmetric boundary on latitude and longtitude, to stop map repetition as well as providing convenience to calculation
+      latLngBounds: {
+        east: Constants.MAX_SCREEN_LONGTITUDE,
+        west: -Constants.MAX_SCREEN_LONGTITUDE,
+        north: Constants.MAX_SCREEN_LATITUDE,
+        south: -Constants.MAX_SCREEN_LATITUDE
+      },
+      strictBounds: true
     }
   });
 
