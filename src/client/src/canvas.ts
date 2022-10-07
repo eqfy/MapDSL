@@ -53,7 +53,8 @@ export class Canvas {
     // TODO: implementation
     createPolyline(streetOutput: StreetOutput, map: google.maps.Map): google.maps.Polyline {
         console.log(`Created a polyline for streetOutput: ${JSON.stringify(streetOutput)}`);
-        var color;
+        //checks type to set the correct color for road.
+        var color: string;
         if (streetOutput.type == "Highway") {
             color = "#ff9900";
         } else if (streetOutput.type == "Bridge") {
@@ -79,6 +80,7 @@ export class Canvas {
     // TODO: implementation
     createMarker(markerOutput: MarkerOutput, map: google.maps.Map): google.maps.Marker {
         console.log(`Created a marker for streetOutput: ${JSON.stringify(markerOutput)}`);
+        //ignore image path for now. It's how we get the location for our custom images, but we are using a default image for now
         var imagePath;
         if (markerOutput.type == "BusStop") {
             
@@ -94,8 +96,7 @@ export class Canvas {
         }
         const marker: google.maps.Marker = new google.maps.Marker({
             position:  CoordinateUtils.convertCoordinateToLatLng(markerOutput.position),
-            map,
-            icon: "./client/assets/bus_stop.svg"
+            map
           });
         return marker;
     }
