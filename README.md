@@ -1,5 +1,21 @@
 # Project1Group9
 
+## Milestone 4
+
+### Status of Implementation
+As you will see, there is typed called CreateStatement found in src/server/src/outputBuilder/CreateStatement.ts and src/client/src/CreateStatement.ts. The backend's job is to transform the user input (using our DSL) into a list of "Create Statements" (which is a simple json object), and then pass this to the frontend. So, the frontend only needs to handle a simple list of "Create Statements", and thats it - they do not need to know how ANYTHING about the user input itself.
+
+Currently, the backend is passing a "testing" list of "Create Statements" to the frontend. The frontend is pretty much entirely built to properly render the list of "Create Statements", aside from small tweaks we may decide to make later on. In other words,  streets and markers are correctly rendered on the map.
+
+However, the backends job is still not complete. We still need to tranform the users input (using our DSL) into a simple list of "Create Statements" to pass to the frontend. This is our only remaining task. We have the foundation set up, its just about filling in the function stubs and finishing off the implementation.
+
+### Planned timeline for the remaining days
+We hope to have the backend completely finished by Wednesday. Which means we would have a fully functioning application - we could write anything in our DSL, our backend would transform it to a list of "Create Statements", pass that to the frontend, and the frontend would render them on the map. Once this is finished, we hope to complete our final user studies Wednesday->Friday. Then make small adjustments Friday if necessary. Then record our video Friday->Sunday.
+
+### Plans for final user study
+Our plans our to have a fully functioning implementation for a user to test on Wednesday. Then find relevant users (which we did not ask in our first user study) to test our DSL. 
+
+
 ## Milestone 3
 
 ### Mockup of concrete language design (as used for your first user study)

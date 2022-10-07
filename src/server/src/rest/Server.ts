@@ -7,9 +7,10 @@ import { ParseToASTVisitor } from '../parser/ParseToASTVisitor';
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import path from 'path';
-import OutputBuilder from '../outputBuilder/OutputBuilder';
+import CreateStatementBuilder from '../outputBuilder/CreateStatementBuilder';
 import { OutputVisitor } from '../ast/OutputVisitor';
 import { getDefaultOutputVisitorContext } from '../ast/OutputVisitorContext';
+import { testing } from '../util/constants';
 
 export default class Server {
   private readonly port: number;
@@ -72,7 +73,6 @@ export default class Server {
   }
 
   private static getMapOutput(req: Request, res: Response) {
-    console.log('getMapOutput');
     try {
       const content = readFileSync(path.join(__dirname, '../USER_INPUT.txt')).toString();
       const lexer = new MapGeneratorLexer(CharStreams.fromString(content));
@@ -80,12 +80,12 @@ export default class Server {
       const parser = new MapGeneratorParser(tokenStream);
       const parseToASTVisitor = new ParseToASTVisitor();
       const programAST = parser.program().accept(parseToASTVisitor);
-
-      const outputBuilder = new OutputBuilder();
+      const outputBuilder = new CreateStatementBuilder();
       const outputVisitor = new OutputVisitor();
-      programAST.accept(outputVisitor, getDefaultOutputVisitorContext(outputBuilder));
+      if (!testing) {
+        programAST.accept(outputVisitor, getDefaultOutputVisitorContext(outputBuilder));
+      }
       const allCreateStatements = outputBuilder.result;
-
       res.status(200).json({ result: allCreateStatements });
     } catch (e: any) {
       res.status(400).json({ error: e.message });

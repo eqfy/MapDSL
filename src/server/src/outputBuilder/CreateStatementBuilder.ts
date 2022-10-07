@@ -1,7 +1,8 @@
 import { CreateStatement } from './CreateStatement';
+import { testing } from '../util/constants';
 
-export default class OutputBuilder {
-  private _result: CreateStatement[];
+export default class CreateStatementBuilder {
+  private readonly _result: CreateStatement[];
 
   constructor() {
     this._result = [];
@@ -18,8 +19,7 @@ export default class OutputBuilder {
   }
 
   public get result(): CreateStatement[] {
-    const testing = true;
-    const testData = [
+    const testData: CreateStatement[] = [
       { type: 'Street', startPosition: { x: 128, y: 128 }, endPosition: { x: 128, y: 640 } },
       { type: 'Street', startPosition: { x: 128, y: 128 }, endPosition: { x: 640, y: 128 } },
       { type: 'Street', startPosition: { x: 128, y: 640 }, endPosition: { x: 640, y: 640 } },
@@ -45,7 +45,9 @@ export default class OutputBuilder {
       { type: 'TrainStop', position: { x: 384, y: 640 } }
     ];
     if (testing) {
+      return testData;
+    } else {
+      return this._result;
     }
-    return this._result;
   }
 }

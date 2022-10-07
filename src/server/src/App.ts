@@ -6,6 +6,7 @@ import { MapGeneratorParser } from './parser/gen/MapGeneratorParser';
 import { ParseToASTVisitor } from './parser/ParseToASTVisitor';
 import { syncWriteFile } from './util/syncWriteFile';
 import path from 'path';
+import { testing } from './util/constants';
 
 export class App {
   public initServer(port: number) {
@@ -22,7 +23,9 @@ const app = new App();
   await app.initServer(1337);
 })();
 
-forTesting();
+if (testing) {
+  forTesting();
+}
 
 function forTesting() {
   const content = readFileSync(path.join(__dirname, './USER_INPUT.txt')).toString();
