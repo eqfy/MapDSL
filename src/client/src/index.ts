@@ -2,6 +2,7 @@ import { Canvas } from './Canvas';
 import { CreateStatement } from './CreateStatement';
 import { Constants } from './constants';
 import CoordMapType from './CoordMapType';
+import { convertCoordinateToLatLng } from './coordinateUtils';
 
 declare global {
   interface Window {
@@ -29,7 +30,7 @@ function getMapCreateStatements(): CreateStatement[] {
 function initMap(): void {
   const map = new google.maps.Map(document.getElementById('map') as HTMLElement, {
     zoom: Constants.DEFAULT_ZOOM,
-    center: CoordinateUtils.convertCoordinateToLatLng({x: 20, y: 20}),
+    center: convertCoordinateToLatLng({ x: 20, y: 20 }),
     streetViewControl: false,
     mapTypeId: 'tiled',
     mapTypeControlOptions: {
