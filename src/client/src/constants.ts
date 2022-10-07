@@ -28,4 +28,19 @@ export class Constants {
     // Canvas size in our coordinate system
     static readonly CANVAS_WIDTH = 2048;
     static readonly CANVAS_HEIGHT = Constants.CANVAS_WIDTH / Constants.MAX_LONGTITUDE_TILES * Constants.MAX_LATITUDE_TILES;
+
+    // For rendering of components
+
+    // StreetOuput
+    static readonly STREET_COLOR = "#FFFFFF";
+    static readonly BRIDGE_COLOR = "#B700FF";
+    static readonly HIGHWAY_COLOR = "#FF9900";
+    
+    // MarkerOutput
+    static readonly BUS_STOP_PATH = "./bus_stop.svg";
+    static readonly STOP_SIGN_PATH = "./stop_sign.svg";
+    static readonly TRAFFICE_LIGHT_PATH = "./traffic_light.svg";
+    static readonly TRAIN_STOP_PATH = "./train_stop.svg";
+
+    static readonly MARKER_SCALE = 50;
 }

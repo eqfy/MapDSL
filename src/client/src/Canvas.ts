@@ -1,3 +1,5 @@
+import { Constants } from "./constants";
+import { CoordinateUtils } from "./coordinateUtils";
 import { CreateStatement, isMarkerOutput, isStreetOutput, MarkerOutput, StreetOutput } from "./CreateStatement";
 
 // The class with everything related to rendering
@@ -52,13 +54,47 @@ export class Canvas {
     // TODO: implementation
     createPolyline(streetOutput: StreetOutput): google.maps.Polyline {
         console.log(`Created a polyline for streetOutput: ${JSON.stringify(streetOutput)}`);
-        return new google.maps.Polyline();
+        
+        let strokeColor = Constants.STREET_COLOR;
+        if (streetOutput.type == 'Bridge') {
+            strokeColor = Constants.BRIDGE_COLOR;
+        } else if (streetOutput.type == 'Highway') {
+            strokeColor = Constants.HIGHWAY_COLOR;
+        }
+
+        return new google.maps.Polyline({
+            path: [
+                CoordinateUtils.convertCoordinateToLatLng(streetOutput.startPosition),
+                CoordinateUtils.convertCoordinateToLatLng(streetOutput.endPosition)
+            ],
+            strokeColor,
+            strokeOpacity: 1,
+            strokeWeight: 5,
+            map: this.map
+        })
     }
 
     // generate a google marker based on marker configuration
     // TODO: implementation
     createMarker(markerOutput: MarkerOutput): google.maps.Marker {
         console.log(`Created a marker for streetOutput: ${JSON.stringify(markerOutput)}`);
-        return new google.maps.Marker();
+
+        let url = Constants.BUS_STOP_PATH;
+        if (markerOutput.type == 'StopSign') {
+            url = Constants.STOP_SIGN_PATH;
+        } else if (markerOutput.type == 'TrafficLight') {
+            url = Constants.TRAFFICE_LIGHT_PATH;
+        } else if (markerOutput.type == 'TrainStop') {
+            url = Constants.TRAIN_STOP_PATH;
+        }
+
+        return new google.maps.Marker({
+            position: CoordinateUtils.convertCoordinateToLatLng(markerOutput.position),
+            icon: {
+                url,
+                scaledSize: new google.maps.Size(Constants.MARKER_SCALE, Constants.MARKER_SCALE)
+            },
+            map: this.map
+        })
     }
 }
