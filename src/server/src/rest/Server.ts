@@ -25,6 +25,7 @@ export default class Server {
     this.registerRoutes();
 
     this.express.use(express.static('../../public'));
+    this.express.use(express.static('../client/assets'));
   }
 
   public start(): Promise<void> {
