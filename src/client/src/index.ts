@@ -105,13 +105,8 @@ function initMap(): void {
   map.mapTypes.set('tiled', new CoordMapType(new google.maps.Size(256, 256), true));
   map.mapTypes.set('untiled', new CoordMapType(new google.maps.Size(256, 256), false));
 
-  var statements: CreateStatement[] =  [
-    { type: "Street", startPosition: {x: 0, y: 0}, endPosition: {x: 10, y: 10}},
-    { type: "TrafficLight", position: {x: 3, y: 3}}
-];
-  
   // Create a canvas with the map and list of CreateStatements
-  const canvas = new Canvas(map, statements);
+  const canvas = new Canvas(map, listOfCreateStatements);
 }
 
 declare global {

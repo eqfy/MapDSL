@@ -1,4 +1,3 @@
-import { CoordinateUtils } from "./coordinateUtils";
 import { CreateStatement, isMarkerOutput, isStreetOutput, MarkerOutput, StreetOutput } from "./CreateStatement";
 
 // The class with everything related to rendering
@@ -36,11 +35,11 @@ export class Canvas {
             // then create corresponding google components by layers (bottom to top: polylines, markers)
             // for instead of forEach used here to avoid this keyword context issue within closure
             for (let i = 0; i < streetOutputs.length; i ++) {
-                polylines.push(this.createPolyline(streetOutputs[i], map));
+                polylines.push(this.createPolyline(streetOutputs[i]));
             }
 
             for (let i = 0; i < markerOutputs.length; i ++) {
-                markers.push(this.createMarker(markerOutputs[i], map));
+                markers.push(this.createMarker(markerOutputs[i]));
             }
         }
         this.polylines = polylines;
@@ -51,53 +50,15 @@ export class Canvas {
 
     // generate a google polyline based on street configuration
     // TODO: implementation
-    createPolyline(streetOutput: StreetOutput, map: google.maps.Map): google.maps.Polyline {
+    createPolyline(streetOutput: StreetOutput): google.maps.Polyline {
         console.log(`Created a polyline for streetOutput: ${JSON.stringify(streetOutput)}`);
-        //checks type to set the correct color for road.
-        var color: string;
-        if (streetOutput.type == "Highway") {
-            color = "#ff9900";
-        } else if (streetOutput.type == "Bridge") {
-            color = "#b87333";
-        } else if (streetOutput.type == "Street") {
-            color = "#FFFFFF";
-        } else {
-            console.log(`ERROR GIVEN INVALID TYPE`);
-            color = "#FF0000";
-        }
-        const path = new google.maps.Polyline({
-            path: [CoordinateUtils.convertCoordinateToLatLng(streetOutput.startPosition),
-                   CoordinateUtils.convertCoordinateToLatLng(streetOutput.endPosition)],
-            strokeColor: color,
-            strokeOpacity: 1.0,
-            strokeWeight: 5,
-            map: map
-          });
-        return path;
+        return new google.maps.Polyline();
     }
 
     // generate a google marker based on marker configuration
     // TODO: implementation
-    createMarker(markerOutput: MarkerOutput, map: google.maps.Map): google.maps.Marker {
+    createMarker(markerOutput: MarkerOutput): google.maps.Marker {
         console.log(`Created a marker for streetOutput: ${JSON.stringify(markerOutput)}`);
-        //ignore image path for now. It's how we get the location for our custom images, but we are using a default image for now
-        var imagePath;
-        if (markerOutput.type == "BusStop") {
-            
-        } else if (markerOutput.type == "StopSign") {
-            
-        } else if (markerOutput.type == "TrafficLight") {
-            
-        } else if (markerOutput.type == "TrainStop"){
-        
-        } else {
-            console.log(`ERROR GIVEN INVALID TYPE`);
-            
-        }
-        const marker: google.maps.Marker = new google.maps.Marker({
-            position:  CoordinateUtils.convertCoordinateToLatLng(markerOutput.position),
-            map
-          });
-        return marker;
+        return new google.maps.Marker();
     }
 }
