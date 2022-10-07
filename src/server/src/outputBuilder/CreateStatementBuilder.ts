@@ -1,55 +1,51 @@
-import { CreateStatement, Position } from './CreateStatement';
-import Program from './Program';
+import { CreateStatement } from './CreateStatement';
 
-export default class CreateStatementBuilder {
-  readonly program: Program;
+export default class OutputBuilder {
+  private _result: CreateStatement[];
 
-  constructor(program: Program) {
-    this.program = program;
+  constructor() {
+    this._result = [];
   }
 
-  public getAllCreateStatements(): CreateStatement[] {
-    const testData: CreateStatement[] = [
-      {
-        type: 'Highway',
-        startPosition: { x: 0, y: 0 },
-        endPosition: { x: 100, y: 0 }
-      },
-      {
-        type: 'BusStop',
-        position: { x: 10, y: 0 }
-      },
-      {
-        type: 'TrainStop',
-        position: { x: 20, y: 0 }
-      },
-      {
-        type: 'BusStop',
-        position: { x: 30, y: 0 }
-      },
-      {
-        type: 'TrainStop',
-        position: { x: 40, y: 0 }
-      },
-      {
-        type: 'Street',
-        startPosition: { x: 0, y: 0 },
-        endPosition: { x: 0, y: 100 }
-      },
-      {
-        type: 'TrafficLight',
-        position: { x: 0, y: 0 }
-      },
-      {
-        type: 'StopSign',
-        position: { x: 50, y: 50 }
-      },
-      {
-        type: 'Bridge',
-        startPosition: { x: 0, y: 0 },
-        endPosition: { x: 50, y: 50 }
-      }
+  public buildRoad() {
+    // TODO
+    // this.result.append(road)
+  }
+
+  public buildMarker() {
+    // TODO
+    // this.result.append(marker)
+  }
+
+  public get result(): CreateStatement[] {
+    const testing = true;
+    const testData = [
+      { type: 'Street', startPosition: { x: 128, y: 128 }, endPosition: { x: 128, y: 640 } },
+      { type: 'Street', startPosition: { x: 128, y: 128 }, endPosition: { x: 640, y: 128 } },
+      { type: 'Street', startPosition: { x: 128, y: 640 }, endPosition: { x: 640, y: 640 } },
+      { type: 'Street', startPosition: { x: 640, y: 128 }, endPosition: { x: 640, y: 640 } },
+
+      { type: 'Street', startPosition: { x: 128, y: 512 }, endPosition: { x: 384, y: 512 } },
+      { type: 'Street', startPosition: { x: 384, y: 512 }, endPosition: { x: 640, y: 640 } },
+      { type: 'Street', startPosition: { x: 384, y: 512 }, endPosition: { x: 640, y: 256 } },
+
+      { type: 'Street', startPosition: { x: 128, y: 384 }, endPosition: { x: 512, y: 384 } },
+      { type: 'Street', startPosition: { x: 300, y: 512 }, endPosition: { x: 300, y: 128 } },
+      { type: 'StopSign', position: { x: 300, y: 384 } },
+
+      { type: 'Bridge', startPosition: { x: 0, y: 512 }, endPosition: { x: 128, y: 512 } },
+
+      { type: 'Highway', startPosition: { x: 128, y: 128 }, endPosition: { x: 140, y: 80 } },
+      { type: 'Highway', startPosition: { x: 640, y: 128 }, endPosition: { x: 680, y: 80 } },
+      { type: 'Highway', startPosition: { x: 64, y: 80 }, endPosition: { x: 800, y: 80 } },
+      { type: 'TrafficLight', position: { x: 384, y: 512 } },
+
+      { type: 'BusStop', position: { x: 128, y: 512 } },
+      { type: 'BusStop', position: { x: 640, y: 256 } },
+      { type: 'TrainStop', position: { x: 384, y: 640 } }
     ];
-    return testData;
+    if (testing) {
+    }
+    return this._result;
   }
 }
