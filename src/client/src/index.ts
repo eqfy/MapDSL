@@ -77,7 +77,7 @@ class CoordMapType {
 function initMap(): void {
   const map = new google.maps.Map(document.getElementById('map') as HTMLElement, {
     zoom: Constants.DEFAULT_ZOOM,
-    center: CoordinateUtils.convertCoordinateToLatLng({x: 0, y: 0}),
+    center: CoordinateUtils.convertCoordinateToLatLng({x: 20, y: 20}),
     streetViewControl: false,
     mapTypeId: 'tiled',
     mapTypeControlOptions: {
