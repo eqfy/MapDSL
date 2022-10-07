@@ -1,10 +1,17 @@
-import { Canvas } from './canvas';
+import { Canvas } from './Canvas';
 import { CreateStatement } from './CreateStatement';
 import { Constants } from './constants';
-import { CoordinateUtils } from './coordinateUtils';
+import CoordMapType from './CoordMapType';
 
-// THIS IS WHERE YOU CAN ACCESS THE CREATE STATEMENTS
-// THIS IS WHERE YOU CAN ACCESS THE CREATE STATEMENTS
+declare global {
+  interface Window {
+    initMap: () => void;
+  }
+}
+export {};
+
+window.initMap = initMap;
+
 function getMapCreateStatements(): CreateStatement[] {
   const xhr = new XMLHttpRequest();
   const url = '/map';
@@ -12,93 +19,11 @@ function getMapCreateStatements(): CreateStatement[] {
   xhr.setRequestHeader('Content-type', 'application/json');
   xhr.send(null);
   if (xhr.status === 200) {
-    return xhr.response;
+    return JSON.parse(xhr.response).result;
   } else {
     console.error('request failed', xhr.response.error);
-    // TODO: remove after demo
-    return [
-      { type: 'Street', startPosition: {x: 128, y: 128}, endPosition: {x: 128, y: 640}},
-      { type: 'Street', startPosition: {x: 128, y: 128}, endPosition: {x: 640, y: 128}},
-      { type: 'Street', startPosition: {x: 128, y: 640}, endPosition: {x: 640, y: 640}},
-      { type: 'Street', startPosition: {x: 640, y: 128}, endPosition: {x: 640, y: 640}},
-
-      { type: 'Street', startPosition: {x: 128, y: 512}, endPosition: {x: 384, y: 512}},
-      { type: 'Street', startPosition: {x: 384, y: 512}, endPosition: {x: 640, y: 640}},
-      { type: 'Street', startPosition: {x: 384, y: 512}, endPosition: {x: 640, y: 256}},
-
-      { type: 'Street', startPosition: {x: 128, y: 384}, endPosition: {x: 512, y: 384}},
-      { type: 'Street', startPosition: {x: 300, y: 512}, endPosition: {x: 300, y: 128}},
-      { type: 'StopSign', position: {x: 300, y: 384}},
-
-      { type: 'Bridge', startPosition: {x: 0, y: 512}, endPosition: {x: 128, y: 512}},
-
-      { type: 'Highway', startPosition: {x: 128, y: 128}, endPosition: {x: 140, y: 80}},
-      { type: 'Highway', startPosition: {x: 640, y: 128}, endPosition: {x: 680, y: 80}},
-      { type: 'Highway', startPosition: {x: 64, y: 80}, endPosition: {x: 800, y: 80}},
-      { type: 'TrafficLight', position: {x: 384, y: 512}},
-
-      // { type: 'Bridge', startPosition: {x: 10, y: 10}, endPosition: {x: 10, y: 20}},
-      // { type: 'Highway', startPosition: {x: 10, y: 20}, endPosition: {x: 10, y: 30}},
-      { type: 'BusStop', position: {x: 128, y: 512}},
-      { type: 'BusStop', position: {x: 640, y: 256}},
-      { type: 'TrainStop', position: {x: 384, y: 640}},
-    ];
+    return xhr.response;
   }
-}
-
-// The coordinate map type configuration for the canvas
-class CoordMapType {
-  tileSize = new google.maps.Size(Constants.TILE_SIDE_LENGTH, Constants.TILE_SIDE_LENGTH);
-  maxZoom = Constants.MAX_ZOOM;
-  minZoom = Constants.MIN_ZOOM;
-  name = 'Tiled';
-  alt = 'Tiled Coordinate Map Type';
-  tiled = true;
-
-  // The coordinate map type configuration for the canvas
-  // Supports tiled (show grid + coordinates) and untiled. Green background is added regardless of variants
-  constructor(tileSize: google.maps.Size, tiled: boolean) {
-    this.tileSize = tileSize;
-    this.tiled = tiled;
-    if (!tiled) {
-      this.name = 'Untiled';
-      this.alt = 'Untiled Coordinate Map Type';
-    }
-  }
-
-  // The render function for a tile
-  getTile(coord: google.maps.Point, zoom: number, ownerDocument: Document): HTMLElement {
-    const div = ownerDocument.createElement('div');
-
-    div.style.width = this.tileSize.width + 'px';
-    div.style.height = this.tileSize.height + 'px';
-    div.style.fontSize = '10';
-
-    // convert into our coordinate system for computation and rendering
-    const convertedCoord = CoordinateUtils.convertTileToCoordinate(coord, zoom);
-
-    const tileInCanvas = CoordinateUtils.isTileInCanvas(convertedCoord);
-
-    if (this.tiled) {
-      // if the tile coordinate is in-bound, the coordinate should be rendered
-      if (CoordinateUtils.isCoordinateInCanvas(convertedCoord)) {
-        div.innerHTML = `(${convertedCoord.x}, ${convertedCoord.y})`;
-      }
-
-      // render the border of in-bound tiles if configuration is tiled
-      if (tileInCanvas) {
-        div.style.borderStyle = 'solid';
-        div.style.borderWidth = '1px';
-        div.style.borderColor = Constants.TILE_BORDER_COLOR;
-      }
-    }
-
-    // tile colors are decided by whether it is in bound or not, regardless of whether configuration is tiled
-    div.style.backgroundColor = tileInCanvas ? Constants.CANVAS_BACKGROUND_COLOR : Constants.TILE_BORDER_COLOR;
-    return div;
-  }
-
-  releaseTile(tile: HTMLElement): void {}
 }
 
 function initMap(): void {
@@ -112,7 +37,6 @@ function initMap(): void {
       style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
     },
     restriction: {
-      // a symmetric boundary on latitude and longtitude, to stop map repetition as well as providing convenience to calculation
       latLngBounds: {
         east: Constants.MAX_SCREEN_LONGTITUDE,
         west: -Constants.MAX_SCREEN_LONGTITUDE,
@@ -123,24 +47,13 @@ function initMap(): void {
     }
   });
 
-  // THIS IS WHERE YOU CAN ACCESS THE CREATE STATEMENTS
-  // THIS IS WHERE YOU CAN ACCESS THE CREATE STATEMENTS
   const listOfCreateStatements = getMapCreateStatements();
-  console.log(listOfCreateStatements);
 
   // The tiled and untiled variants of our coordinate map - the roads/markers remain in place when switching variants
   map.mapTypes.set('tiled', new CoordMapType(new google.maps.Size(256, 256), true));
   map.mapTypes.set('untiled', new CoordMapType(new google.maps.Size(256, 256), false));
 
   // Create a canvas with the map and list of CreateStatements
-  const canvas = new Canvas(map, listOfCreateStatements);
+  const canvas = new Canvas(map);
+  canvas.render(listOfCreateStatements);
 }
-
-declare global {
-  interface Window {
-    initMap: () => void;
-  }
-}
-
-window.initMap = initMap;
-export {};

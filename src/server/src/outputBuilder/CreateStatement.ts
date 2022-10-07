@@ -3,15 +3,15 @@ export interface Position {
   y: number;
 }
 
-interface StreetOutput {
+interface StreetCreateStatement {
   type: 'Highway' | 'Street' | 'Bridge';
   startPosition: Position;
   endPosition: Position;
 }
 
-interface MarkerOutput {
+interface MarkerCreateStatement {
   type: 'BusStop' | 'TrafficLight' | 'StopSign' | 'TrainStop';
   position: Position;
 }
 
-export type CreateStatement = StreetOutput | MarkerOutput;
+export type CreateStatement = StreetCreateStatement | MarkerCreateStatement;
