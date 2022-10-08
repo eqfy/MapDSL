@@ -1,12 +1,8 @@
 {
-    "type": "Program",
     "definitionBlock": {
-        "type": "DefinitionBlock",
         "body": [
             {
-                "type": "FunctionDeclaration",
                 "name": {
-                    "type": "FunctionName",
                     "tokenValue": "createBlock",
                     "range": {
                         "zeroIndexStart": 29,
@@ -15,7 +11,6 @@
                 },
                 "inputVariables": [
                     {
-                        "type": "ParameterName",
                         "tokenValue": "nwPosition",
                         "range": {
                             "zeroIndexStart": 41,
@@ -23,7 +18,6 @@
                         }
                     },
                     {
-                        "type": "ParameterName",
                         "tokenValue": "blockSize",
                         "range": {
                             "zeroIndexStart": 53,
@@ -33,10 +27,8 @@
                 ],
                 "body": [
                     {
-                        "type": "VariableDeclaration",
                         "isGlobalConstant": false,
                         "name": {
-                            "type": "VariableName",
                             "tokenValue": "nePosition",
                             "range": {
                                 "zeroIndexStart": 91,
@@ -44,71 +36,65 @@
                             }
                         },
                         "value": {
-                            "type": "Position",
-                            "xCoordinate": {
-                                "type": "Expression",
-                                "leftValue": {
-                                    "type": "PositionAccess",
-                                    "variableName": {
-                                        "type": "VariableName",
-                                        "tokenValue": "nwPosition",
-                                        "range": {
-                                            "zeroIndexStart": 105,
-                                            "zeroIndexEnd": 114
+                            "leftValue": {
+                                "xCoordinate": {
+                                    "leftValue": {
+                                        "variableName": {
+                                            "tokenValue": "nwPosition",
+                                            "range": {
+                                                "zeroIndexStart": 105,
+                                                "zeroIndexEnd": 114
+                                            }
+                                        },
+                                        "coordinate": {
+                                            "tokenValue": "x",
+                                            "range": {
+                                                "zeroIndexStart": 116,
+                                                "zeroIndexEnd": 116
+                                            }
                                         }
                                     },
-                                    "coordinate": {
-                                        "type": "Coordinate",
-                                        "tokenValue": "x",
+                                    "operator": {
+                                        "tokenValue": "+",
                                         "range": {
-                                            "zeroIndexStart": 116,
-                                            "zeroIndexEnd": 116
+                                            "zeroIndexStart": 118,
+                                            "zeroIndexEnd": 118
+                                        }
+                                    },
+                                    "rightValue": {
+                                        "leftValue": {
+                                            "tokenValue": "blockSize",
+                                            "range": {
+                                                "zeroIndexStart": 120,
+                                                "zeroIndexEnd": 128
+                                            }
                                         }
                                     }
                                 },
-                                "operator": {
-                                    "type": "Operator",
-                                    "tokenValue": "+",
-                                    "range": {
-                                        "zeroIndexStart": 118,
-                                        "zeroIndexEnd": 118
-                                    }
-                                },
-                                "rightValue": {
-                                    "type": "VariableName",
-                                    "tokenValue": "blockSize",
-                                    "range": {
-                                        "zeroIndexStart": 120,
-                                        "zeroIndexEnd": 128
-                                    }
-                                }
-                            },
-                            "yCoordinate": {
-                                "type": "PositionAccess",
-                                "variableName": {
-                                    "type": "VariableName",
-                                    "tokenValue": "nwPosition",
-                                    "range": {
-                                        "zeroIndexStart": 131,
-                                        "zeroIndexEnd": 140
-                                    }
-                                },
-                                "coordinate": {
-                                    "type": "Coordinate",
-                                    "tokenValue": "y",
-                                    "range": {
-                                        "zeroIndexStart": 142,
-                                        "zeroIndexEnd": 142
+                                "yCoordinate": {
+                                    "leftValue": {
+                                        "variableName": {
+                                            "tokenValue": "nwPosition",
+                                            "range": {
+                                                "zeroIndexStart": 131,
+                                                "zeroIndexEnd": 140
+                                            }
+                                        },
+                                        "coordinate": {
+                                            "tokenValue": "y",
+                                            "range": {
+                                                "zeroIndexStart": 142,
+                                                "zeroIndexEnd": 142
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
                     },
                     {
-                        "type": "VariableDeclaration",
                         "isGlobalConstant": false,
                         "name": {
-                            "type": "VariableName",
                             "tokenValue": "sePosition",
                             "range": {
                                 "zeroIndexStart": 171,
@@ -116,71 +102,65 @@
                             }
                         },
                         "value": {
-                            "type": "Position",
-                            "xCoordinate": {
-                                "type": "PositionAccess",
-                                "variableName": {
-                                    "type": "VariableName",
-                                    "tokenValue": "nePosition",
-                                    "range": {
-                                        "zeroIndexStart": 185,
-                                        "zeroIndexEnd": 194
+                            "leftValue": {
+                                "xCoordinate": {
+                                    "leftValue": {
+                                        "variableName": {
+                                            "tokenValue": "nePosition",
+                                            "range": {
+                                                "zeroIndexStart": 185,
+                                                "zeroIndexEnd": 194
+                                            }
+                                        },
+                                        "coordinate": {
+                                            "tokenValue": "x",
+                                            "range": {
+                                                "zeroIndexStart": 196,
+                                                "zeroIndexEnd": 196
+                                            }
+                                        }
                                     }
                                 },
-                                "coordinate": {
-                                    "type": "Coordinate",
-                                    "tokenValue": "x",
-                                    "range": {
-                                        "zeroIndexStart": 196,
-                                        "zeroIndexEnd": 196
-                                    }
-                                }
-                            },
-                            "yCoordinate": {
-                                "type": "Expression",
-                                "leftValue": {
-                                    "type": "PositionAccess",
-                                    "variableName": {
-                                        "type": "VariableName",
-                                        "tokenValue": "nePosition",
-                                        "range": {
-                                            "zeroIndexStart": 199,
-                                            "zeroIndexEnd": 208
+                                "yCoordinate": {
+                                    "leftValue": {
+                                        "variableName": {
+                                            "tokenValue": "nePosition",
+                                            "range": {
+                                                "zeroIndexStart": 199,
+                                                "zeroIndexEnd": 208
+                                            }
+                                        },
+                                        "coordinate": {
+                                            "tokenValue": "y",
+                                            "range": {
+                                                "zeroIndexStart": 210,
+                                                "zeroIndexEnd": 210
+                                            }
                                         }
                                     },
-                                    "coordinate": {
-                                        "type": "Coordinate",
-                                        "tokenValue": "y",
+                                    "operator": {
+                                        "tokenValue": "-",
                                         "range": {
-                                            "zeroIndexStart": 210,
-                                            "zeroIndexEnd": 210
+                                            "zeroIndexStart": 212,
+                                            "zeroIndexEnd": 212
                                         }
-                                    }
-                                },
-                                "operator": {
-                                    "type": "Operator",
-                                    "tokenValue": "-",
-                                    "range": {
-                                        "zeroIndexStart": 212,
-                                        "zeroIndexEnd": 212
-                                    }
-                                },
-                                "rightValue": {
-                                    "type": "VariableName",
-                                    "tokenValue": "blockSize",
-                                    "range": {
-                                        "zeroIndexStart": 214,
-                                        "zeroIndexEnd": 222
+                                    },
+                                    "rightValue": {
+                                        "leftValue": {
+                                            "tokenValue": "blockSize",
+                                            "range": {
+                                                "zeroIndexStart": 214,
+                                                "zeroIndexEnd": 222
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
                     },
                     {
-                        "type": "VariableDeclaration",
                         "isGlobalConstant": false,
                         "name": {
-                            "type": "VariableName",
                             "tokenValue": "swPosition",
                             "range": {
                                 "zeroIndexStart": 251,
@@ -188,206 +168,166 @@
                             }
                         },
                         "value": {
-                            "type": "Position",
-                            "xCoordinate": {
-                                "type": "PositionAccess",
-                                "variableName": {
-                                    "type": "VariableName",
-                                    "tokenValue": "nwPosition",
-                                    "range": {
-                                        "zeroIndexStart": 265,
-                                        "zeroIndexEnd": 274
+                            "leftValue": {
+                                "xCoordinate": {
+                                    "leftValue": {
+                                        "variableName": {
+                                            "tokenValue": "nwPosition",
+                                            "range": {
+                                                "zeroIndexStart": 265,
+                                                "zeroIndexEnd": 274
+                                            }
+                                        },
+                                        "coordinate": {
+                                            "tokenValue": "x",
+                                            "range": {
+                                                "zeroIndexStart": 276,
+                                                "zeroIndexEnd": 276
+                                            }
+                                        }
                                     }
                                 },
-                                "coordinate": {
-                                    "type": "Coordinate",
-                                    "tokenValue": "x",
-                                    "range": {
-                                        "zeroIndexStart": 276,
-                                        "zeroIndexEnd": 276
-                                    }
-                                }
-                            },
-                            "yCoordinate": {
-                                "type": "Expression",
-                                "leftValue": {
-                                    "type": "PositionAccess",
-                                    "variableName": {
-                                        "type": "VariableName",
-                                        "tokenValue": "nwPosition",
-                                        "range": {
-                                            "zeroIndexStart": 279,
-                                            "zeroIndexEnd": 288
+                                "yCoordinate": {
+                                    "leftValue": {
+                                        "variableName": {
+                                            "tokenValue": "nwPosition",
+                                            "range": {
+                                                "zeroIndexStart": 279,
+                                                "zeroIndexEnd": 288
+                                            }
+                                        },
+                                        "coordinate": {
+                                            "tokenValue": "y",
+                                            "range": {
+                                                "zeroIndexStart": 290,
+                                                "zeroIndexEnd": 290
+                                            }
                                         }
                                     },
-                                    "coordinate": {
-                                        "type": "Coordinate",
-                                        "tokenValue": "y",
+                                    "operator": {
+                                        "tokenValue": "-",
                                         "range": {
-                                            "zeroIndexStart": 290,
-                                            "zeroIndexEnd": 290
+                                            "zeroIndexStart": 292,
+                                            "zeroIndexEnd": 292
+                                        }
+                                    },
+                                    "rightValue": {
+                                        "leftValue": {
+                                            "tokenValue": "blockSize",
+                                            "range": {
+                                                "zeroIndexStart": 294,
+                                                "zeroIndexEnd": 302
+                                            }
                                         }
                                     }
-                                },
-                                "operator": {
-                                    "type": "Operator",
-                                    "tokenValue": "-",
-                                    "range": {
-                                        "zeroIndexStart": 292,
-                                        "zeroIndexEnd": 292
-                                    }
-                                },
-                                "rightValue": {
-                                    "type": "VariableName",
-                                    "tokenValue": "blockSize",
-                                    "range": {
-                                        "zeroIndexStart": 294,
-                                        "zeroIndexEnd": 302
-                                    }
                                 }
                             }
                         }
                     },
                     {
-                        "type": "CreateCall",
-                        "value": {
-                            "type": "StreetOutput",
-                            "streetType": {
-                                "type": "StreetType",
-                                "tokenValue": "street",
+                        "streetType": {
+                            "tokenValue": "street",
+                            "range": {
+                                "zeroIndexStart": 330,
+                                "zeroIndexEnd": 335
+                            }
+                        },
+                        "startPosition": {
+                            "variableName": {
+                                "tokenValue": "nwPosition",
                                 "range": {
-                                    "zeroIndexStart": 330,
-                                    "zeroIndexEnd": 335
+                                    "zeroIndexStart": 342,
+                                    "zeroIndexEnd": 351
                                 }
-                            },
-                            "startPosition": {
-                                "type": "Position",
-                                "variableName": {
-                                    "type": "VariableName",
-                                    "tokenValue": "nwPosition",
-                                    "range": {
-                                        "zeroIndexStart": 342,
-                                        "zeroIndexEnd": 351
-                                    }
-                                }
-                            },
-                            "endPosition": {
-                                "type": "Position",
-                                "variableName": {
-                                    "type": "VariableName",
-                                    "tokenValue": "nePosition",
-                                    "range": {
-                                        "zeroIndexStart": 356,
-                                        "zeroIndexEnd": 365
-                                    }
+                            }
+                        },
+                        "endPosition": {
+                            "variableName": {
+                                "tokenValue": "nePosition",
+                                "range": {
+                                    "zeroIndexStart": 356,
+                                    "zeroIndexEnd": 365
                                 }
                             }
                         }
                     },
                     {
-                        "type": "CreateCall",
-                        "value": {
-                            "type": "StreetOutput",
-                            "streetType": {
-                                "type": "StreetType",
-                                "tokenValue": "street",
+                        "streetType": {
+                            "tokenValue": "street",
+                            "range": {
+                                "zeroIndexStart": 391,
+                                "zeroIndexEnd": 396
+                            }
+                        },
+                        "startPosition": {
+                            "variableName": {
+                                "tokenValue": "nePosition",
                                 "range": {
-                                    "zeroIndexStart": 391,
-                                    "zeroIndexEnd": 396
+                                    "zeroIndexStart": 403,
+                                    "zeroIndexEnd": 412
                                 }
-                            },
-                            "startPosition": {
-                                "type": "Position",
-                                "variableName": {
-                                    "type": "VariableName",
-                                    "tokenValue": "nePosition",
-                                    "range": {
-                                        "zeroIndexStart": 403,
-                                        "zeroIndexEnd": 412
-                                    }
-                                }
-                            },
-                            "endPosition": {
-                                "type": "Position",
-                                "variableName": {
-                                    "type": "VariableName",
-                                    "tokenValue": "sePosition",
-                                    "range": {
-                                        "zeroIndexStart": 417,
-                                        "zeroIndexEnd": 426
-                                    }
+                            }
+                        },
+                        "endPosition": {
+                            "variableName": {
+                                "tokenValue": "sePosition",
+                                "range": {
+                                    "zeroIndexStart": 417,
+                                    "zeroIndexEnd": 426
                                 }
                             }
                         }
                     },
                     {
-                        "type": "CreateCall",
-                        "value": {
-                            "type": "StreetOutput",
-                            "streetType": {
-                                "type": "StreetType",
-                                "tokenValue": "street",
+                        "streetType": {
+                            "tokenValue": "street",
+                            "range": {
+                                "zeroIndexStart": 452,
+                                "zeroIndexEnd": 457
+                            }
+                        },
+                        "startPosition": {
+                            "variableName": {
+                                "tokenValue": "sePosition",
                                 "range": {
-                                    "zeroIndexStart": 452,
-                                    "zeroIndexEnd": 457
+                                    "zeroIndexStart": 464,
+                                    "zeroIndexEnd": 473
                                 }
-                            },
-                            "startPosition": {
-                                "type": "Position",
-                                "variableName": {
-                                    "type": "VariableName",
-                                    "tokenValue": "sePosition",
-                                    "range": {
-                                        "zeroIndexStart": 464,
-                                        "zeroIndexEnd": 473
-                                    }
-                                }
-                            },
-                            "endPosition": {
-                                "type": "Position",
-                                "variableName": {
-                                    "type": "VariableName",
-                                    "tokenValue": "swPosition",
-                                    "range": {
-                                        "zeroIndexStart": 478,
-                                        "zeroIndexEnd": 487
-                                    }
+                            }
+                        },
+                        "endPosition": {
+                            "variableName": {
+                                "tokenValue": "swPosition",
+                                "range": {
+                                    "zeroIndexStart": 478,
+                                    "zeroIndexEnd": 487
                                 }
                             }
                         }
                     },
                     {
-                        "type": "CreateCall",
-                        "value": {
-                            "type": "StreetOutput",
-                            "streetType": {
-                                "type": "StreetType",
-                                "tokenValue": "street",
+                        "streetType": {
+                            "tokenValue": "street",
+                            "range": {
+                                "zeroIndexStart": 513,
+                                "zeroIndexEnd": 518
+                            }
+                        },
+                        "startPosition": {
+                            "variableName": {
+                                "tokenValue": "swPosition",
                                 "range": {
-                                    "zeroIndexStart": 513,
-                                    "zeroIndexEnd": 518
+                                    "zeroIndexStart": 525,
+                                    "zeroIndexEnd": 534
                                 }
-                            },
-                            "startPosition": {
-                                "type": "Position",
-                                "variableName": {
-                                    "type": "VariableName",
-                                    "tokenValue": "swPosition",
-                                    "range": {
-                                        "zeroIndexStart": 525,
-                                        "zeroIndexEnd": 534
-                                    }
-                                }
-                            },
-                            "endPosition": {
-                                "type": "Position",
-                                "variableName": {
-                                    "type": "VariableName",
-                                    "tokenValue": "nwPosition",
-                                    "range": {
-                                        "zeroIndexStart": 539,
-                                        "zeroIndexEnd": 548
-                                    }
+                            }
+                        },
+                        "endPosition": {
+                            "variableName": {
+                                "tokenValue": "nwPosition",
+                                "range": {
+                                    "zeroIndexStart": 539,
+                                    "zeroIndexEnd": 548
                                 }
                             }
                         }
@@ -395,9 +335,7 @@
                 ]
             },
             {
-                "type": "FunctionDeclaration",
                 "name": {
-                    "type": "FunctionName",
                     "tokenValue": "createTrafficLight",
                     "range": {
                         "zeroIndexStart": 578,
@@ -406,7 +344,6 @@
                 },
                 "inputVariables": [
                     {
-                        "type": "ParameterName",
                         "tokenValue": "position",
                         "range": {
                             "zeroIndexStart": 597,
@@ -416,26 +353,19 @@
                 ],
                 "body": [
                     {
-                        "type": "CreateCall",
-                        "value": {
-                            "type": "MarkerOutput",
-                            "markerType": {
-                                "type": "MarkerType",
-                                "tokenValue": "traffic light",
+                        "markerType": {
+                            "tokenValue": "traffic light",
+                            "range": {
+                                "zeroIndexStart": 632,
+                                "zeroIndexEnd": 644
+                            }
+                        },
+                        "position": {
+                            "variableName": {
+                                "tokenValue": "position",
                                 "range": {
-                                    "zeroIndexStart": 632,
-                                    "zeroIndexEnd": 644
-                                }
-                            },
-                            "position": {
-                                "type": "Position",
-                                "variableName": {
-                                    "type": "VariableName",
-                                    "tokenValue": "position",
-                                    "range": {
-                                        "zeroIndexStart": 649,
-                                        "zeroIndexEnd": 656
-                                    }
+                                    "zeroIndexStart": 649,
+                                    "zeroIndexEnd": 656
                                 }
                             }
                         }
@@ -443,10 +373,8 @@
                 ]
             },
             {
-                "type": "VariableDeclaration",
                 "isGlobalConstant": true,
                 "name": {
-                    "type": "VariableName",
                     "tokenValue": "centerPosition",
                     "range": {
                         "zeroIndexStart": 687,
@@ -454,30 +382,31 @@
                     }
                 },
                 "value": {
-                    "type": "Position",
-                    "xCoordinate": {
-                        "type": "Number",
-                        "tokenValue": "0",
-                        "range": {
-                            "zeroIndexStart": 705,
-                            "zeroIndexEnd": 705
-                        }
-                    },
-                    "yCoordinate": {
-                        "type": "Number",
-                        "tokenValue": "0",
-                        "range": {
-                            "zeroIndexStart": 707,
-                            "zeroIndexEnd": 707
+                    "leftValue": {
+                        "xCoordinate": {
+                            "leftValue": {
+                                "tokenValue": "0",
+                                "range": {
+                                    "zeroIndexStart": 705,
+                                    "zeroIndexEnd": 705
+                                }
+                            }
+                        },
+                        "yCoordinate": {
+                            "leftValue": {
+                                "tokenValue": "0",
+                                "range": {
+                                    "zeroIndexStart": 707,
+                                    "zeroIndexEnd": 707
+                                }
+                            }
                         }
                     }
                 }
             },
             {
-                "type": "VariableDeclaration",
                 "isGlobalConstant": true,
                 "name": {
-                    "type": "VariableName",
                     "tokenValue": "defaultBlockSize",
                     "range": {
                         "zeroIndexStart": 728,
@@ -485,23 +414,21 @@
                     }
                 },
                 "value": {
-                    "type": "Number",
-                    "tokenValue": "5",
-                    "range": {
-                        "zeroIndexStart": 747,
-                        "zeroIndexEnd": 747
+                    "leftValue": {
+                        "tokenValue": "5",
+                        "range": {
+                            "zeroIndexStart": 747,
+                            "zeroIndexEnd": 747
+                        }
                     }
                 }
             }
         ]
     },
     "outputBlock": {
-        "type": "OutputBlock",
         "body": [
             {
-                "type": "FunctionCall",
                 "name": {
-                    "type": "FunctionName",
                     "tokenValue": "createBlock",
                     "range": {
                         "zeroIndexStart": 782,
@@ -510,27 +437,27 @@
                 },
                 "inputValues": [
                     {
-                        "type": "VariableName",
-                        "tokenValue": "centerPosition",
-                        "range": {
-                            "zeroIndexStart": 794,
-                            "zeroIndexEnd": 807
+                        "leftValue": {
+                            "tokenValue": "centerPosition",
+                            "range": {
+                                "zeroIndexStart": 794,
+                                "zeroIndexEnd": 807
+                            }
                         }
                     },
                     {
-                        "type": "VariableName",
-                        "tokenValue": "defaultBlockSize",
-                        "range": {
-                            "zeroIndexStart": 810,
-                            "zeroIndexEnd": 825
+                        "leftValue": {
+                            "tokenValue": "defaultBlockSize",
+                            "range": {
+                                "zeroIndexStart": 810,
+                                "zeroIndexEnd": 825
+                            }
                         }
                     }
                 ]
             },
             {
-                "type": "FunctionCall",
                 "name": {
-                    "type": "FunctionName",
                     "tokenValue": "createBlock",
                     "range": {
                         "zeroIndexStart": 837,
@@ -539,77 +466,78 @@
                 },
                 "inputValues": [
                     {
-                        "type": "Position",
-                        "xCoordinate": {
-                            "type": "VariableName",
-                            "tokenValue": "defaultBlockSize",
-                            "range": {
-                                "zeroIndexStart": 850,
-                                "zeroIndexEnd": 865
-                            }
-                        },
-                        "yCoordinate": {
-                            "type": "Number",
-                            "tokenValue": "0",
-                            "range": {
-                                "zeroIndexStart": 868,
-                                "zeroIndexEnd": 868
+                        "leftValue": {
+                            "xCoordinate": {
+                                "leftValue": {
+                                    "tokenValue": "defaultBlockSize",
+                                    "range": {
+                                        "zeroIndexStart": 850,
+                                        "zeroIndexEnd": 865
+                                    }
+                                }
+                            },
+                            "yCoordinate": {
+                                "leftValue": {
+                                    "tokenValue": "0",
+                                    "range": {
+                                        "zeroIndexStart": 868,
+                                        "zeroIndexEnd": 868
+                                    }
+                                }
                             }
                         }
                     },
                     {
-                        "type": "VariableName",
-                        "tokenValue": "defaultBlockSize",
-                        "range": {
-                            "zeroIndexStart": 872,
-                            "zeroIndexEnd": 887
+                        "leftValue": {
+                            "tokenValue": "defaultBlockSize",
+                            "range": {
+                                "zeroIndexStart": 872,
+                                "zeroIndexEnd": 887
+                            }
                         }
                     }
                 ]
             },
             {
-                "type": "CreateCall",
-                "value": {
-                    "type": "StreetOutput",
-                    "streetType": {
-                        "type": "StreetType",
-                        "tokenValue": "highway",
-                        "range": {
-                            "zeroIndexStart": 907,
-                            "zeroIndexEnd": 913
-                        }
-                    },
-                    "startPosition": {
-                        "type": "Position",
-                        "xCoordinate": {
-                            "type": "Number",
+                "streetType": {
+                    "tokenValue": "highway",
+                    "range": {
+                        "zeroIndexStart": 907,
+                        "zeroIndexEnd": 913
+                    }
+                },
+                "startPosition": {
+                    "xCoordinate": {
+                        "leftValue": {
                             "tokenValue": "-100",
                             "range": {
                                 "zeroIndexStart": 921,
                                 "zeroIndexEnd": 924
                             }
-                        },
-                        "yCoordinate": {
-                            "type": "Number",
+                        }
+                    },
+                    "yCoordinate": {
+                        "leftValue": {
                             "tokenValue": "0",
                             "range": {
                                 "zeroIndexStart": 926,
                                 "zeroIndexEnd": 926
                             }
                         }
-                    },
-                    "endPosition": {
-                        "type": "Position",
-                        "xCoordinate": {
-                            "type": "Number",
+                    }
+                },
+                "endPosition": {
+                    "xCoordinate": {
+                        "leftValue": {
                             "tokenValue": "0",
                             "range": {
                                 "zeroIndexStart": 933,
                                 "zeroIndexEnd": 933
                             }
-                        },
-                        "yCoordinate": {
-                            "type": "Number",
+                        }
+                    },
+                    "yCoordinate": {
+                        "leftValue": {
                             "tokenValue": "0",
                             "range": {
                                 "zeroIndexStart": 935,
@@ -620,9 +548,7 @@
                 }
             },
             {
-                "type": "FunctionCall",
                 "name": {
-                    "type": "FunctionName",
                     "tokenValue": "createTrafficLight",
                     "range": {
                         "zeroIndexStart": 948,
@@ -631,58 +557,52 @@
                 },
                 "inputValues": [
                     {
-                        "type": "VariableName",
-                        "tokenValue": "centerPosition",
-                        "range": {
-                            "zeroIndexStart": 967,
-                            "zeroIndexEnd": 980
+                        "leftValue": {
+                            "tokenValue": "centerPosition",
+                            "range": {
+                                "zeroIndexStart": 967,
+                                "zeroIndexEnd": 980
+                            }
                         }
                     }
                 ]
             },
             {
-                "type": "CreateCall",
-                "value": {
-                    "type": "MarkerOutput",
-                    "markerType": {
-                        "type": "MarkerType",
-                        "tokenValue": "stop sign",
-                        "range": {
-                            "zeroIndexStart": 999,
-                            "zeroIndexEnd": 1007
-                        }
-                    },
-                    "position": {
-                        "type": "Position",
-                        "xCoordinate": {
-                            "type": "Expression",
+                "markerType": {
+                    "tokenValue": "stop sign",
+                    "range": {
+                        "zeroIndexStart": 999,
+                        "zeroIndexEnd": 1007
+                    }
+                },
+                "position": {
+                    "xCoordinate": {
+                        "leftValue": {
+                            "tokenValue": "0",
+                            "range": {
+                                "zeroIndexStart": 1013,
+                                "zeroIndexEnd": 1013
+                            }
+                        },
+                        "operator": {
+                            "tokenValue": "+",
+                            "range": {
+                                "zeroIndexStart": 1015,
+                                "zeroIndexEnd": 1015
+                            }
+                        },
+                        "rightValue": {
                             "leftValue": {
-                                "type": "Number",
-                                "tokenValue": "0",
-                                "range": {
-                                    "zeroIndexStart": 1013,
-                                    "zeroIndexEnd": 1013
-                                }
-                            },
-                            "operator": {
-                                "type": "Operator",
-                                "tokenValue": "+",
-                                "range": {
-                                    "zeroIndexStart": 1015,
-                                    "zeroIndexEnd": 1015
-                                }
-                            },
-                            "rightValue": {
-                                "type": "VariableName",
                                 "tokenValue": "defaultBlockSize",
                                 "range": {
                                     "zeroIndexStart": 1017,
                                     "zeroIndexEnd": 1032
                                 }
                             }
-                        },
-                        "yCoordinate": {
-                            "type": "Number",
+                        }
+                    },
+                    "yCoordinate": {
+                        "leftValue": {
                             "tokenValue": "0",
                             "range": {
                                 "zeroIndexStart": 1035,
@@ -693,29 +613,25 @@
                 }
             },
             {
-                "type": "CreateCall",
-                "value": {
-                    "type": "MarkerOutput",
-                    "markerType": {
-                        "type": "MarkerType",
-                        "tokenValue": "bus stop",
-                        "range": {
-                            "zeroIndexStart": 1054,
-                            "zeroIndexEnd": 1061
-                        }
-                    },
-                    "position": {
-                        "type": "Position",
-                        "xCoordinate": {
-                            "type": "Number",
+                "markerType": {
+                    "tokenValue": "bus stop",
+                    "range": {
+                        "zeroIndexStart": 1054,
+                        "zeroIndexEnd": 1061
+                    }
+                },
+                "position": {
+                    "xCoordinate": {
+                        "leftValue": {
                             "tokenValue": "-50",
                             "range": {
                                 "zeroIndexStart": 1067,
                                 "zeroIndexEnd": 1069
                             }
-                        },
-                        "yCoordinate": {
-                            "type": "Number",
+                        }
+                    },
+                    "yCoordinate": {
+                        "leftValue": {
                             "tokenValue": "0",
                             "range": {
                                 "zeroIndexStart": 1072,
@@ -726,10 +642,8 @@
                 }
             },
             {
-                "type": "VariableDeclaration",
                 "isGlobalConstant": false,
                 "name": {
-                    "type": "VariableName",
                     "tokenValue": "eastStreetLightPosition",
                     "range": {
                         "zeroIndexStart": 1094,
@@ -737,70 +651,64 @@
                     }
                 },
                 "value": {
-                    "type": "Position",
-                    "xCoordinate": {
-                        "type": "PositionAccess",
-                        "variableName": {
-                            "type": "VariableName",
-                            "tokenValue": "centerPosition",
-                            "range": {
-                                "zeroIndexStart": 1121,
-                                "zeroIndexEnd": 1134
+                    "leftValue": {
+                        "xCoordinate": {
+                            "leftValue": {
+                                "variableName": {
+                                    "tokenValue": "centerPosition",
+                                    "range": {
+                                        "zeroIndexStart": 1121,
+                                        "zeroIndexEnd": 1134
+                                    }
+                                },
+                                "coordinate": {
+                                    "tokenValue": "x",
+                                    "range": {
+                                        "zeroIndexStart": 1136,
+                                        "zeroIndexEnd": 1136
+                                    }
+                                }
                             }
                         },
-                        "coordinate": {
-                            "type": "Coordinate",
-                            "tokenValue": "x",
-                            "range": {
-                                "zeroIndexStart": 1136,
-                                "zeroIndexEnd": 1136
-                            }
-                        }
-                    },
-                    "yCoordinate": {
-                        "type": "Expression",
-                        "leftValue": {
-                            "type": "PositionAccess",
-                            "variableName": {
-                                "type": "VariableName",
-                                "tokenValue": "centerPosition",
-                                "range": {
-                                    "zeroIndexStart": 1139,
-                                    "zeroIndexEnd": 1152
+                        "yCoordinate": {
+                            "leftValue": {
+                                "variableName": {
+                                    "tokenValue": "centerPosition",
+                                    "range": {
+                                        "zeroIndexStart": 1139,
+                                        "zeroIndexEnd": 1152
+                                    }
+                                },
+                                "coordinate": {
+                                    "tokenValue": "y",
+                                    "range": {
+                                        "zeroIndexStart": 1154,
+                                        "zeroIndexEnd": 1154
+                                    }
                                 }
                             },
-                            "coordinate": {
-                                "type": "Coordinate",
-                                "tokenValue": "y",
+                            "operator": {
+                                "tokenValue": "-",
                                 "range": {
-                                    "zeroIndexStart": 1154,
-                                    "zeroIndexEnd": 1154
+                                    "zeroIndexStart": 1156,
+                                    "zeroIndexEnd": 1156
                                 }
-                            }
-                        },
-                        "operator": {
-                            "type": "Operator",
-                            "tokenValue": "-",
-                            "range": {
-                                "zeroIndexStart": 1156,
-                                "zeroIndexEnd": 1156
-                            }
-                        },
-                        "rightValue": {
-                            "type": "Number",
-                            "tokenValue": "5",
-                            "range": {
-                                "zeroIndexStart": 1158,
-                                "zeroIndexEnd": 1158
+                            },
+                            "rightValue": {
+                                "leftValue": {
+                                    "tokenValue": "5",
+                                    "range": {
+                                        "zeroIndexStart": 1158,
+                                        "zeroIndexEnd": 1158
+                                    }
+                                }
                             }
                         }
                     }
                 }
             },
             {
-                "type": "LoopBlock",
                 "loopNumber": {
-                    "type": "LoopNumber",
                     "tokenValue": "3",
                     "range": {
                         "zeroIndexStart": 1176,
@@ -809,9 +717,7 @@
                 },
                 "body": [
                     {
-                        "type": "FunctionCall",
                         "name": {
-                            "type": "FunctionName",
                             "tokenValue": "createTrafficLight",
                             "range": {
                                 "zeroIndexStart": 1196,
@@ -820,19 +726,18 @@
                         },
                         "inputValues": [
                             {
-                                "type": "VariableName",
-                                "tokenValue": "eastStreetLightPosition",
-                                "range": {
-                                    "zeroIndexStart": 1215,
-                                    "zeroIndexEnd": 1237
+                                "leftValue": {
+                                    "tokenValue": "eastStreetLightPosition",
+                                    "range": {
+                                        "zeroIndexStart": 1215,
+                                        "zeroIndexEnd": 1237
+                                    }
                                 }
                             }
                         ]
                     },
                     {
-                        "type": "VariableAssignment",
                         "name": {
-                            "type": "VariableName",
                             "tokenValue": "eastStreetLightPosition",
                             "range": {
                                 "zeroIndexStart": 1253,
@@ -840,61 +745,57 @@
                             }
                         },
                         "value": {
-                            "type": "Position",
-                            "xCoordinate": {
-                                "type": "Expression",
-                                "leftValue": {
-                                    "type": "PositionAccess",
-                                    "variableName": {
-                                        "type": "VariableName",
-                                        "tokenValue": "eastStreetLightPosition",
-                                        "range": {
-                                            "zeroIndexStart": 1280,
-                                            "zeroIndexEnd": 1302
+                            "leftValue": {
+                                "xCoordinate": {
+                                    "leftValue": {
+                                        "variableName": {
+                                            "tokenValue": "eastStreetLightPosition",
+                                            "range": {
+                                                "zeroIndexStart": 1280,
+                                                "zeroIndexEnd": 1302
+                                            }
+                                        },
+                                        "coordinate": {
+                                            "tokenValue": "x",
+                                            "range": {
+                                                "zeroIndexStart": 1304,
+                                                "zeroIndexEnd": 1304
+                                            }
                                         }
                                     },
-                                    "coordinate": {
-                                        "type": "Coordinate",
-                                        "tokenValue": "x",
+                                    "operator": {
+                                        "tokenValue": "+",
                                         "range": {
-                                            "zeroIndexStart": 1304,
-                                            "zeroIndexEnd": 1304
+                                            "zeroIndexStart": 1306,
+                                            "zeroIndexEnd": 1306
+                                        }
+                                    },
+                                    "rightValue": {
+                                        "leftValue": {
+                                            "tokenValue": "defaultBlockSize",
+                                            "range": {
+                                                "zeroIndexStart": 1308,
+                                                "zeroIndexEnd": 1323
+                                            }
                                         }
                                     }
                                 },
-                                "operator": {
-                                    "type": "Operator",
-                                    "tokenValue": "+",
-                                    "range": {
-                                        "zeroIndexStart": 1306,
-                                        "zeroIndexEnd": 1306
-                                    }
-                                },
-                                "rightValue": {
-                                    "type": "VariableName",
-                                    "tokenValue": "defaultBlockSize",
-                                    "range": {
-                                        "zeroIndexStart": 1308,
-                                        "zeroIndexEnd": 1323
-                                    }
-                                }
-                            },
-                            "yCoordinate": {
-                                "type": "PositionAccess",
-                                "variableName": {
-                                    "type": "VariableName",
-                                    "tokenValue": "eastStreetLightPosition",
-                                    "range": {
-                                        "zeroIndexStart": 1326,
-                                        "zeroIndexEnd": 1348
-                                    }
-                                },
-                                "coordinate": {
-                                    "type": "Coordinate",
-                                    "tokenValue": "y",
-                                    "range": {
-                                        "zeroIndexStart": 1350,
-                                        "zeroIndexEnd": 1350
+                                "yCoordinate": {
+                                    "leftValue": {
+                                        "variableName": {
+                                            "tokenValue": "eastStreetLightPosition",
+                                            "range": {
+                                                "zeroIndexStart": 1326,
+                                                "zeroIndexEnd": 1348
+                                            }
+                                        },
+                                        "coordinate": {
+                                            "tokenValue": "y",
+                                            "range": {
+                                                "zeroIndexStart": 1350,
+                                                "zeroIndexEnd": 1350
+                                            }
+                                        }
                                     }
                                 }
                             }

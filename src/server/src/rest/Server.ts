@@ -8,9 +8,9 @@ import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import path from 'path';
 import CreateStatementBuilder from '../outputBuilder/CreateStatementBuilder';
-import { OutputVisitor } from '../ast/OutputVisitor';
-import { getDefaultOutputVisitorContext } from '../ast/OutputVisitorContext';
 import { testing } from '../util/constants';
+import { OutputVisitor } from '../ast/evaluators/OutputVisitor';
+import { getDefaultOutputVisitorContext } from '../ast/evaluators/OutputVisitorContext';
 
 export default class Server {
   private readonly port: number;

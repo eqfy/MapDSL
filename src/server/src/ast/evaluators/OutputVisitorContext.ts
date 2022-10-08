@@ -1,4 +1,4 @@
-import CreateStatementBuilder from '../outputBuilder/CreateStatementBuilder';
+import CreateStatementBuilder from '../../outputBuilder/CreateStatementBuilder';
 
 export interface OutputVisitorContext {
   outputBuilder: CreateStatementBuilder;

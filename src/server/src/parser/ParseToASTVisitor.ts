@@ -1,22 +1,3 @@
-import {
-  ASTNode,
-  ASTTokenNode,
-  CreateCallNode,
-  DefinitionBlockNode,
-  ExpressionNode,
-  FunctionCallNode,
-  FunctionDeclarationNode,
-  LoopBlockNode,
-  MarkerOutputNode,
-  OutputBlockNode,
-  PositionNode,
-  PositionAccessNode,
-  ProgramNode,
-  StatementNode,
-  StreetOutputNode,
-  VariableAssignmentNode,
-  VariableDeclarationNode
-} from '../ast/AST';
 import { MapGeneratorParserVisitor } from './gen/MapGeneratorParserVisitor';
 import { AbstractParseTreeVisitor } from 'antlr4ts/tree';
 import {
@@ -42,42 +23,34 @@ import {
   VariableAssignmentContext
 } from './gen/MapGeneratorParser';
 import { TerminalNode } from 'antlr4ts/tree/TerminalNode';
-import { ASTTokenType } from '../ast/ASTTypes';
+import Program from '../ast/Program';
+import ASTNode from '../ast/ASTNode';
+import DefinitionBlock from '../ast/DefinitionBlock';
+import OutputBlock from '../ast/OutputBlock';
+import VariableAssignment from '../ast/VariableAssignment';
+import FunctionDeclaration from '../ast/FunctionDeclaration';
+import LoopBlock from '../ast/LoopBlock';
+import Expression from '../ast/Expression';
+import VariableDeclaration from '../ast/VariableDeclaration';
+import FunctionCall from '../ast/FunctionCall';
+import CreateMarker from '../ast/CreateMarker';
+import CreatePolygon from '../ast/CreatePolygon';
+import CoordinateAccess from '../ast/CoordinateAccess';
+import TokenNode from '../ast/TokenNode';
+import Position from '../ast/Position';
 
 export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> implements MapGeneratorParserVisitor<ASTNode> {
-  visitProgram(ctx: ProgramContext): ProgramNode {
-    const definitionBlockCtx = ctx.definitionBlock();
-    if (definitionBlockCtx) {
-      return {
-        type: 'Program',
-        definitionBlock: this.visitDefinitionBlock(definitionBlockCtx),
-        outputBlock: this.visitOutputBlock(ctx.outputBlock()),
-        accept(v, t) {
-          return v.visitProgramNode(this, t);
-        }
-      };
-    } else {
-      return {
-        type: 'Program',
-        outputBlock: this.visitOutputBlock(ctx.outputBlock()),
-        accept(v, t) {
-          return v.visitProgramNode(this, t);
-        }
-      };
-    }
+  visitProgram(ctx: ProgramContext): Program {
+    return new Program(this.visitOutputBlock(ctx.outputBlock()), this.visitDefinitionBlock(ctx.definitionBlock()));
   }
 
-  visitDefinitionBlock(ctx: DefinitionBlockContext): DefinitionBlockNode {
-    return {
-      type: 'DefinitionBlock',
-      body: this.getGlobalBody(ctx.globalBodyElement()),
-      accept(v, t) {
-        return v.visitDefinitionBlockNode(this, t);
-      }
-    };
+  visitDefinitionBlock(ctx: DefinitionBlockContext | undefined): DefinitionBlock {
+    return new DefinitionBlock(this.getGlobalBody(ctx?.globalBodyElement()));
   }
 
-  visitBodyElement(ctx: BodyElementContext): LoopBlockNode | StatementNode {
+  visitBodyElement(
+    ctx: BodyElementContext
+  ): VariableDeclaration | VariableAssignment | CreateMarker | CreatePolygon | FunctionCall | LoopBlock {
     const loopBlockCtx = ctx.loopBlock();
     const statementCtx = ctx.statement();
     if (loopBlockCtx) {
@@ -89,7 +62,7 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
     }
   }
 
-  visitGlobalBodyElement(ctx: GlobalBodyElementContext): FunctionDeclarationNode | VariableDeclarationNode {
+  visitGlobalBodyElement(ctx: GlobalBodyElementContext): FunctionDeclaration | VariableDeclaration {
     const functionDeclarationCtx = ctx.functionDeclaration();
     const variableDeclarationCtx = ctx.globalVariableDeclaration();
     if (functionDeclarationCtx) {
@@ -103,35 +76,25 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
     }
   }
 
-  visitGlobalVariableDeclaration(ctx: GlobalVariableDeclarationContext): VariableDeclarationNode {
-    const globalVar = this.getVariableDeclaration(ctx);
-    globalVar.isGlobalConstant = true;
-    return globalVar;
+  visitGlobalVariableDeclaration(ctx: GlobalVariableDeclarationContext): VariableDeclaration {
+    return this.getVariableDeclaration(ctx, true);
   }
 
-  visitFunctionDeclaration(ctx: FunctionDeclarationContext): FunctionDeclarationNode {
-    return {
-      type: 'FunctionDeclaration',
-      name: this.getTokenNode('FunctionName', ctx.functionName().NAME()),
-      inputVariables: this.getInputVariables(ctx.parameterName()),
-      body: this.getLocalBody(ctx.bodyElement()),
-      accept(v, t) {
-        return v.visitFunctionDeclarationNode(this, t);
-      }
-    };
+  visitFunctionDeclaration(ctx: FunctionDeclarationContext): FunctionDeclaration {
+    return new FunctionDeclaration(
+      this.getToken(ctx.functionName().NAME()),
+      this.getInputVariables(ctx.parameterName()),
+      this.getLocalBody(ctx.bodyElement())
+    );
   }
 
-  visitOutputBlock(ctx: OutputBlockContext): OutputBlockNode {
-    return {
-      type: 'OutputBlock',
-      body: this.getLocalBody(ctx.bodyElement()),
-      accept(v, t) {
-        return v.visitOutputBlockNode(this, t);
-      }
-    };
+  visitOutputBlock(ctx: OutputBlockContext): OutputBlock {
+    return new OutputBlock(this.getLocalBody(ctx.bodyElement()));
   }
 
-  visitStatement(ctx: StatementContext): StatementNode {
+  visitStatement(
+    ctx: StatementContext
+  ): VariableDeclaration | VariableAssignment | CreateMarker | CreatePolygon | FunctionCall {
     const localVariableDeclarationCtx = ctx.localVariableDeclaration();
     const variableAssignmentCtx = ctx.variableAssignment();
     const createCallCtx = ctx.createCall();
@@ -156,69 +119,35 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
     return value;
   }
 
-  visitLoopBlock(ctx: LoopBlockContext): LoopBlockNode {
-    return {
-      type: 'LoopBlock',
-      loopNumber: this.getTokenNode('LoopNumber', ctx.POSITIVE_NUMBER()),
-      body: this.getStatements(ctx.statement()),
-      accept(v, t) {
-        return v.visitLoopBlockNode(this, t);
-      }
-    };
+  visitLoopBlock(ctx: LoopBlockContext): LoopBlock {
+    return new LoopBlock(this.getToken(ctx.POSITIVE_NUMBER()), this.getStatements(ctx.statement()));
   }
 
-  visitVariableAssignment(ctx: VariableAssignmentContext): VariableAssignmentNode {
-    return {
-      type: 'VariableAssignment',
-      name: this.getTokenNode('VariableName', ctx.variableName().NAME()),
-      value: this.visitExpression(ctx.expression()),
-      accept(v, t) {
-        return v.visitVariableAssignmentNode(this, t);
-      }
-    };
+  visitVariableAssignment(ctx: VariableAssignmentContext): VariableAssignment {
+    return new VariableAssignment(this.getToken(ctx.variableName().NAME()), this.visitExpression(ctx.expression()));
   }
 
-  visitLocalVariableDeclaration(ctx: LocalVariableDeclarationContext): VariableDeclarationNode {
-    const globalVar = this.getVariableDeclaration(ctx);
-    globalVar.isGlobalConstant = false;
-    return globalVar;
+  visitLocalVariableDeclaration(ctx: LocalVariableDeclarationContext): VariableDeclaration {
+    return this.getVariableDeclaration(ctx, false);
   }
 
-  visitFunctionCall(ctx: FunctionCallContext): FunctionCallNode {
-    return {
-      type: 'FunctionCall',
-      name: this.getTokenNode('FunctionName', ctx.functionName().NAME()),
-      inputValues: this.getExpressions(ctx.expression()),
-      accept(v, t) {
-        return v.visitFunctionCallNode(this, t);
-      }
-    };
+  visitFunctionCall(ctx: FunctionCallContext): FunctionCall {
+    return new FunctionCall(this.getToken(ctx.functionName().NAME()), this.getExpressions(ctx.expression()));
   }
 
-  visitCreateCall(ctx: CreateCallContext): CreateCallNode {
+  visitCreateCall(ctx: CreateCallContext): CreateMarker | CreatePolygon {
     const streetOutputCtx = ctx.streetOutput();
     const markerOutputCtx = ctx.markerOutput();
-
-    let value;
-
     if (streetOutputCtx) {
-      value = this.visitStreetOutput(streetOutputCtx);
+      return this.visitStreetOutput(streetOutputCtx);
     } else if (markerOutputCtx) {
-      value = this.visitMarkerOutput(markerOutputCtx);
+      return this.visitMarkerOutput(markerOutputCtx);
     } else {
       throw new Error('Impossible - MarkerOutput and StreetOutput cannot both be undefined (enforced by Parser)');
     }
-
-    return {
-      type: 'CreateCall',
-      value: value,
-      accept(v, t) {
-        return v.visitCreateCallNode(this, t);
-      }
-    };
   }
 
-  visitMarkerOutput(ctx: MarkerOutputContext): MarkerOutputNode {
+  visitMarkerOutput(ctx: MarkerOutputContext): CreateMarker {
     const busStopCtx = ctx.BUS_STOP();
     const trafficLightCtx = ctx.TRAFFIC_LIGHT();
     const stopSignCtx = ctx.STOP_SIGN();
@@ -239,18 +168,10 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
         'Impossible - Bus Stop, Traffic Light, Stop Sign, and Train Stop cannot all be undefined (enforced by Parser)'
       );
     }
-
-    return {
-      type: 'MarkerOutput',
-      markerType: this.getTokenNode('MarkerType', type),
-      position: this.visitPosition(ctx.position()),
-      accept(v, t) {
-        return v.visitMarkerOutputNode(this, t);
-      }
-    };
+    return new CreateMarker(this.getToken(type), this.visitPosition(ctx.position()));
   }
 
-  visitStreetOutput(ctx: StreetOutputContext): StreetOutputNode {
+  visitStreetOutput(ctx: StreetOutputContext): CreatePolygon {
     const streetCtx = ctx.STREET();
     const highwayCtx = ctx.HIGHWAY();
     const bridgeCtx = ctx.BRIDGE();
@@ -267,37 +188,29 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
       throw new Error('Impossible - Street, Highway, and Bridge cannot all be undefined (enforced by Parser)');
     }
 
-    return {
-      type: 'StreetOutput',
-      streetType: this.getTokenNode('StreetType', type),
-      startPosition: this.visitPosition(ctx.position()[0]),
-      endPosition: this.visitPosition(ctx.position()[1]),
-      accept(v, t) {
-        return v.visitStreetOutputNode(this, t);
-      }
-    };
+    return new CreatePolygon(
+      this.getToken(type),
+      this.visitPosition(ctx.position()[0]),
+      this.visitPosition(ctx.position()[1])
+    );
   }
 
-  visitExpression(ctx: ExpressionContext): ExpressionNode {
+  visitExpression(ctx: ExpressionContext): Expression {
     const leftValueCtx = ctx.leftExpressionValue();
     const operatorCtx = ctx.OPERATOR();
     const expressionCtx = ctx.expression();
     if (!operatorCtx) {
       if (leftValueCtx) {
-        return this.visitLeftExpressionValue(leftValueCtx);
+        return new Expression(this.visitLeftExpressionValue(leftValueCtx));
       } else {
         throw new Error('Impossible - Left Expression Value must be defined if there is no operator (enforced by Parser)');
       }
     } else if (expressionCtx && leftValueCtx) {
-      return {
-        type: 'Expression',
-        leftValue: this.visitLeftExpressionValue(leftValueCtx),
-        operator: this.getTokenNode('Operator', operatorCtx),
-        rightValue: this.visitExpression(expressionCtx),
-        accept(v, t) {
-          return v.visitExpressionNode(this, t);
-        }
-      };
+      return new Expression(
+        this.visitLeftExpressionValue(leftValueCtx),
+        this.getToken(operatorCtx),
+        this.visitExpression(expressionCtx)
+      );
     } else {
       throw new Error(
         'Impossible - Right Expression and Left Expression must be defined if there is an Operator (enforced by Parser)'
@@ -305,7 +218,7 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
     }
   }
 
-  visitLeftExpressionValue(ctx: LeftExpressionValueContext): PositionNode | PositionAccessNode | ASTTokenNode {
+  visitLeftExpressionValue(ctx: LeftExpressionValueContext): Position | CoordinateAccess | TokenNode {
     const positionCtx = ctx.position();
     const positionAccessCtx = ctx.positionAccess();
     const positiveNumberCtx = ctx.POSITIVE_NUMBER();
@@ -320,9 +233,9 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
       value = this.visitPositionAccess(positionAccessCtx);
     } else if (positiveNumberCtx || negativeNumberCtx) {
       const number = positiveNumberCtx ? positiveNumberCtx : (negativeNumberCtx as TerminalNode);
-      value = this.getTokenNode('Number', number);
+      value = this.getToken(number);
     } else if (variableNameCtx) {
-      value = this.getTokenNode('VariableName', variableNameCtx.NAME());
+      value = this.getToken(variableNameCtx.NAME());
     } else {
       throw new Error(
         'Impossible - Position, Number, PositionAccess, and VariableName cannot all be undefined (enforced by Parser)'
@@ -332,91 +245,71 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
     return value;
   }
 
-  visitPosition(ctx: PositionContext): PositionNode {
+  visitPosition(ctx: PositionContext): Position {
     const variableNameCtx = ctx.variableName();
     if (variableNameCtx) {
-      return {
-        type: 'Position',
-        variableName: this.getTokenNode('VariableName', variableNameCtx.NAME()),
-        accept(v, t) {
-          return v.visitPositionNode(this, t);
-        }
-      };
+      return new Position(undefined, undefined, this.getToken(variableNameCtx.NAME()));
     } else {
-      return {
-        type: 'Position',
-        xCoordinate: this.visitExpression(ctx.expression()[0]),
-        yCoordinate: this.visitExpression(ctx.expression()[1]),
-        accept(v, t) {
-          return v.visitPositionNode(this, t);
-        }
-      };
+      return new Position(this.visitExpression(ctx.expression()[0]), this.visitExpression(ctx.expression()[1]));
     }
   }
 
+  visitPositionAccess(ctx: PositionAccessContext): CoordinateAccess {
+    return new CoordinateAccess(this.getToken(ctx.NAME()), this.getToken(ctx.COORDINATE()));
+  }
+
   protected defaultResult(): ASTNode {
-    return {
-      type: 'Program',
-      accept(v, t) {
-        return v.visitASTNode(this, t);
-      }
-    };
+    return new Program(new OutputBlock([]));
   }
 
   private getVariableDeclaration(
-    ctx: GlobalVariableDeclarationContext | LocalVariableDeclarationContext
-  ): VariableDeclarationNode {
-    return {
-      type: 'VariableDeclaration',
-      isGlobalConstant: false,
-      name: this.getTokenNode('VariableName', ctx.variableName().NAME()),
-      value: this.visitExpression(ctx.expression()),
-      accept(v, t) {
-        return v.visitVariableDeclarationNode(this, t);
-      }
-    };
+    ctx: GlobalVariableDeclarationContext | LocalVariableDeclarationContext,
+    isGlobalConstant: boolean
+  ): VariableDeclaration {
+    return new VariableDeclaration(
+      isGlobalConstant,
+      this.getToken(ctx.variableName().NAME()),
+      this.visitExpression(ctx.expression())
+    );
   }
 
-  private getGlobalBody(elements: GlobalBodyElementContext[]): (FunctionDeclarationNode | VariableDeclarationNode)[] {
-    const body: (FunctionDeclarationNode | VariableDeclarationNode)[] = [];
+  private getGlobalBody(elements: GlobalBodyElementContext[] | undefined): (FunctionDeclaration | VariableDeclaration)[] {
+    if (!elements) return [];
+    const body: (FunctionDeclaration | VariableDeclaration)[] = [];
     for (const element of elements) {
       body.push(this.visitGlobalBodyElement(element));
     }
     return body;
   }
 
-  private getLocalBody(elements: BodyElementContext[]): (StatementNode | LoopBlockNode)[] {
-    const body: (StatementNode | LoopBlockNode)[] = [];
+  private getLocalBody(
+    elements: BodyElementContext[]
+  ): (VariableDeclaration | VariableAssignment | CreateMarker | CreatePolygon | FunctionCall | LoopBlock)[] {
+    const body: (VariableDeclaration | VariableAssignment | CreateMarker | CreatePolygon | FunctionCall | LoopBlock)[] = [];
     for (const element of elements) {
       body.push(this.visitBodyElement(element));
     }
     return body;
   }
 
-  private getTokenNode(type: ASTTokenType, terminalNode: TerminalNode): ASTTokenNode {
-    // not using type because it was (seemingly) useless information, but kept it here in case
-    return {
-      type: type,
-      tokenValue: terminalNode.text,
-      range: {
-        zeroIndexStart: terminalNode.symbol.startIndex,
-        zeroIndexEnd: terminalNode.symbol.stopIndex
-      },
-      accept(v, t) {
-        return v.visitASTTokenNode(this, t);
-      }
-    };
+  private getToken(terminal: TerminalNode): TokenNode {
+    return new TokenNode(terminal.text, {
+      zeroIndexStart: terminal.symbol.startIndex,
+      zeroIndexEnd: terminal.symbol.stopIndex
+    });
   }
 
-  private getInputVariables(parameterNameContexts: ParameterNameContext[]): ASTTokenNode[] {
+  private getInputVariables(parameterNameContexts: ParameterNameContext[]): TokenNode[] {
     const inputVariables = [];
     for (const parameter of parameterNameContexts) {
-      inputVariables.push(this.getTokenNode('ParameterName', parameter.NAME()));
+      inputVariables.push(this.getToken(parameter.NAME()));
     }
     return inputVariables;
   }
 
-  private getStatements(statementContexts: StatementContext[]): StatementNode[] {
+  private getStatements(
+    statementContexts: StatementContext[]
+  ): (VariableDeclaration | VariableAssignment | CreateMarker | CreatePolygon | FunctionCall)[] {
     const statements = [];
     for (const statement of statementContexts) {
       statements.push(this.visitStatement(statement));
@@ -424,22 +317,11 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
     return statements;
   }
 
-  private getExpressions(expressionContexts: ExpressionContext[]): ExpressionNode[] {
+  private getExpressions(expressionContexts: ExpressionContext[]): Expression[] {
     const expressions = [];
     for (const expression of expressionContexts) {
       expressions.push(this.visitExpression(expression));
     }
     return expressions;
-  }
-
-  visitPositionAccess(ctx: PositionAccessContext): PositionAccessNode {
-    return {
-      type: 'PositionAccess',
-      variableName: this.getTokenNode('VariableName', ctx.NAME()),
-      coordinate: this.getTokenNode('Coordinate', ctx.COORDINATE()),
-      accept(v, t) {
-        return v.visitPositionAccessNode(this, t);
-      }
-    };
   }
 }
