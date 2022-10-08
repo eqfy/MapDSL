@@ -3,7 +3,7 @@ export interface Position {
   y: number;
 }
 
-export interface StreetCreateStatement {
+export interface PolylineCreateStatement {
   type: 'Highway' | 'Street' | 'Bridge';
   startPosition: Position;
   endPosition: Position;
@@ -14,10 +14,10 @@ export interface MarkerCreateStatement {
   position: Position;
 }
 
-export type CreateStatement = StreetCreateStatement | MarkerCreateStatement;
+export type CreateStatement = PolylineCreateStatement | MarkerCreateStatement;
 
 // Type checking
-export function isStreetCreateStatement(output: unknown): output is StreetCreateStatement {
+export function isPolylineCreateStatement(output: unknown): output is PolylineCreateStatement {
   return isCreateStatement(output) && 'startPosition' in output && 'endPosition' in output;
 }
 

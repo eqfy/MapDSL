@@ -34,7 +34,7 @@ import Expression from '../ast/Expression';
 import VariableDeclaration from '../ast/VariableDeclaration';
 import FunctionCall from '../ast/FunctionCall';
 import CreateMarker from '../ast/CreateMarker';
-import CreatePolygon from '../ast/CreatePolygon';
+import CreatePolyline from '../ast/CreatePolyline';
 import CoordinateAccess from '../ast/CoordinateAccess';
 import TokenNode from '../ast/TokenNode';
 import Position from '../ast/Position';
@@ -50,7 +50,7 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
 
   visitBodyElement(
     ctx: BodyElementContext
-  ): VariableDeclaration | VariableAssignment | CreateMarker | CreatePolygon | FunctionCall | LoopBlock {
+  ): VariableDeclaration | VariableAssignment | CreateMarker | CreatePolyline | FunctionCall | LoopBlock {
     const loopBlockCtx = ctx.loopBlock();
     const statementCtx = ctx.statement();
     if (loopBlockCtx) {
@@ -94,7 +94,7 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
 
   visitStatement(
     ctx: StatementContext
-  ): VariableDeclaration | VariableAssignment | CreateMarker | CreatePolygon | FunctionCall {
+  ): VariableDeclaration | VariableAssignment | CreateMarker | CreatePolyline | FunctionCall {
     const localVariableDeclarationCtx = ctx.localVariableDeclaration();
     const variableAssignmentCtx = ctx.variableAssignment();
     const createCallCtx = ctx.createCall();
@@ -135,7 +135,7 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
     return new FunctionCall(this.getToken(ctx.functionName().NAME()), this.getExpressions(ctx.expression()));
   }
 
-  visitCreateCall(ctx: CreateCallContext): CreateMarker | CreatePolygon {
+  visitCreateCall(ctx: CreateCallContext): CreateMarker | CreatePolyline {
     const streetOutputCtx = ctx.streetOutput();
     const markerOutputCtx = ctx.markerOutput();
     if (streetOutputCtx) {
@@ -171,7 +171,7 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
     return new CreateMarker(this.getToken(type), this.visitPosition(ctx.position()));
   }
 
-  visitStreetOutput(ctx: StreetOutputContext): CreatePolygon {
+  visitStreetOutput(ctx: StreetOutputContext): CreatePolyline {
     const streetCtx = ctx.STREET();
     const highwayCtx = ctx.HIGHWAY();
     const bridgeCtx = ctx.BRIDGE();
@@ -188,7 +188,7 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
       throw new Error('Impossible - Street, Highway, and Bridge cannot all be undefined (enforced by Parser)');
     }
 
-    return new CreatePolygon(
+    return new CreatePolyline(
       this.getToken(type),
       this.visitPosition(ctx.position()[0]),
       this.visitPosition(ctx.position()[1])
@@ -284,8 +284,8 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
 
   private getLocalBody(
     elements: BodyElementContext[]
-  ): (VariableDeclaration | VariableAssignment | CreateMarker | CreatePolygon | FunctionCall | LoopBlock)[] {
-    const body: (VariableDeclaration | VariableAssignment | CreateMarker | CreatePolygon | FunctionCall | LoopBlock)[] = [];
+  ): (VariableDeclaration | VariableAssignment | CreateMarker | CreatePolyline | FunctionCall | LoopBlock)[] {
+    const body: (VariableDeclaration | VariableAssignment | CreateMarker | CreatePolyline | FunctionCall | LoopBlock)[] = [];
     for (const element of elements) {
       body.push(this.visitBodyElement(element));
     }
@@ -309,7 +309,7 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
 
   private getStatements(
     statementContexts: StatementContext[]
-  ): (VariableDeclaration | VariableAssignment | CreateMarker | CreatePolygon | FunctionCall)[] {
+  ): (VariableDeclaration | VariableAssignment | CreateMarker | CreatePolyline | FunctionCall)[] {
     const statements = [];
     for (const statement of statementContexts) {
       statements.push(this.visitStatement(statement));

@@ -2,15 +2,17 @@ import ASTNode from './ASTNode';
 import { Visitor } from './Visitor';
 import FunctionCall from './FunctionCall';
 import CreateMarker from './CreateMarker';
-import CreatePolygon from './CreatePolygon';
+import CreatePolyline from './CreatePolyline';
 import VariableAssignment from './VariableAssignment';
 import VariableDeclaration from './VariableDeclaration';
 import LoopBlock from './LoopBlock';
 
 export default class OutputBlock extends ASTNode {
-  readonly body: (VariableDeclaration | VariableAssignment | CreateMarker | CreatePolygon | FunctionCall | LoopBlock)[];
+  readonly body: (VariableDeclaration | VariableAssignment | CreateMarker | CreatePolyline | FunctionCall | LoopBlock)[];
 
-  constructor(body: (VariableDeclaration | VariableAssignment | CreateMarker | CreatePolygon | FunctionCall | LoopBlock)[]) {
+  constructor(
+    body: (VariableDeclaration | VariableAssignment | CreateMarker | CreatePolyline | FunctionCall | LoopBlock)[]
+  ) {
     super();
     this.body = body;
   }

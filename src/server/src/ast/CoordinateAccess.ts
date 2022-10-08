@@ -3,8 +3,8 @@ import { Visitor } from './Visitor';
 import TokenNode from './TokenNode';
 
 export default class CoordinateAccess extends ASTNode {
-  readonly variableName: TokenNode;
-  readonly coordinate: TokenNode;
+  readonly variableName: TokenNode; // the variable name
+  readonly coordinate: TokenNode; // x or y
 
   constructor(variableName: TokenNode, coordinate: TokenNode) {
     super();

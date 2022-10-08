@@ -1,17 +1,17 @@
-export interface Position {
+export interface CreatePosition {
   x: number;
   y: number;
 }
 
-interface StreetCreateStatement {
+interface PolylineCreateStatement {
   type: 'Highway' | 'Street' | 'Bridge';
-  startPosition: Position;
-  endPosition: Position;
+  startPosition: CreatePosition;
+  endPosition: CreatePosition;
 }
 
 interface MarkerCreateStatement {
   type: 'BusStop' | 'TrafficLight' | 'StopSign' | 'TrainStop';
-  position: Position;
+  position: CreatePosition;
 }
 
-export type CreateStatement = StreetCreateStatement | MarkerCreateStatement;
+export type CreateStatement = PolylineCreateStatement | MarkerCreateStatement;

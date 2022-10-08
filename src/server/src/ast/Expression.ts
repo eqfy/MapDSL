@@ -5,7 +5,7 @@ import CoordinateAccess from './CoordinateAccess';
 import Position from './Position';
 
 export default class Expression extends ASTNode {
-  leftValue: CoordinateAccess | Position | TokenNode;
+  leftValue: CoordinateAccess /*evaluates to a number*/ | Position | TokenNode; // tokenNode could be a number or a variable name (if variable name, you would have to find that variables value)
   operator?: TokenNode;
   rightValue?: Expression;
 

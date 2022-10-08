@@ -3,9 +3,9 @@ import { convertCoordinateToLatLng } from './coordinateUtils';
 import {
   CreateStatement,
   isMarkerCreateStatement,
-  isStreetCreateStatement,
+  isPolylineCreateStatement,
   MarkerCreateStatement,
-  StreetCreateStatement
+  PolylineCreateStatement
 } from './CreateStatement';
 
 export class Canvas {
@@ -25,11 +25,11 @@ export class Canvas {
     const markers: google.maps.Marker[] = [];
 
     if (statements) {
-      const streetOutputs: StreetCreateStatement[] = [];
+      const streetOutputs: PolylineCreateStatement[] = [];
       const markerOutputs: MarkerCreateStatement[] = [];
 
       for (const statement of statements) {
-        if (isStreetCreateStatement(statement)) {
+        if (isPolylineCreateStatement(statement)) {
           streetOutputs.push(statement);
         } else if (isMarkerCreateStatement(statement)) {
           markerOutputs.push(statement);
@@ -51,7 +51,7 @@ export class Canvas {
     this.markers = markers;
   }
 
-  private createPolyline(streetOutput: StreetCreateStatement): google.maps.Polyline {
+  private createPolyline(streetOutput: PolylineCreateStatement): google.maps.Polyline {
     console.log(`Created a polyline for streetOutput: ${JSON.stringify(streetOutput)}`);
 
     let strokeColor;

@@ -3,7 +3,7 @@ import { Visitor } from './Visitor';
 import TokenNode from './TokenNode';
 import Position from './Position';
 
-export default class CreatePolygon extends ASTNode {
+export default class CreatePolyline extends ASTNode {
   readonly streetType: TokenNode;
   readonly startPosition: Position;
   readonly endPosition: Position;
@@ -16,6 +16,6 @@ export default class CreatePolygon extends ASTNode {
   }
 
   accept<T, U>(v: Visitor<T, U>, t: T): U {
-    return v.visitCreatePolygon(this, t);
+    return v.visitCreatePolyline(this, t);
   }
 }

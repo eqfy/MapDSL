@@ -4,19 +4,19 @@ import TokenNode from './TokenNode';
 import VariableDeclaration from './VariableDeclaration';
 import VariableAssignment from './VariableAssignment';
 import CreateMarker from './CreateMarker';
-import CreatePolygon from './CreatePolygon';
+import CreatePolyline from './CreatePolyline';
 import FunctionCall from './FunctionCall';
 import LoopBlock from './LoopBlock';
 
 export default class FunctionDeclaration extends ASTNode {
   readonly name: TokenNode;
   readonly inputVariables?: TokenNode[];
-  readonly body: (VariableDeclaration | VariableAssignment | CreateMarker | CreatePolygon | FunctionCall | LoopBlock)[];
+  readonly body: (VariableDeclaration | VariableAssignment | CreateMarker | CreatePolyline | FunctionCall | LoopBlock)[];
 
   constructor(
     name: TokenNode,
     inputVariables: TokenNode[],
-    body: (VariableDeclaration | VariableAssignment | CreateMarker | CreatePolygon | FunctionCall | LoopBlock)[]
+    body: (VariableDeclaration | VariableAssignment | CreateMarker | CreatePolyline | FunctionCall | LoopBlock)[]
   ) {
     super();
     this.name = name;

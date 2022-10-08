@@ -4,7 +4,7 @@ import TokenNode from './TokenNode';
 import Expression from './Expression';
 
 export default class Position extends ASTNode {
-  readonly xCoordinate?: Expression;
+  readonly xCoordinate?: Expression; // can either be (x,y) or it can be a variableName
   readonly yCoordinate?: Expression;
   readonly variableName?: TokenNode;
 

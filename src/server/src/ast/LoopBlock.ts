@@ -3,17 +3,17 @@ import { Visitor } from './Visitor';
 import TokenNode from './TokenNode';
 import FunctionCall from './FunctionCall';
 import CreateMarker from './CreateMarker';
-import CreatePolygon from './CreatePolygon';
+import CreatePolyline from './CreatePolyline';
 import VariableDeclaration from './VariableDeclaration';
 import VariableAssignment from './VariableAssignment';
 
 export default class LoopBlock extends ASTNode {
   readonly loopNumber: TokenNode;
-  readonly body: (VariableDeclaration | VariableAssignment | CreateMarker | CreatePolygon | FunctionCall)[];
+  readonly body: (VariableDeclaration | VariableAssignment | CreateMarker | CreatePolyline | FunctionCall)[];
 
   constructor(
     loopNumber: TokenNode,
-    body: (VariableDeclaration | VariableAssignment | CreateMarker | CreatePolygon | FunctionCall)[]
+    body: (VariableDeclaration | VariableAssignment | CreateMarker | CreatePolyline | FunctionCall)[]
   ) {
     super();
     this.loopNumber = loopNumber;

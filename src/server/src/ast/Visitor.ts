@@ -6,7 +6,7 @@ import FunctionDeclaration from './FunctionDeclaration';
 import VariableDeclaration from './VariableDeclaration';
 import VariableAssignment from './VariableAssignment';
 import CreateMarker from './CreateMarker';
-import CreatePolygon from './CreatePolygon';
+import CreatePolyline from './CreatePolyline';
 import FunctionCall from './FunctionCall';
 import LoopBlock from './LoopBlock';
 import Expression from './Expression';
@@ -30,7 +30,7 @@ export interface Visitor<T = void, U = void> {
 
   visitCreateMarker(n: CreateMarker, t: T): U;
 
-  visitCreatePolygon(n: CreatePolygon, t: T): U;
+  visitCreatePolyline(n: CreatePolyline, t: T): U;
 
   visitFunctionCall(n: FunctionCall, t: T): U;
 

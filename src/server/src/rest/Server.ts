@@ -83,7 +83,7 @@ export default class Server {
       const outputBuilder = new CreateStatementBuilder();
       const outputVisitor = new OutputVisitor();
       if (!testing) {
-        programAST.accept(outputVisitor, getDefaultOutputVisitorContext(outputBuilder));
+        //programAST.accept(outputVisitor, getDefaultOutputVisitorContext(outputBuilder));
       }
       const allCreateStatements = outputBuilder.result;
       res.status(200).json({ result: allCreateStatements });
