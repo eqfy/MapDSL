@@ -1,4 +1,4 @@
-import { CreateStatement, MarkerCreateStatement, PolylineCreateStatement } from "./CreateStatementTypes";
+import { CreateStatement, MarkerCreateStatement, PolylineCreateStatement } from './CreateStatementTypes';
 
 export default class CreateStatementBuilder {
   private _createStatements: CreateStatement[] = [];
