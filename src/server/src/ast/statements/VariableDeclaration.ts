@@ -1,9 +1,9 @@
-import ASTNode from './ASTNode';
-import { Visitor } from './Visitor';
-import TokenNode from './TokenNode';
-import Expression from './Expression';
+import { Visitor } from "../Visitor";
+import TokenNode from "../expressions/TokenNode";
+import Expression from "../expressions/Expression";
+import Statement from "./Statement";
 
-export default class VariableDeclaration extends ASTNode {
+export default class VariableDeclaration extends Statement {
   readonly isGlobalConstant: boolean;
   readonly name: TokenNode;
   readonly value: Expression;

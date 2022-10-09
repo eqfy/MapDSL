@@ -1,7 +1,7 @@
-import ASTNode from './ASTNode';
-import { Visitor } from './Visitor';
-import DefinitionBlock from './DefinitionBlock';
-import OutputBlock from './OutputBlock';
+import ASTNode from "./ASTNode";
+import { Visitor } from "./Visitor";
+import DefinitionBlock from "./DefinitionBlock";
+import OutputBlock from "./OutputBlock";
 
 export default class Program extends ASTNode {
   readonly definitionBlock?: DefinitionBlock;

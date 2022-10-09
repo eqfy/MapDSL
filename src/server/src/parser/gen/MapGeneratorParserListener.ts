@@ -5,6 +5,7 @@ import { ParseTreeListener } from "antlr4ts/tree/ParseTreeListener";
 
 import { ProgramContext } from "./MapGeneratorParser";
 import { DefinitionBlockContext } from "./MapGeneratorParser";
+import { GlobalBodyElementContext } from "./MapGeneratorParser";
 import { FunctionDeclarationContext } from "./MapGeneratorParser";
 import { OutputBlockContext } from "./MapGeneratorParser";
 import { StatementContext } from "./MapGeneratorParser";
@@ -17,10 +18,9 @@ import { CreateCallContext } from "./MapGeneratorParser";
 import { MarkerOutputContext } from "./MapGeneratorParser";
 import { StreetOutputContext } from "./MapGeneratorParser";
 import { ExpressionContext } from "./MapGeneratorParser";
-import { LeftExpressionValueContext } from "./MapGeneratorParser";
+import { OperableExprContext } from "./MapGeneratorParser";
+import { OperationContext } from "./MapGeneratorParser";
 import { PositionContext } from "./MapGeneratorParser";
-import { BodyElementContext } from "./MapGeneratorParser";
-import { GlobalBodyElementContext } from "./MapGeneratorParser";
 import { PositionAccessContext } from "./MapGeneratorParser";
 import { FunctionNameContext } from "./MapGeneratorParser";
 import { ParameterNameContext } from "./MapGeneratorParser";
@@ -53,6 +53,17 @@ export interface MapGeneratorParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitDefinitionBlock?: (ctx: DefinitionBlockContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `MapGeneratorParser.globalBodyElement`.
+	 * @param ctx the parse tree
+	 */
+	enterGlobalBodyElement?: (ctx: GlobalBodyElementContext) => void;
+	/**
+	 * Exit a parse tree produced by `MapGeneratorParser.globalBodyElement`.
+	 * @param ctx the parse tree
+	 */
+	exitGlobalBodyElement?: (ctx: GlobalBodyElementContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `MapGeneratorParser.functionDeclaration`.
@@ -187,15 +198,26 @@ export interface MapGeneratorParserListener extends ParseTreeListener {
 	exitExpression?: (ctx: ExpressionContext) => void;
 
 	/**
-	 * Enter a parse tree produced by `MapGeneratorParser.leftExpressionValue`.
+	 * Enter a parse tree produced by `MapGeneratorParser.operableExpr`.
 	 * @param ctx the parse tree
 	 */
-	enterLeftExpressionValue?: (ctx: LeftExpressionValueContext) => void;
+	enterOperableExpr?: (ctx: OperableExprContext) => void;
 	/**
-	 * Exit a parse tree produced by `MapGeneratorParser.leftExpressionValue`.
+	 * Exit a parse tree produced by `MapGeneratorParser.operableExpr`.
 	 * @param ctx the parse tree
 	 */
-	exitLeftExpressionValue?: (ctx: LeftExpressionValueContext) => void;
+	exitOperableExpr?: (ctx: OperableExprContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `MapGeneratorParser.operation`.
+	 * @param ctx the parse tree
+	 */
+	enterOperation?: (ctx: OperationContext) => void;
+	/**
+	 * Exit a parse tree produced by `MapGeneratorParser.operation`.
+	 * @param ctx the parse tree
+	 */
+	exitOperation?: (ctx: OperationContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `MapGeneratorParser.position`.
@@ -207,28 +229,6 @@ export interface MapGeneratorParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitPosition?: (ctx: PositionContext) => void;
-
-	/**
-	 * Enter a parse tree produced by `MapGeneratorParser.bodyElement`.
-	 * @param ctx the parse tree
-	 */
-	enterBodyElement?: (ctx: BodyElementContext) => void;
-	/**
-	 * Exit a parse tree produced by `MapGeneratorParser.bodyElement`.
-	 * @param ctx the parse tree
-	 */
-	exitBodyElement?: (ctx: BodyElementContext) => void;
-
-	/**
-	 * Enter a parse tree produced by `MapGeneratorParser.globalBodyElement`.
-	 * @param ctx the parse tree
-	 */
-	enterGlobalBodyElement?: (ctx: GlobalBodyElementContext) => void;
-	/**
-	 * Exit a parse tree produced by `MapGeneratorParser.globalBodyElement`.
-	 * @param ctx the parse tree
-	 */
-	exitGlobalBodyElement?: (ctx: GlobalBodyElementContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `MapGeneratorParser.positionAccess`.

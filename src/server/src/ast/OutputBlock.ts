@@ -1,17 +1,12 @@
-import ASTNode from './ASTNode';
-import { Visitor } from './Visitor';
-import FunctionCall from './FunctionCall';
-import CreateMarker from './CreateMarker';
-import CreatePolyline from './CreatePolyline';
-import VariableAssignment from './VariableAssignment';
-import VariableDeclaration from './VariableDeclaration';
-import LoopBlock from './LoopBlock';
+import ASTNode from "./ASTNode";
+import { Visitor } from "./Visitor";
+import Statement from "./statements/Statement";
 
 export default class OutputBlock extends ASTNode {
-  readonly body: (VariableDeclaration | VariableAssignment | CreateMarker | CreatePolyline | FunctionCall | LoopBlock)[];
+  readonly body: Statement[];
 
   constructor(
-    body: (VariableDeclaration | VariableAssignment | CreateMarker | CreatePolyline | FunctionCall | LoopBlock)[]
+    body: Statement[]
   ) {
     super();
     this.body = body;

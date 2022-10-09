@@ -4,14 +4,12 @@ export interface CreatePosition {
 }
 
 interface PolylineCreateStatement {
-  type: 'Highway' | 'Street' | 'Bridge';
+  type: "Highway" | "Street" | "Bridge";
   startPosition: CreatePosition;
   endPosition: CreatePosition;
 }
 
 interface MarkerCreateStatement {
-  type: 'BusStop' | 'TrafficLight' | 'StopSign' | 'TrainStop';
+  type: "BusStop" | "TrafficLight" | "StopSign" | "TrainStop";
   position: CreatePosition;
 }
-
-export type CreateStatement = PolylineCreateStatement | MarkerCreateStatement;

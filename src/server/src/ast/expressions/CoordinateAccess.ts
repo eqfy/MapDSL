@@ -1,8 +1,8 @@
-import ASTNode from './ASTNode';
-import { Visitor } from './Visitor';
-import TokenNode from './TokenNode';
+import { Visitor } from "../Visitor";
+import TokenNode from "./TokenNode";
+import { OperableExpr } from "./OperableExpr";
 
-export default class CoordinateAccess extends ASTNode {
+export default class CoordinateAccess extends OperableExpr {
   readonly variableName: TokenNode; // the variable name
   readonly coordinate: TokenNode; // x or y
 
