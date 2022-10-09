@@ -1,21 +1,20 @@
 // See https://refactoring.guru/design-patterns/visitor/typescript/example
-import Program from "./Program";
-import DefinitionBlock from "./DefinitionBlock";
-import OutputBlock from "./OutputBlock";
-import FunctionDeclaration from "./FunctionDeclaration";
-import VariableDeclaration from "./statements/VariableDeclaration";
-import VariableAssignment from "./statements/VariableAssignment";
-import CreateMarker from "./statements/CreateMarker";
-import CreatePolyline from "./statements/CreatePolyline";
-import FunctionCall from "./expressions/FunctionCall";
-import LoopBlock from "./statements/LoopBlock";
-import Expression from "./expressions/Expression";
-import Position from "./expressions/Position";
-import CoordinateAccess from "./expressions/CoordinateAccess";
-import TokenNode from "./expressions/TokenNode";
-import ASTNode from "./ASTNode";
-import OpExpression from "./expressions/OpExpression";
-
+import Program from './Program';
+import DefinitionBlock from './DefinitionBlock';
+import OutputBlock from './OutputBlock';
+import FunctionDeclaration from './FunctionDeclaration';
+import VariableDeclaration from './statements/VariableDeclaration';
+import VariableAssignment from './statements/VariableAssignment';
+import CreateMarker from './statements/CreateMarker';
+import CreatePolyline from './statements/CreatePolyline';
+import FunctionCall from './expressions/FunctionCall';
+import LoopBlock from './statements/LoopBlock';
+import Expression from './expressions/Expression';
+import Position from './expressions/Position';
+import CoordinateAccess from './expressions/CoordinateAccess';
+import TokenNode from './expressions/TokenNode';
+import ASTNode from './ASTNode';
+import OpExpression from './expressions/OpExpression';
 
 export interface Visitor<T = void, U = void> {
   visitProgram(n: Program, t: T): U;

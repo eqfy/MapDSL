@@ -8,7 +8,7 @@ import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import path from 'path';
 import { OutputVisitor } from '../ast/evaluators/OutputVisitor';
-import CreateStatementBuilder from "../CreateStatements/CreateStatementBuilder";
+import CreateStatementBuilder from '../CreateStatements/CreateStatementBuilder';
 
 export default class Server {
   private readonly port: number;
@@ -80,7 +80,7 @@ export default class Server {
       const programAST = parser.program().accept(parseToASTVisitor);
       const createStatementBuilder = new CreateStatementBuilder();
       const outputVisitor = new OutputVisitor();
-      programAST.accept(outputVisitor, {createStatementBuilder: createStatementBuilder, variableTable: new Map()});
+      programAST.accept(outputVisitor, { createStatementBuilder: createStatementBuilder, variableTable: new Map() });
       res.status(200).json({ result: createStatementBuilder.createStatements });
     } catch (e: any) {
       res.status(400).json({ error: e.message });

@@ -1,7 +1,7 @@
-import { Visitor } from "../Visitor";
-import TokenNode from "../expressions/TokenNode";
-import CreateStatement from "./CreateStatement";
-import Expression from "../expressions/Expression";
+import { Visitor } from '../Visitor';
+import TokenNode from '../expressions/TokenNode';
+import CreateStatement from './CreateStatement';
+import Expression from '../expressions/Expression';
 
 export default class CreateMarker extends CreateStatement {
   readonly markerType: TokenNode;

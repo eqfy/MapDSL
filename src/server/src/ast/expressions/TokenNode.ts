@@ -1,6 +1,6 @@
-import { Visitor } from "../Visitor";
-import { Range } from "../Range";
-import { OperableExpr } from "./OperableExpr";
+import { Visitor } from '../Visitor';
+import { Range } from '../Range';
+import { OperableExpr } from './OperableExpr';
 
 export default class TokenNode extends OperableExpr {
   // A token represents any atomic final value

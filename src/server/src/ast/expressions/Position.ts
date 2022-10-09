@@ -1,5 +1,5 @@
-import { Visitor } from "../Visitor";
-import Expression from "./Expression";
+import { Visitor } from '../Visitor';
+import Expression from './Expression';
 
 export default class Position extends Expression {
   readonly xCoordinate?: Expression;

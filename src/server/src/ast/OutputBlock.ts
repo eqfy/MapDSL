@@ -1,13 +1,11 @@
-import ASTNode from "./ASTNode";
-import { Visitor } from "./Visitor";
-import Statement from "./statements/Statement";
+import ASTNode from './ASTNode';
+import { Visitor } from './Visitor';
+import Statement from './statements/Statement';
 
 export default class OutputBlock extends ASTNode {
   readonly body: Statement[];
 
-  constructor(
-    body: Statement[]
-  ) {
+  constructor(body: Statement[]) {
     super();
     this.body = body;
   }

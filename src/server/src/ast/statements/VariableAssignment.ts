@@ -1,7 +1,7 @@
-import { Visitor } from "../Visitor";
-import TokenNode from "../expressions/TokenNode";
-import Expression from "../expressions/Expression";
-import Statement from "./Statement";
+import { Visitor } from '../Visitor';
+import TokenNode from '../expressions/TokenNode';
+import Expression from '../expressions/Expression';
+import Statement from './Statement';
 
 export default class VariableAssignment extends Statement {
   readonly name: TokenNode;

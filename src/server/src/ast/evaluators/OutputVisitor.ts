@@ -28,7 +28,7 @@ interface OutputVisitorContext {
 
 export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisitorReturnType> {
   visitOpExpression(n: OpExpression, t: OutputVisitorContext): OutputVisitorReturnType {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
 
   private functionTable = new Map<string, FunctionDeclaration>(); // always global
@@ -87,7 +87,9 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
     if (!argNames || !argExprs) {
       throw new Error(`IMPOSSIBLE - Something went wrong with parsing functions (calls)`);
     } else if (argNames.length !== argExprs.length) {
-      throw new Error(`Number of arguments provided does not match number of arguments needed when calling ${n.name.tokenValue}`);
+      throw new Error(
+        `Number of arguments provided does not match number of arguments needed when calling ${n.name.tokenValue}`
+      );
     }
 
     // Create a copy of the variable table for the new scope

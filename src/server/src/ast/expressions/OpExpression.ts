@@ -1,6 +1,6 @@
-import Expression from "./Expression";
-import { Visitor } from "../Visitor";
-import TokenNode from "./TokenNode";
+import Expression from './Expression';
+import { Visitor } from '../Visitor';
+import TokenNode from './TokenNode';
 
 export default class OpExpression extends Expression {
   leftExpression: Expression;

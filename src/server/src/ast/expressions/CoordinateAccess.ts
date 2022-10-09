@@ -1,6 +1,6 @@
-import { Visitor } from "../Visitor";
-import TokenNode from "./TokenNode";
-import { OperableExpr } from "./OperableExpr";
+import { Visitor } from '../Visitor';
+import TokenNode from './TokenNode';
+import { OperableExpr } from './OperableExpr';
 
 export default class CoordinateAccess extends OperableExpr {
   readonly variableName: TokenNode; // the variable name
