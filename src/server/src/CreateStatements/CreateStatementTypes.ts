@@ -3,13 +3,13 @@ export interface CreatePosition {
   y: number;
 }
 
-interface PolylineCreateStatement {
+export interface PolylineCreateStatement {
   type: 'Highway' | 'Street' | 'Bridge';
   startPosition: CreatePosition;
   endPosition: CreatePosition;
 }
 
-interface MarkerCreateStatement {
+export interface MarkerCreateStatement {
   type: 'BusStop' | 'TrafficLight' | 'StopSign' | 'TrainStop';
   position: CreatePosition;
 }

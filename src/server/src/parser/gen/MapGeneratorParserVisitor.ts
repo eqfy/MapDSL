@@ -5,6 +5,7 @@ import { ParseTreeVisitor } from "antlr4ts/tree/ParseTreeVisitor";
 
 import { ProgramContext } from "./MapGeneratorParser";
 import { DefinitionBlockContext } from "./MapGeneratorParser";
+import { GlobalBodyElementContext } from "./MapGeneratorParser";
 import { FunctionDeclarationContext } from "./MapGeneratorParser";
 import { OutputBlockContext } from "./MapGeneratorParser";
 import { StatementContext } from "./MapGeneratorParser";
@@ -17,10 +18,9 @@ import { CreateCallContext } from "./MapGeneratorParser";
 import { MarkerOutputContext } from "./MapGeneratorParser";
 import { StreetOutputContext } from "./MapGeneratorParser";
 import { ExpressionContext } from "./MapGeneratorParser";
-import { LeftExpressionValueContext } from "./MapGeneratorParser";
+import { OperableExprContext } from "./MapGeneratorParser";
+import { OperationContext } from "./MapGeneratorParser";
 import { PositionContext } from "./MapGeneratorParser";
-import { BodyElementContext } from "./MapGeneratorParser";
-import { GlobalBodyElementContext } from "./MapGeneratorParser";
 import { PositionAccessContext } from "./MapGeneratorParser";
 import { FunctionNameContext } from "./MapGeneratorParser";
 import { ParameterNameContext } from "./MapGeneratorParser";
@@ -48,6 +48,13 @@ export interface MapGeneratorParserVisitor<Result> extends ParseTreeVisitor<Resu
 	 * @return the visitor result
 	 */
 	visitDefinitionBlock?: (ctx: DefinitionBlockContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `MapGeneratorParser.globalBodyElement`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitGlobalBodyElement?: (ctx: GlobalBodyElementContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `MapGeneratorParser.functionDeclaration`.
@@ -134,11 +141,18 @@ export interface MapGeneratorParserVisitor<Result> extends ParseTreeVisitor<Resu
 	visitExpression?: (ctx: ExpressionContext) => Result;
 
 	/**
-	 * Visit a parse tree produced by `MapGeneratorParser.leftExpressionValue`.
+	 * Visit a parse tree produced by `MapGeneratorParser.operableExpr`.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	visitLeftExpressionValue?: (ctx: LeftExpressionValueContext) => Result;
+	visitOperableExpr?: (ctx: OperableExprContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `MapGeneratorParser.operation`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitOperation?: (ctx: OperationContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `MapGeneratorParser.position`.
@@ -146,20 +160,6 @@ export interface MapGeneratorParserVisitor<Result> extends ParseTreeVisitor<Resu
 	 * @return the visitor result
 	 */
 	visitPosition?: (ctx: PositionContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `MapGeneratorParser.bodyElement`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitBodyElement?: (ctx: BodyElementContext) => Result;
-
-	/**
-	 * Visit a parse tree produced by `MapGeneratorParser.globalBodyElement`.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	visitGlobalBodyElement?: (ctx: GlobalBodyElementContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `MapGeneratorParser.positionAccess`.

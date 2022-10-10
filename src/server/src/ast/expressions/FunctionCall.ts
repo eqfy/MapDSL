@@ -1,9 +1,9 @@
-import ASTNode from './ASTNode';
-import { Visitor } from './Visitor';
+import { Visitor } from '../Visitor';
 import TokenNode from './TokenNode';
 import Expression from './Expression';
+import { OperableExpr } from './OperableExpr';
 
-export default class FunctionCall extends ASTNode {
+export default class FunctionCall extends OperableExpr {
   readonly name: TokenNode;
   readonly inputValues: Expression[];
 

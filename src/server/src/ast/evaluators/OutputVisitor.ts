@@ -1,29 +1,34 @@
-import { OutputVisitorContext } from './OutputVisitorContext';
 import { Visitor } from '../Visitor';
 import DefinitionBlock from '../DefinitionBlock';
-import TokenNode from '../TokenNode';
+import TokenNode from '../expressions/TokenNode';
 import OutputBlock from '../OutputBlock';
-import VariableAssignment from '../VariableAssignment';
-import CreatePolyline from '../CreatePolyline';
-import CoordinateAccess from '../CoordinateAccess';
+import VariableAssignment from '../statements/VariableAssignment';
+import CreatePolyline from '../statements/CreatePolyline';
+import CoordinateAccess from '../expressions/CoordinateAccess';
 import FunctionDeclaration from '../FunctionDeclaration';
-import LoopBlock from '../LoopBlock';
-import Expression from '../Expression';
+import LoopBlock from '../statements/LoopBlock';
+import Expression from '../expressions/Expression';
 import ASTNode from '../ASTNode';
-import CreateMarker from '../CreateMarker';
-import VariableDeclaration from '../VariableDeclaration';
-import FunctionCall from '../FunctionCall';
+import CreateMarker from '../statements/CreateMarker';
+import VariableDeclaration from '../statements/VariableDeclaration';
+import FunctionCall from '../expressions/FunctionCall';
 import Program from '../Program';
-import Position from '../Position';
-import { CreatePosition, CreateStatement } from '../../outputBuilder/CreateStatement';
+import Position from '../expressions/Position';
+import OpExpression from '../expressions/OpExpression';
+import CreateStatementBuilder from '../../CreateStatements/CreateStatementBuilder';
+import { CreatePosition } from '../../CreateStatements/CreateStatementTypes';
 
-export class OutputVisitor
-  implements Visitor<OutputVisitorContext, Expression | void | CreatePosition | number | CreateStatement>
-{
-  private constantTable = new Map<string, Expression>(); // always global
-  private variableTable = new Map<string, Expression>();
-  private functionTable = new Map<string, FunctionDeclaration>();
-  private createStatements: CreateStatement[] = [];
+// This type represents all values allowed in our language
+type OutputVisitorReturnType = CreatePosition | number | string | void;
+
+interface OutputVisitorContext {
+  createStatementBuilder: CreateStatementBuilder;
+  variableTable: Map<string, OutputVisitorReturnType>;
+}
+
+export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisitorReturnType> {
+  private functionTable = new Map<string, FunctionDeclaration>(); // always global
+  private constantTable = new Map<string, OutputVisitorReturnType>(); // always global
 
   // if you need the value of a tokenNode, either use the value itself (if simple to do so, example: number), otherwise, just call accept on the tokenNode (for example, getting the value of a variable name), and trust you'll get back the correct result
   // if you need any helpers, just create another file
@@ -61,12 +66,47 @@ export class OutputVisitor
   visitLoopBlock(n: LoopBlock, t: OutputVisitorContext): void {
     // 3 -- MICHAEL
     // loop n.loopNumber times, for each body statement call accept
+    for (let i = 0; i < Number(n.loopNumber.tokenValue); i++) {
+      for (let s of n.body) {
+        s.accept(this, t);
+      }
+    }
     return undefined;
   }
 
-  visitFunctionCall(n: FunctionCall, t: OutputVisitorContext): CreateStatement | void {
-    // 3 --- ERIC
-    // eric
+  visitFunctionCall(n: FunctionCall, t: OutputVisitorContext): OutputVisitorReturnType {
+    const fnDec = this.functionTable.get(n.name.tokenValue);
+    if (!fnDec) {
+      throw Error(`Called an undeclared function ${n.name.tokenValue}`);
+    }
+
+    const argNames = fnDec.inputVariables;
+    const argExprs = n.inputValues;
+    const fnBody = fnDec.body;
+
+    if (!argNames || !argExprs) {
+      throw new Error(`IMPOSSIBLE - Something went wrong with parsing functions (calls)`);
+    } else if (argNames.length !== argExprs.length) {
+      throw new Error(
+        `Number of arguments provided does not match number of arguments needed when calling ${n.name.tokenValue}`
+      );
+    }
+
+    // Create a copy of the variable table for the new scope
+    const newVariableTable = structuredClone(t.variableTable);
+
+    for (let i = 0; i < argNames.length; i++) {
+      newVariableTable.set(argNames[i].tokenValue, argExprs[i].accept(this, t));
+    }
+
+    for (const stmt of fnBody) {
+      stmt.accept(this, {
+        createStatementBuilder: t.createStatementBuilder,
+        variableTable: newVariableTable
+      });
+    }
+
+    // If we decide to return something from a function call in the future, return it here
     return undefined;
   }
 
@@ -75,6 +115,7 @@ export class OutputVisitor
     // if no operator return leftvalue (evaluated)
     // else return leftValue (operator) rightValue.accept();
     // recursively evaluate the expression (assume proper inputs)
+    // FIXME might not be needed
     return 0;
   }
 
@@ -84,11 +125,27 @@ export class OutputVisitor
     return undefined;
   }
 
+  visitOpExpression(n: OpExpression, t: OutputVisitorContext): OutputVisitorReturnType {
+    // 3 -- MICHAEL
+    // if no operator return leftvalue (evaluated)
+    // else return leftValue (operator) rightValue.accept();
+    // recursively evaluate the expression (assume proper inputs)
+    throw new Error('Method not implemented.');
+  }
+
   visitVariableAssignment(n: VariableAssignment, t: OutputVisitorContext): void {
     // 3 -- MICHAEL
-    //if (this.constantTable.get(n.name.tokenValue)) this.constantTable.set(n.name.tokenValue), n.value.accept())
-    // if( variableTable.)
-    return undefined;
+
+    // ASSUMPTIONS: we are allowing constants and variables to have the same name?
+    //              owness is on user to make sure that if they update a constant with some name and a variable also
+    //              has that name, that both are subject to overwriting?
+    if (!this.constantTable.has(n.name.tokenValue)) {
+      this.constantTable.set(n.name.tokenValue, n.value.accept(this, t));
+    }
+
+    if (!t.variableTable.has(n.name.tokenValue)) {
+      t.variableTable.set(n.name.tokenValue, n.value.accept(this, t));
+    }
   }
 
   visitCoordinateAccess(n: CoordinateAccess, t: OutputVisitorContext): number {
@@ -99,13 +156,13 @@ export class OutputVisitor
     return 0;
   }
 
-  visitCreateMarker(n: CreateMarker, t: OutputVisitorContext): CreateStatement | void {
+  visitCreateMarker(n: CreateMarker, t: OutputVisitorContext): void {
     // TODO remove void // 5 -- KYLE
     // create the marker and return it
     return undefined;
   }
 
-  visitCreatePolyline(n: CreatePolyline, t: OutputVisitorContext): CreateStatement | void {
+  visitCreatePolyline(n: CreatePolyline, t: OutputVisitorContext): void {
     // TODO remove void // 5 -- KYLE
     // create the street etc and return it
     return undefined;

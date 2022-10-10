@@ -7,10 +7,8 @@ import { ParseToASTVisitor } from '../parser/ParseToASTVisitor';
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import path from 'path';
-import CreateStatementBuilder from '../outputBuilder/CreateStatementBuilder';
-import { testing } from '../util/constants';
 import { OutputVisitor } from '../ast/evaluators/OutputVisitor';
-import { getDefaultOutputVisitorContext } from '../ast/evaluators/OutputVisitorContext';
+import CreateStatementBuilder from '../CreateStatements/CreateStatementBuilder';
 
 export default class Server {
   private readonly port: number;
@@ -80,13 +78,10 @@ export default class Server {
       const parser = new MapGeneratorParser(tokenStream);
       const parseToASTVisitor = new ParseToASTVisitor();
       const programAST = parser.program().accept(parseToASTVisitor);
-      const outputBuilder = new CreateStatementBuilder();
+      const createStatementBuilder = new CreateStatementBuilder();
       const outputVisitor = new OutputVisitor();
-      if (!testing) {
-        //programAST.accept(outputVisitor, getDefaultOutputVisitorContext(outputBuilder));
-      }
-      const allCreateStatements = outputBuilder.result;
-      res.status(200).json({ result: allCreateStatements });
+      programAST.accept(outputVisitor, { createStatementBuilder: createStatementBuilder, variableTable: new Map() });
+      res.status(200).json({ result: createStatementBuilder.createStatements });
     } catch (e: any) {
       res.status(400).json({ error: e.message });
     }
