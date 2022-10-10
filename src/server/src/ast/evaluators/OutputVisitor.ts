@@ -66,6 +66,11 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
   visitLoopBlock(n: LoopBlock, t: OutputVisitorContext): void {
     // 3 -- MICHAEL
     // loop n.loopNumber times, for each body statement call accept
+    for (let i = 0; i < Number(n.loopNumber.tokenValue); i++) {
+      for (let s of n.body) {
+        s.accept(this, t);
+      }
+    }
     return undefined;
   }
 
@@ -130,11 +135,17 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
 
   visitVariableAssignment(n: VariableAssignment, t: OutputVisitorContext): void {
     // 3 -- MICHAEL
+
+    // ASSUMPTIONS: we are allowing constants and variables to have the same name?
+    //              owness is on user to make sure that if they update a constant with some name and a variable also
+    //              has that name, that both are subject to overwriting?
     if (!this.constantTable.has(n.name.tokenValue)) {
       this.constantTable.set(n.name.tokenValue, n.value.accept(this, t));
     }
 
-    t.variableTable.set(n.name.tokenValue, n.value.accept(this, t));
+    if (!t.variableTable.has(n.name.tokenValue)) {
+      t.variableTable.set(n.name.tokenValue, n.value.accept(this, t));
+    }
   }
 
   visitCoordinateAccess(n: CoordinateAccess, t: OutputVisitorContext): number {
