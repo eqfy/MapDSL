@@ -27,13 +27,8 @@ interface OutputVisitorContext {
 }
 
 export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisitorReturnType> {
-  visitOpExpression(n: OpExpression, t: OutputVisitorContext): OutputVisitorReturnType {
-    throw new Error('Method not implemented.');
-  }
-
   private functionTable = new Map<string, FunctionDeclaration>(); // always global
   private constantTable = new Map<string, OutputVisitorReturnType>(); // always global
-  private variableTable = new Map<string, OutputVisitorReturnType>();
 
   // if you need the value of a tokenNode, either use the value itself (if simple to do so, example: number), otherwise, just call accept on the tokenNode (for example, getting the value of a variable name), and trust you'll get back the correct result
   // if you need any helpers, just create another file
@@ -112,9 +107,7 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
 
   visitExpression(n: Expression, t: OutputVisitorContext): CreatePosition | number {
     // 3 -- MICHAEL
-    // if no operator return leftvalue (evaluated)
-    // else return leftValue (operator) rightValue.accept();
-    // recursively evaluate the expression (assume proper inputs)
+    // FIXME might not be needed
     return 0;
   }
 
@@ -124,13 +117,21 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
     return undefined;
   }
 
+  visitOpExpression(n: OpExpression, t: OutputVisitorContext): OutputVisitorReturnType {
+    // 3 -- MICHAEL
+    // if no operator return leftvalue (evaluated)
+    // else return leftValue (operator) rightValue.accept();
+    // recursively evaluate the expression (assume proper inputs)
+    throw new Error('Method not implemented.');
+  }
+
   visitVariableAssignment(n: VariableAssignment, t: OutputVisitorContext): void {
     // 3 -- MICHAEL
     if (this.constantTable.get(n.name.tokenValue)) {
       this.constantTable.set(n.name.tokenValue, n.value.accept(this, t));
     }
-    if (this.variableTable.get(n.name.tokenValue)) {
-      this.variableTable.set(n.name.tokenValue, n.value.accept(this, t));
+    if (t.variableTable.get(n.name.tokenValue)) {
+      t.variableTable.set(n.name.tokenValue, n.value.accept(this, t));
     }
     return undefined;
   }
