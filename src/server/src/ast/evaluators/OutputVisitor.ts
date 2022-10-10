@@ -107,6 +107,9 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
 
   visitExpression(n: Expression, t: OutputVisitorContext): CreatePosition | number {
     // 3 -- MICHAEL
+    // if no operator return leftvalue (evaluated)
+    // else return leftValue (operator) rightValue.accept();
+    // recursively evaluate the expression (assume proper inputs)
     // FIXME might not be needed
     return 0;
   }
@@ -127,13 +130,11 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
 
   visitVariableAssignment(n: VariableAssignment, t: OutputVisitorContext): void {
     // 3 -- MICHAEL
-    if (this.constantTable.get(n.name.tokenValue)) {
+    if (!this.constantTable.has(n.name.tokenValue)) {
       this.constantTable.set(n.name.tokenValue, n.value.accept(this, t));
     }
-    if (t.variableTable.get(n.name.tokenValue)) {
-      t.variableTable.set(n.name.tokenValue, n.value.accept(this, t));
-    }
-    return undefined;
+
+    t.variableTable.set(n.name.tokenValue, n.value.accept(this, t));
   }
 
   visitCoordinateAccess(n: CoordinateAccess, t: OutputVisitorContext): number {
