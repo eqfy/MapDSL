@@ -1,4 +1,5 @@
-/src/server/src/parser/gen/
-/build/
-/node_modules/
-/public/
+node_modules/**
+client/node_modules/**
+client/out/**
+server/node_modules/**
+server/out/**/
