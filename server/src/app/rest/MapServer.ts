@@ -24,8 +24,8 @@ export default class MapServer {
 		this.registerMiddleware();
 		this.registerRoutes();
 
-		this.express.use(express.static(path.join(__dirname, '../../../../client/out'))); // TODO figure out relative pathing ??? its not working as I would expect
-		this.express.use(express.static(path.join(__dirname, '../../../../client/assets'))); // TODO figure out relative pathing ??? its not working as I would expect
+		this.express.use(express.static(path.join(__dirname, '../../../../client/out')));
+		this.express.use(express.static(path.join(__dirname, '../../../../client/assets')));
 	}
 
 	public start(): Promise<void> {
@@ -63,7 +63,7 @@ export default class MapServer {
 
 	private getMapOutput(req: Request, res: Response) {
 		try {
-			const content = readFileSync(path.join(__dirname, '../../../user/USER_INPUT.mg')).toString();
+			const content = readFileSync(path.join(__dirname, '../../../../user/USER_INPUT.mg')).toString();
 			const lexer = new MapGeneratorLexer(CharStreams.fromString(content));
 			const tokenStream = new CommonTokenStream(lexer);
 			const parser = new MapGeneratorParser(tokenStream);
