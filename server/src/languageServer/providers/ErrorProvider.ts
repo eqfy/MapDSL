@@ -32,7 +32,6 @@ export default class ErrorProvider {
 						end: findEndOfToken(textDocument, line - 1, column),
 					},
 					message: msg,
-					source: 'mg',
 				};
 
 				diagnostics.push(diagnostic);
@@ -51,7 +50,6 @@ export default class ErrorProvider {
 						end: findEndOfToken(textDocument, line - 1, column),
 					},
 					message: msg,
-					source: 'mg',
 				};
 
 				diagnostics.push(diagnostic);
