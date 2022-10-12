@@ -10,6 +10,7 @@ import path from 'path';
 import { OutputVisitor } from '../ast/evaluators/OutputVisitor';
 import CreateStatementBuilder from '../CreateStatements/CreateStatementBuilder';
 import { testing } from '../util/constants';
+import ErrorBuilder from "../ast/Errors/ErrorBuilder";
 
 export default class MapServer {
 	private readonly port: number;
@@ -70,16 +71,17 @@ export default class MapServer {
 			const parseToASTVisitor = new ParseToASTVisitor();
 			const programAST = parser.program().accept(parseToASTVisitor);
 			const createStatementBuilder = new CreateStatementBuilder();
+			const errorBuilder = new ErrorBuilder();
 			const outputVisitor = new OutputVisitor();
 			if (!testing) {
 				programAST.accept(outputVisitor, {
+					errorBuilder: errorBuilder,
 					createStatementBuilder: createStatementBuilder,
 					variableTable: new Map(),
 					functionTable: new Map(),
 					constantTable: new Map(),
 				});
 			}
-
 			res.status(200).json({ result: createStatementBuilder.createStatements });
 		} catch (e: any) {
 			res.status(400).json({ error: e.message });

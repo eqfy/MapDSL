@@ -37,8 +37,6 @@ export interface Visitor<T = void, U = void> {
 
   visitLoopBlock(n: LoopBlock, t: T): U;
 
-  visitExpression(n: Expression, t: T): U;
-
   visitOpExpression(n: OpExpression, t: T): U;
 
   visitPosition(n: Position, t: T): U;

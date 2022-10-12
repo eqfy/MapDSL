@@ -1,5 +1,5 @@
 import { Visitor } from '../Visitor';
-import { Range } from '../Range';
+import { Range } from '../../util/Range';
 import { OperableExpr } from './OperableExpr';
 
 export default class TokenNode extends OperableExpr {
