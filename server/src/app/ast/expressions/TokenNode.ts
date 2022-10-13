@@ -6,13 +6,11 @@ export default class TokenNode extends OperableExpr {
   // A token represents any atomic final value
   // It can be number, operator, variable name, function name, ... any important individual string
   readonly tokenValue: string;
-  readonly range: Range;
   readonly targetValueType: string;
 
-  constructor(tokenValue: string, range: Range, targetValue: TokenCtxTargetValueType) {
-    super();
+  constructor(range: Range, tokenValue: string, targetValue: TokenCtxTargetValueType) {
+    super(range);
     this.tokenValue = tokenValue;
-    this.range = range;
     this.targetValueType = targetValue;
   }
 

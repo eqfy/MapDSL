@@ -1,12 +1,12 @@
 import ASTNode from './ASTNode';
 import { Visitor } from './Visitor';
 import Statement from './statements/Statement';
-
+import { Range } from '../util/Range';
 export default class OutputBlock extends ASTNode {
   readonly body: Statement[];
 
-  constructor(body: Statement[]) {
-    super();
+  constructor(range: Range, body: Statement[]) {
+    super(range);
     this.body = body;
   }
 

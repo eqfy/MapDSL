@@ -28,7 +28,7 @@ import ErrorBuilder from '../Errors/ErrorBuilder';
 export type OutputVisitorReturnType = CreatePosition | number | string | void;
 
 interface OutputVisitorContext {
-	errorBuilder: ErrorBuilder;
+	dynamicErrorBuilder: ErrorBuilder;
 	createStatementBuilder: CreateStatementBuilder;
 	variableTable: Map<string, OutputVisitorReturnType>;
 	functionTable: Map<string, FunctionDeclaration>; // always global
@@ -77,22 +77,26 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
 	visitFunctionCall(n: FunctionCall, t: OutputVisitorContext): OutputVisitorReturnType {
 		const fnName = this.getStringTokenValue(n.name, t);
 		const fnDec = t.functionTable.get(fnName);
+		if (!fnDec) return;
 
-		const argNames = fnDec!.inputVariables;
+		const argNames = fnDec.inputVariables;
 		const argExprs = n.inputValues;
-		const fnBody = fnDec!.body;
+		const fnBody = fnDec.body;
+
+		if (!argNames || !argExprs) return;
+		if (argNames.length !== argExprs.length) return;
 
 		// Create a copy of the variable table for the new scope
 		const newVariableTable = new Map(t.variableTable);
 
-		for (let i = 0; i < argNames!.length; i++) {
-			const argName = this.getStringTokenValue(argNames![i], t);
+		for (let i = 0; i < argNames.length; i++) {
+			const argName = this.getStringTokenValue(argNames[i], t);
 			newVariableTable.set(argName, argExprs[i].accept(this, t));
 		}
 
 		for (const stmt of fnBody) {
 			stmt.accept(this, {
-				errorBuilder: t.errorBuilder,
+				dynamicErrorBuilder: t.dynamicErrorBuilder,
 				createStatementBuilder: t.createStatementBuilder,
 				variableTable: newVariableTable,
 				constantTable: t.constantTable,
@@ -104,29 +108,33 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
 	visitPosition(n: Position, t: OutputVisitorContext): CreatePosition | void {
 		const xPos = n.xCoordinate.accept(this, t);
 		const yPos = n.yCoordinate.accept(this, t);
-		return { x: xPos, y: yPos } as CreatePosition;
+		const pos = { x: xPos, y: yPos };
+		if (isCreatePosition(pos)) {
+			return pos;
+		}
 	}
 
 	visitOpExpression(n: OpExpression, t: OutputVisitorContext): OutputVisitorReturnType {
 		const leftValue = n.leftExpression.accept(this, t);
 		if (!isNumber(leftValue)) {
-			t.errorBuilder.buildStaticError('Expected a number for left operand',{zeroIndexStart: 0, zeroIndexEnd: 0});// TODO
+			t.dynamicErrorBuilder.buildError('Expected a number for left operand',n.leftExpression.range);
 			return;
 		}
 
 		let returnValue = leftValue;
 		const rightValue = n.rightExpression.accept(this, t);
 		if (!isNumber(rightValue)) {
-			t.errorBuilder.buildStaticError('Expected a number for left operand',{zeroIndexStart: 0, zeroIndexEnd: 0}); // TODO
+			t.dynamicErrorBuilder.buildError('Expected a number for left operand',n.rightExpression.range);
 			return;
 		}
 
-		if (n.operator.accept(this, t) === '+') {
+		const op = n.operator.accept(this, t);
+		if (op === '+') {
 			returnValue += rightValue;
-		} else if (n.operator.accept(this, t) === '-') {
+		} else if (op === '-') {
 			returnValue -= rightValue;
 		} else {
-			t.errorBuilder.buildStaticError('Invalid operator',{zeroIndexStart: 0, zeroIndexEnd: 0});// TODO
+			t.dynamicErrorBuilder.buildError('Invalid operator',n.operator.range);
 			return;
 		}
 		return returnValue;
@@ -134,7 +142,11 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
 
 	visitVariableAssignment(n: VariableAssignment, t: OutputVisitorContext): void {
 		const name = this.getStringTokenValue(n.name, t);
-		t.variableTable.set(name, n.value.accept(this, t));
+		if (t.variableTable.has(name)) {
+			t.variableTable.set(name, n.value.accept(this, t));
+		} else {
+			t.dynamicErrorBuilder.buildError(`Variable ${name} is undefined`, n.range);
+		}
 	}
 
 	visitCoordinateAccess(n: CoordinateAccess, t: OutputVisitorContext): number {
@@ -145,7 +157,7 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
 		} else if (t.variableTable.has(name)) {
 			position = t.variableTable.get(n.variableName.tokenValue);
 		} else {
-			t.errorBuilder.buildStaticError(`Variable ${name} is undefined`, n.variableName.range);
+			t.dynamicErrorBuilder.buildError(`Variable ${name} is undefined`, n.variableName.range);
 		}
 
 		if (isCreatePosition(position)) {
@@ -155,11 +167,11 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
 			} else if (coordinate === 'y') {
 				return position.y;
 			} else {
-				t.errorBuilder.buildStaticError(`Coordinate was not x or y`, n.coordinate.range);
+				t.dynamicErrorBuilder.buildError(`Coordinate was not x or y`, n.coordinate.range);
 				return 0;
 			}
 		} else {
-			t.errorBuilder.buildStaticError(`Invalid coordiante access`, n.coordinate.range);
+			t.dynamicErrorBuilder.buildError(`Invalid coordiante access`, n.coordinate.range);
 			return 0;
 		}
 	}
@@ -167,13 +179,13 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
 	visitCreateMarker(n: CreateMarker, t: OutputVisitorContext): void {
 		const type = this.getStringTokenValue(n.markerType, t);
 		if (type !== 'stop sign' && type !== 'traffic light' && type !== 'bus stop' && type !== 'train stop'){
-			t.errorBuilder.buildStaticError('Invalid marker type', n.markerType.range);
+			t.dynamicErrorBuilder.buildError('Invalid marker type', n.range);
 			return;
 		}
 
 		const position = n.position.accept(this, t);
 		if (!isCreatePosition(position)) {
-			t.errorBuilder.buildStaticError('Invalid position',{zeroIndexStart: 0, zeroIndexEnd: 0});// TODO
+			t.dynamicErrorBuilder.buildError('Invalid position',n.position.range);
 			return;
 		}
 
@@ -185,14 +197,22 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
 	}
 
 	visitCreatePolyline(n: CreatePolyline, t: OutputVisitorContext): void {
-
 		const type = this.getStringTokenValue(n.streetType, t);
 
-		const startPosition = n.startPosition.accept(this, t) as CreatePosition;
-		const endPosition = n.endPosition.accept(this, t) as CreatePosition;
+		if (type !== 'highway' && type !== 'street' && type !== 'bridge') {
+			t.dynamicErrorBuilder.buildError('Invalid street type', n.range);
+			return;
+		}
+
+		const startPosition = n.startPosition.accept(this, t);
+		const endPosition = n.endPosition.accept(this, t);
+		if (!isCreatePosition(startPosition) || !isCreatePosition(endPosition)){
+			t.dynamicErrorBuilder.buildError('Invalid positions',{start: n.startPosition.range.start, end: n.endPosition.range.end});
+			return;
+		}
 
 		const polyline: PolylineCreateStatement = {
-			type: String(type) as 'highway' | 'street' | 'bridge',
+			type: type,
 			startPosition: startPosition,
 			endPosition: endPosition,
 		};
@@ -211,16 +231,27 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
 			return t.constantTable.get(name);
 		} else if (t.variableTable.has(name)) {
 			return t.variableTable.get(name);
+		} else {
+			t.dynamicErrorBuilder.buildError('Variable does not exist',n.range);
+			return 0;
 		}
 	}
 
 	private getStringTokenValue(token: TokenNode, t: OutputVisitorContext): string {
 		const str = token.accept(this, t);
-		return String(str);
+		if (!isString(str)){
+			t.dynamicErrorBuilder.buildError('Token is not a string',token.range);
+			return "";
+		}
+		return str;
 	}
 
 	private getNumberTokenValue(token: TokenNode, t: OutputVisitorContext): number {
 		const num = token.accept(this, t);
+		if (!isNumber(num)) {
+			t.dynamicErrorBuilder.buildError('Token is not a number',token.range);
+			return 0;
+		}
 		return Number(num);
 	}
 

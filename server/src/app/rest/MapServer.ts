@@ -75,7 +75,7 @@ export default class MapServer {
 			const outputVisitor = new OutputVisitor();
 			if (!testing) {
 				programAST.accept(outputVisitor, {
-					errorBuilder: errorBuilder,
+					dynamicErrorBuilder: errorBuilder,
 					createStatementBuilder: createStatementBuilder,
 					variableTable: new Map(),
 					functionTable: new Map(),
