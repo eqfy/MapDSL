@@ -92,6 +92,7 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
 		}
 		if (argNames.length !== argExprs.length) {
 			t.errorBuilder.buildStaticError(`Number of arguments provided does not match number of arguments needed when calling ${fnName}`, n.name.range);
+			return;
 		}
 
 		// Create a copy of the variable table for the new scope

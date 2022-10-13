@@ -17,6 +17,7 @@ import ErrorProvider from './providers/ErrorProvider';
 import { MapApp } from "../app/rest/MapApp";
 import * as fs from "fs";
 import path from "path";
+import { availableTokenModifiers, availableTokenTypes } from "./util/semanticTokens";
 
 export default class LanguageServer {
 	connection: Connection;
@@ -35,12 +36,31 @@ export default class LanguageServer {
 	}
 
 	private setupHandlers() {
+		this.setupOnDidChangeContentHandler();
+		this.setupSemanticTokenHandler();
+	}
+
+	private setupSemanticTokenHandler() {
+		this.connection.languages.semanticTokens.on(async (params) => {
+			try {
+				const document = this.documents.get(params.textDocument.uri);
+				this.semanticTokenProvider.getSemanticTokens(document);
+			} catch (error) {
+				throw new Error("onSemanticTokens");
+			}
+			return {
+				data: []
+			};
+		});
+	}
+
+	private setupOnDidChangeContentHandler() {
 		this.documents.onDidChangeContent((change) => {
-			fs.writeFile(path.join(__dirname, '../USER_INPUT.mg'), change.document.getText(), function (err) {
+			fs.writeFile(path.join(__dirname, "../USER_INPUT.mg"), change.document.getText(), function(err) {
 				if (err) {
 					return console.error(err);
 				}
-				console.log('File created at: ' + path.join(__dirname, '../USER_INPUT.mg'));
+				console.log("File created at: " + path.join(__dirname, "../USER_INPUT.mg"));
 			});
 			this.errorProvider.validateTextDocument(change.document);
 		});
@@ -67,6 +87,12 @@ export default class LanguageServer {
 							supported: true,
 						},
 					},
+					semanticTokensProvider: {
+						legend: {
+							tokenTypes: availableTokenTypes,
+							tokenModifiers: availableTokenModifiers,
+						}
+					}
 				},
 			};
 			return result;
