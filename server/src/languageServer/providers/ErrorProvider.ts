@@ -19,7 +19,7 @@ export default class ErrorProvider {
 		this.connection = connection;
 	}
 
-	async validateTextDocument(textDocument: TextDocument): Promise<void> {
+	async validateTextDocument(textDocument: TextDocument){
 		const text = textDocument.getText();
 		const lexer = new MapGeneratorLexer(CharStreams.fromString(text));
 		const diagnostics: Diagnostic[] = [];

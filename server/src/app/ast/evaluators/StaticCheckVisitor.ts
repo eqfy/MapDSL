@@ -107,11 +107,11 @@ export class StaticCheckVisitor implements Visitor<StaticCheckVisitorContext, St
   }
 
   visitPosition(n: Position, t: StaticCheckVisitorContext): CreatePosition | void {
-    console.log("visitPosition called");
+    // nothing to do here
   }
 
   visitOpExpression(n: OpExpression, t: StaticCheckVisitorContext): void {
-    console.log("visitOpExpression called");
+    // nothing to do here
   }
 
   visitVariableAssignment(n: VariableAssignment, t: StaticCheckVisitorContext): void {
@@ -157,7 +157,7 @@ export class StaticCheckVisitor implements Visitor<StaticCheckVisitorContext, St
   }
 
   visitAST(n: ASTNode, t: StaticCheckVisitorContext): void {
-    console.log("visitAST was called");
+    // nothing to do here
   }
 
   private getStringTokenValue(token: TokenNode, t: StaticCheckVisitorContext): string {

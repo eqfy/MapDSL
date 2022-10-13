@@ -224,7 +224,7 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
   }
 
   visitAST(n: ASTNode, t: OutputVisitorContext): void {
-    console.log("visitAST was called");
+    // nothing to do here
   }
 
   private getStringTokenValue(token: TokenNode, t: OutputVisitorContext): string {

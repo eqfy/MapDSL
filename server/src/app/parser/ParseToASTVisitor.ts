@@ -44,10 +44,15 @@ import { Range } from "../util/Range";
 
 export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> implements MapGeneratorParserVisitor<ASTNode> {
   visitProgram(ctx: ProgramContext): Program {
-    const output = this.visitOutputBlock(ctx.outputBlock());
-    const def = this.visitDefinitionBlock(ctx.definitionBlock());
-    const range = { start: def ? def.range.start : output.range.start, end: output.range.end };
-    return new Program(range, output, def);
+    try {
+      const output = this.visitOutputBlock(ctx.outputBlock());
+      const def = this.visitDefinitionBlock(ctx.definitionBlock());
+      const range = { start: def ? def.range.start : output.range.start, end: output.range.end };
+      return new Program(range, output, def);
+    } catch (err) {
+      console.error(err);
+      return new Program({ start: 0, end: 0 }, new OutputBlock({ start: 0, end: 0 }, []));
+    }
   }
 
   visitDefinitionBlock(ctx: DefinitionBlockContext | undefined): DefinitionBlock {
