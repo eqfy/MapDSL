@@ -64,7 +64,7 @@ export default class MapServer {
 
 	private getMapOutput(req: Request, res: Response) {
 		try {
-			const content = readFileSync(path.join(__dirname, '../../../../user/USER_INPUT.mg')).toString();
+			const content = readFileSync(path.join(__dirname, '../../USER_INPUT.mg')).toString();
 			const lexer = new MapGeneratorLexer(CharStreams.fromString(content));
 			const tokenStream = new CommonTokenStream(lexer);
 			const parser = new MapGeneratorParser(tokenStream);
