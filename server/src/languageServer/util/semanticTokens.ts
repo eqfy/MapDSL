@@ -1,5 +1,5 @@
 import { SemanticTokenModifiers, SemanticTokenTypes } from "vscode-languageserver";
-
+import { Range } from '../../app/util/Range';
 export const availableTokenTypes = [
   SemanticTokenTypes.namespace,
   SemanticTokenTypes.type,
@@ -58,4 +58,10 @@ function encodeTokenModifiers(tokenModifiers: SemanticTokenModifiers[]): number 
     encodedMods |= (1 << modIndex) >>> 0;
   }
   return encodedMods;
+}
+
+export interface SemanticTokenInfo {
+  tokenType: SemanticTokenTypes;
+  tokenModifiers: SemanticTokenModifiers[];
+  range: Range
 }

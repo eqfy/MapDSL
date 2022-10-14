@@ -11,7 +11,7 @@ import CreateStatementBuilder from "../../app/CreateStatements/CreateStatementBu
 import { findEndOfToken } from "../util/findEndOfToken";
 import ErrorBuilder from '../../app/ast/Errors/ErrorBuilder';
 import { StaticCheckVisitor } from "../../app/ast/evaluators/StaticCheckVisitor";
-import { SemanticTokens } from "vscode-languageserver";
+import { SemanticTokens, SemanticTokensBuilder } from "vscode-languageserver";
 
 export default class SemanticTokenProvider {
 	connection: Connection;
@@ -21,6 +21,7 @@ export default class SemanticTokenProvider {
 	}
 
 	getSemanticTokens(textDocument: TextDocument): SemanticTokens {
+		const semanticTokenBuilder: SemanticTokensBuilder = new SemanticTokensBuilder();
 		const text = textDocument.getText();
 		const lexer = new MapGeneratorLexer(CharStreams.fromString(text));
 		const diagnostics: Diagnostic[] = [];

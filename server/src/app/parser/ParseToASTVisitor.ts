@@ -41,8 +41,13 @@ import OpExpression from "../ast/expressions/OpExpression";
 import { OperableExpr } from "../ast/expressions/OperableExpr";
 import CreateMarker from "../ast/statements/CreateMarker";
 import { Range } from "../util/Range";
+import { SemanticTokenInfo } from "../../languageServer/util/semanticTokens";
+import { SemanticTokenModifiers, SemanticTokenTypes } from "vscode-languageserver";
+
 
 export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> implements MapGeneratorParserVisitor<ASTNode> {
+  semanticTokenInfo: SemanticTokenInfo[] = [];
+
   visitProgram(ctx: ProgramContext): Program {
     try {
       const output = this.visitOutputBlock(ctx.outputBlock());
@@ -93,6 +98,7 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
   }
 
   visitOutputBlock(ctx: OutputBlockContext): OutputBlock {
+    this.addSemanticTokenInfo([{ token: ctx.OUTPUT(), type: SemanticTokenTypes.keyword, mods: [] }, { token: ctx.END_OUTPUT(), type: SemanticTokenTypes.keyword, mods: [] }]);
     const statements = this.getStatements(ctx.statement());
     const range = this.getRangeFromList(statements);
     return new OutputBlock(range, statements);
@@ -129,6 +135,11 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
   }
 
   visitLoopBlock(ctx: LoopBlockContext): LoopBlock {
+    this.addSemanticTokenInfo([{ token: ctx.LOOP(), type: SemanticTokenTypes.keyword, mods: [] }, {
+      token: ctx.END_LOOP(),
+      type: SemanticTokenTypes.keyword,
+      mods: []
+    }, { token: ctx.TIMES(), type: SemanticTokenTypes.keyword, mods: [] }, { token: ctx.POSITIVE_NUMBER(), type: SemanticTokenTypes.number, mods: [] }]);
     const statements = this.getStatements(ctx.statement());
     const range = this.getRangeFromList(statements, { start: ctx.LOOP().symbol.startIndex, end: ctx.LOOP().symbol.stopIndex });
     return new LoopBlock(range, this.getToken(ctx.POSITIVE_NUMBER(), "number"), statements);
@@ -357,6 +368,16 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
       return listOfNodes[0].range;
     } else {
       return fallback ? fallback : { start: 0, end: 0 };
+    }
+  }
+
+  private addSemanticTokenInfo(semanticInformation: { token: TerminalNode; type: SemanticTokenTypes; mods: SemanticTokenModifiers[] }[]) {
+    for (const info of semanticInformation) {
+      this.semanticTokenInfo.push({
+        range: { start: info.token.symbol.startIndex, end: info.token.symbol.stopIndex },
+        tokenType: info.type,
+        tokenModifiers: info.mods
+      });
     }
   }
 }
