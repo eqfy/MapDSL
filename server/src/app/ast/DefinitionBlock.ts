@@ -2,12 +2,13 @@ import ASTNode from './ASTNode';
 import { Visitor } from './Visitor';
 import FunctionDeclaration from './FunctionDeclaration';
 import VariableDeclaration from './statements/VariableDeclaration';
+import { Range } from '../util/Range';
 
 export default class DefinitionBlock extends ASTNode {
   readonly body: (FunctionDeclaration | VariableDeclaration)[];
 
-  constructor(body: (FunctionDeclaration | VariableDeclaration)[]) {
-    super();
+  constructor(range: Range, body: (FunctionDeclaration | VariableDeclaration)[]) {
+    super(range);
     this.body = body;
   }
 

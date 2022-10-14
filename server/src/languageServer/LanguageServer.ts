@@ -15,6 +15,8 @@ import {
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import ErrorProvider from './providers/ErrorProvider';
 import { MapApp } from "../app/rest/MapApp";
+import * as fs from "fs";
+import path from "path";
 
 export default class LanguageServer {
 	connection: Connection;
@@ -34,6 +36,12 @@ export default class LanguageServer {
 
 	private setupHandlers() {
 		this.documents.onDidChangeContent((change) => {
+			fs.writeFile(path.join(__dirname, '../USER_INPUT.mg'), change.document.getText(), function (err) {
+				if (err) {
+					return console.error(err);
+				}
+				console.log('File created at: ' + path.join(__dirname, '../USER_INPUT.mg'));
+			});
 			this.errorProvider.validateTextDocument(change.document);
 		});
 	}
@@ -51,9 +59,6 @@ export default class LanguageServer {
 			const result: InitializeResult = {
 				capabilities: {
 					textDocumentSync: TextDocumentSyncKind.Incremental,
-					completionProvider: {
-						resolveProvider: true,
-					},
 					workspace: {
 						workspaceFolders: {
 							supported: true,

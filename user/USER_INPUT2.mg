@@ -31,9 +31,4 @@ OUTPUT
         CREATE train stop at (1024, 384);
 
         VARIABLE eastStreetLightPosition = (centerPosition.x, centerPosition.y);
-
-        LOOP 3 TIMES
-            createTrafficLight(eastStreetLightPosition);
-            eastStreetLightPosition = (eastStreetLightPosition.x + defaultBlockSize, eastStreetLightPosition.y);
-        END_LOOP
 END_OUTPUT
