@@ -16,6 +16,10 @@ See docs/MILESTONES.md
 
 ## Installation / Usage Instructions
 todo
+
+## Screenshots
+todo
+
 ## User Documentation
 See docs/UserDocumentation.md
 
