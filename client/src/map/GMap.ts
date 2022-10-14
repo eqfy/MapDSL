@@ -35,6 +35,13 @@ export default class GMap {
     // Create a canvas with the map and list of CreateStatements
     const canvas = new Canvas(map);
     canvas.render(listOfCreateStatements);
+
+    // Attach a legend
+    const legend = document.getElementById('legend');
+    if (legend) {
+      map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
+      canvas.createLegend(legend);
+    }
   }
 
   private static getMapCreateStatements(): CreateStatement[] {

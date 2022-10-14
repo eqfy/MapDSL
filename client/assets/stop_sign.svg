@@ -9,8 +9,9 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="1010.4"
-   height="1010.4002"
+   width="1310.4"
+   height="1310.4"
+   viewBox="-110 0 1200.4 1310.4"
    id="svg2"
    sodipodi:version="0.32"
    inkscape:version="0.48.4 r9939"
@@ -125,4 +126,5 @@
        d="m -767.64954,-2905.2797 0,340.5126 47.43268,0 0,-149.5203 59.38545,0 c 39.7359,0 78.6236,-33.35 78.6236,-96.1584 0,-46.5721 -27.33503,-93.1248 -74.33451,-94.8339 l -111.10722,0 z m 47.87418,47.4328 57.24095,0 c 14.95437,0 32.04232,13.24 32.04232,46.1396 0,36.3177 -13.24776,47.4236 -35.03841,49.9872 l -54.24486,0 0,-96.1268 z"
        id="path3525" />
   </g>
+  <rect x="455" y="1005" width="100" height="300" style="fill:#E5E5E5;" />
 </svg>

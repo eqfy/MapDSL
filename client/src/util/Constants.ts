@@ -33,8 +33,18 @@ export class Constants {
 
     // StreetOuput
     static readonly STREET_COLOR = "#FFFFFF";
-    static readonly BRIDGE_COLOR = "#B700FF";
-    static readonly HIGHWAY_COLOR = "#FF9900";
+    static readonly BRIDGE_BACK_COLOR = "#FF9900";
+    static readonly HIGHWAY_FRONT_COLOR = "#FFFF4D";
+    static readonly HIGHWAY_BACK_COLOR = "#595959";
+
+    static readonly STREET_WEIGHT = 5;
+    static readonly BRIDGE_STREET_BACK_WEIGHT = 10;
+    static readonly HIGHWAY_FRONT_WEIGHT = 2;
+    static readonly HIGHWAY_BACK_WEIGHT = 15;
+
+    static readonly STREET_LEGEND = "./street_legend.svg";
+    static readonly BRIDGE_LEGEND = "./bridge_legend.svg";
+    static readonly HIGHWAY_LEGEND = "./highway_legend.svg";
     
     // MarkerOutput
     static readonly BUS_STOP_PATH = "./bus_stop.svg";
@@ -43,4 +53,5 @@ export class Constants {
     static readonly TRAIN_STOP_PATH = "./train_stop.svg";
 
     static readonly MARKER_SCALE = 50;
+    static readonly LEGEND_SCALE = 25;
 }
