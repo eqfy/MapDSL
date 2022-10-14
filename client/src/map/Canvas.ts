@@ -43,7 +43,7 @@ export class Canvas {
               highwayOutputs.push(statement);
             break;
             default:
-              throw new Error('Invalid market output type');
+              throw new Error('Invalid street output type');
           }
         } else if (isMarkerCreateStatement(statement)) {
           markerOutputs.push(statement);
