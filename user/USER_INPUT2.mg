@@ -12,7 +12,7 @@ DEFINITIONS
         
         FUNCTION createTrafficLight(position) {
                 CREATE traffic light at position;
-        } 
+        }
 
         CONSTANT centerPosition = (512,512);
         CONSTANT defaultBlockSize = 256;

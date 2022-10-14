@@ -1,0 +1,150 @@
+Designing a text file with the following language documentation will successfully be converted into a map
+
+<<this is a comment to describe the documentation>>
+
+[if something is inside a square bracket, it will describe what is allowed for inputs]
+
+... will describe that you can have as many as you want
+
+
+================================================DOCUMENTATION START================================================
+
+
+<<Expression. Addition/subtraction is optional>>
+[coordinate access from variable, variable name, position, number] [+, -] expression
+
+
+<<Position on the map. Expressions must evaluate to be a number>>
+(expression, expression)
+
+
+<<Creating streets (or something similar)>>
+CREATE [street, highway, bridge] from position to position;
+
+<<Creating markers>
+CREATE [bus stop, stop sign, stop light, train stop] at position;
+
+
+<<Declaring a constant value>>
+CONSTANT constantName = expression;
+
+
+<<Declaring a variable value. After it is declared, you can also re-assign the value>>
+VARIABLE variableName = expression;
+variableName = expression; <<re-assigning the value>>
+
+
+<<Accessing a coordinate from a position variable/constant>>
+variableName.x;
+variableName.y;
+
+
+<<Declaring a function>>
+FUNCTION functionName(inputName1, inputName2...) {
+    	[CREATE statement, VARIABLE declaration, variable re-assignment, LOOP/END_LOOP block, function call]...
+}
+
+
+<<Calling a function>>
+functionName(inputName1, inputName2...);
+
+
+<<DEFINITIONS block. This block is entirely optional>>
+DEFINITIONS
+    [FUNCTION declaration, CONSTANT declaration]...
+END_DEFINITIONS
+
+
+<<OUTPUT block. This is required.>>
+OUTPUT
+    [CREATE statement, VARIABLE declaration, variable re-assignment, LOOP/END_LOOP block, function call]...
+END_OUTPUT
+
+================================================DOCUMENTATION END================================================
+
+
+================================================EXAMPLE 1 START================================================
+
+DEFINITIONS
+        FUNCTION createBlock(nwPosition, blockSize) {
+                VARIABLE nePosition = (nwPosition.x + blockSize, nwPosition.y);
+                VARIABLE sePosition = (nePosition.x, nePosition.y - blockSize);
+                VARIABLE swPosition = (nwPosition.x, nwPosition.y - blockSize);
+
+                CREATE street from nwPosition to nePosition;
+                CREATE street from nePosition to sePosition;
+                CREATE street from sePosition to swPosition;
+                CREATE street from swPosition to nwPosition;
+        }
+
+        FUNCTION createTrafficLight(position) {
+                CREATE traffic light at position;
+        }
+
+        CONSTANT centerPosition = (0,0);
+        CONSTANT defaultBlockSize = 5;
+END_DEFINITIONS
+
+OUTPUT
+        createBlock(centerPosition, defaultBlockSize);
+        createBlock((defaultBlockSize, 0), defaultBlockSize);
+
+        CREATE highway from (-100,0) to (0,0);
+
+        createTrafficLight(centerPosition);
+        CREATE stop sign at (0 + defaultBlockSize, 0);
+        CREATE bus stop at (-50, 0);
+
+        VARIABLE eastStreetLightPosition = (centerPosition.x, centerPosition.y - 5);
+
+        LOOP 3 TIMES
+            createTrafficLight(eastStreetLightPosition);
+            eastStreetLightPosition = (eastStreetLightPosition.x + defaultBlockSize, eastStreetLightPosition.y);
+        END_LOOP
+END_OUTPUT
+
+
+<<this would create the following map>>
+
+(-100,0)                 (-50,0)                  (0,0)                   (5,0)                     (10,0)
+=======================<bus stop>===========<traffic lights>------------<stop sign>-------------------
+                                                    |                        |                        |
+                                                    |                        |                        |
+                                                    |                        |                        |
+                                                    |                        |                        |
+                                                    |                        |                        |
+                                             <traffic lights>---------<traffic lights>---------<traffic lights>
+                                                 (0,-5)                    (5,-5)                   (10,-5)
+
+================================================EXAMPLE 1 END================================================
+
+
+================================================USER TEST MAP START================================================
+
+- is street
+== is highway
++ is bridge
+
+
+(-1000,0)              (-100,100)               (0,100)                  (50,100)                  (100,100)
+=======================<bus stop>==============<train stop>--------------<bus stop>----------------------
+                                                    +                        +                        +
+                                                    +                        +                        +
+                                            <traffic lights>            <traffic lights>         <traffic lights>
+                                                    +                        +                        +
+                                                    +                        +                        +
+                                                   ====================================================
+                                                 (0,-100)                  (50,-100)                (100,-100)
+
+For clarity:
+- Highway from (-1000,0) to (0,100)
+- Bus stop at (-100,100)
+- Train stop at (0,100)
+- Bus stop at (50,100)
+- Highway from (0,-100) to (100,100)
+- Bridge from (0,100) to (0,-100)
+- Bridge from (50,100) to (50,-100)
+- Bridge from (100,100) to (100,-100)
+- Traffic lights on (0,-50), (50,-50), and (100,-50)
+
+================================================USER TEST MAP END================================================

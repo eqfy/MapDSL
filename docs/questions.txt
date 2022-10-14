@@ -1,0 +1,10 @@
+Did you feel creating markers and streets with CREATE statements was straight forward?
+
+Did you like having the DEFINITIONS block seperated from the CREATE block?
+
+Did you find it difficult to declare new functions, constants, and variables?
+
+Did you find it challenging to understand how loops work?
+
+Was it weird to have nothing technically "returned" from the functions? Rather they are just a method of creating map elements?
+

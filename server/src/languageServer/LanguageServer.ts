@@ -17,17 +17,21 @@ import ErrorProvider from './providers/ErrorProvider';
 import { MapApp } from "../app/rest/MapApp";
 import * as fs from "fs";
 import path from "path";
+import { availableTokenModifiers, availableTokenTypes } from "./util/semanticTokens";
+import SemanticTokenProvider from "./providers/SemanticTokenProvider";
 
 export default class LanguageServer {
 	connection: Connection;
 	documents: TextDocuments<TextDocument>;
 	errorProvider: ErrorProvider;
+	semanticTokenProvider: SemanticTokenProvider;
 
 	constructor() {
 		this.connection = createConnection(ProposedFeatures.all);
 		this.initLanguageServer();
 		this.initMapServer();
 		this.errorProvider = new ErrorProvider(this.connection);
+		this.semanticTokenProvider = new SemanticTokenProvider();
 		this.documents = new TextDocuments(TextDocument);
 		this.setupHandlers();
 		this.documents.listen(this.connection);
@@ -35,12 +39,31 @@ export default class LanguageServer {
 	}
 
 	private setupHandlers() {
+		this.setupOnDidChangeContentHandler();
+		this.setupSemanticTokenHandler();
+	}
+
+	private setupSemanticTokenHandler() {
+		this.connection.languages.semanticTokens.on(async (params) => {
+			try {
+				const document = this.documents.get(params.textDocument.uri);
+				if(document)  return this.semanticTokenProvider.getSemanticTokens(document);
+			} catch (error) {
+				throw new Error("onSemanticTokens");
+			}
+			return {
+				data: []
+			};
+		});
+	}
+
+	private setupOnDidChangeContentHandler() {
 		this.documents.onDidChangeContent((change) => {
-			fs.writeFile(path.join(__dirname, '../USER_INPUT.mg'), change.document.getText(), function (err) {
+			fs.writeFile(path.join(__dirname, "../USER_INPUT.mg"), change.document.getText(), function(err) {
 				if (err) {
 					return console.error(err);
 				}
-				console.log('File created at: ' + path.join(__dirname, '../USER_INPUT.mg'));
+				console.log("File created at: " + path.join(__dirname, "../USER_INPUT.mg"));
 			});
 			this.errorProvider.validateTextDocument(change.document);
 		});
@@ -64,6 +87,13 @@ export default class LanguageServer {
 							supported: true,
 						},
 					},
+					semanticTokensProvider: {
+						full: true,
+						legend: {
+							tokenTypes: availableTokenTypes,
+							tokenModifiers: availableTokenModifiers,
+						}
+					}
 				},
 			};
 			return result;
