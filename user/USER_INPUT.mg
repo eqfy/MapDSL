@@ -4,10 +4,10 @@ DEFINITIONS
                 VARIABLE sePosition = (nePosition.x, nePosition.y - blockSize);
                 VARIABLE swPosition = (nwPosition.x, nwPosition.y - blockSize);
 
-                CREATE street from nwPosition to nePosition;
-                CREATE street from nePosition to sePosition;
-                CREATE street from sePosition to swPosition;
-                CREATE street from swPosition to nwPosition;
+                CREATE highway from nwPosition to nePosition;
+                CREATE highway from nePosition to sePosition;
+                CREATE highway from sePosition to swPosition;
+                CREATE highway from swPosition to nwPosition;
         }
         
         FUNCTION createTrafficLight(position) {
@@ -30,9 +30,11 @@ OUTPUT
         CREATE bus stop at (768, 384);
         CREATE train stop at (1024, 384);
 
+        VARIABLE loops= 10;
+
         VARIABLE eastStreetLightPosition = (centerPosition.x, centerPosition.y);
 
-        LOOP 3 TIMES
+        LOOP 10 TIMES
             createTrafficLight(eastStreetLightPosition);
             eastStreetLightPosition = (eastStreetLightPosition.x + defaultBlockSize, eastStreetLightPosition.y);
         END_LOOP

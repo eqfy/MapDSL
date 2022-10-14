@@ -40,7 +40,7 @@ export const availableTokenModifiers = [
 ];
 const tokenModifiersMap = new Map(availableTokenModifiers.map((value, index) => [value, index]));
 
-function encodeTokenType(tokenType: SemanticTokenTypes) {
+export function encodeTokenType(tokenType: SemanticTokenTypes) {
   const typeIndex = tokenTypesMap.get(tokenType);
   if (typeIndex === undefined) {
     throw new Error(`The token type isnt available`);
@@ -48,7 +48,7 @@ function encodeTokenType(tokenType: SemanticTokenTypes) {
   return typeIndex;
 }
 
-function encodeTokenModifiers(tokenModifiers: SemanticTokenModifiers[]): number {
+export function encodeTokenModifiers(tokenModifiers: SemanticTokenModifiers[]): number {
   let encodedMods = 0;
   for (const mod of tokenModifiers) {
     const modIndex = tokenModifiersMap.get(mod);

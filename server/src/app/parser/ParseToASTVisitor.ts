@@ -1,5 +1,5 @@
-import { MapGeneratorParserVisitor } from "./gen/MapGeneratorParserVisitor";
-import { AbstractParseTreeVisitor } from "antlr4ts/tree";
+import { MapGeneratorParserVisitor } from './gen/MapGeneratorParserVisitor';
+import { AbstractParseTreeVisitor } from 'antlr4ts/tree';
 import {
   CreateCallContext,
   DefinitionBlockContext,
@@ -20,33 +20,37 @@ import {
   StatementContext,
   StreetOutputContext,
   VariableAssignmentContext
-} from "./gen/MapGeneratorParser";
-import { TerminalNode } from "antlr4ts/tree/TerminalNode";
-import Program from "../ast/Program";
-import ASTNode from "../ast/ASTNode";
-import DefinitionBlock from "../ast/DefinitionBlock";
-import OutputBlock from "../ast/OutputBlock";
-import VariableAssignment from "../ast/statements/VariableAssignment";
-import FunctionDeclaration from "../ast/FunctionDeclaration";
-import LoopBlock from "../ast/statements/LoopBlock";
-import Expression from "../ast/expressions/Expression";
-import VariableDeclaration from "../ast/statements/VariableDeclaration";
-import FunctionCall from "../ast/expressions/FunctionCall";
-import CreatePolyline from "../ast/statements/CreatePolyline";
-import CoordinateAccess from "../ast/expressions/CoordinateAccess";
-import TokenNode, { TokenCtxTargetValueType } from "../ast/expressions/TokenNode";
-import Position from "../ast/expressions/Position";
-import Statement from "../ast/statements/Statement";
-import OpExpression from "../ast/expressions/OpExpression";
-import { OperableExpr } from "../ast/expressions/OperableExpr";
-import CreateMarker from "../ast/statements/CreateMarker";
-import { Range } from "../util/Range";
-import { SemanticTokenInfo } from "../../languageServer/util/semanticTokens";
-import { SemanticTokenModifiers, SemanticTokenTypes } from "vscode-languageserver";
-
+} from './gen/MapGeneratorParser';
+import { TerminalNode } from 'antlr4ts/tree/TerminalNode';
+import Program from '../ast/Program';
+import ASTNode from '../ast/ASTNode';
+import DefinitionBlock from '../ast/DefinitionBlock';
+import OutputBlock from '../ast/OutputBlock';
+import VariableAssignment from '../ast/statements/VariableAssignment';
+import FunctionDeclaration from '../ast/FunctionDeclaration';
+import LoopBlock from '../ast/statements/LoopBlock';
+import Expression from '../ast/expressions/Expression';
+import VariableDeclaration from '../ast/statements/VariableDeclaration';
+import FunctionCall from '../ast/expressions/FunctionCall';
+import CreatePolyline from '../ast/statements/CreatePolyline';
+import CoordinateAccess from '../ast/expressions/CoordinateAccess';
+import TokenNode, { TokenCtxTargetValueType } from '../ast/expressions/TokenNode';
+import Position from '../ast/expressions/Position';
+import Statement from '../ast/statements/Statement';
+import OpExpression from '../ast/expressions/OpExpression';
+import { OperableExpr } from '../ast/expressions/OperableExpr';
+import CreateMarker from '../ast/statements/CreateMarker';
+import { Range } from '../util/Range';
+import { SemanticTokenInfo } from '../../languageServer/util/semanticTokens';
+import { SemanticTokenModifiers, SemanticTokenTypes } from 'vscode-languageserver';
 
 export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> implements MapGeneratorParserVisitor<ASTNode> {
-  semanticTokenInfo: SemanticTokenInfo[] = [];
+  semanticTokenInfo: SemanticTokenInfo[];
+
+  constructor() {
+    super();
+    this.semanticTokenInfo = [];
+  }
 
   visitProgram(ctx: ProgramContext): Program {
     try {
@@ -61,6 +65,15 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
   }
 
   visitDefinitionBlock(ctx: DefinitionBlockContext | undefined): DefinitionBlock {
+    if (ctx)
+      this.addSemanticTokenInfo([
+        { token: ctx.DEFINITIONS(), type: SemanticTokenTypes.keyword, mods: [] },
+        {
+          token: ctx.END_DEFINITION(),
+          type: SemanticTokenTypes.keyword,
+          mods: []
+        }
+      ]);
     const globalBody = this.getGlobalBody(ctx?.globalBodyElement());
     const range = this.getRangeFromList(globalBody);
     return new DefinitionBlock(range, globalBody);
@@ -75,30 +88,49 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
       return this.visitGlobalVariableDeclaration(variableDeclarationCtx);
     } else {
       throw new Error(
-        "Impossible - FunctionDeclaration and VariableDeclaration cannot both be undefined (enforced by Parser)"
+        'Impossible - FunctionDeclaration and VariableDeclaration cannot both be undefined (enforced by Parser)'
       );
     }
   }
 
   visitGlobalVariableDeclaration(ctx: GlobalVariableDeclarationContext): VariableDeclaration {
+    this.addSemanticTokenInfo([
+      { token: ctx.CONSTANT(), type: SemanticTokenTypes.keyword, mods: [] },
+      {
+        token: ctx.EQ(),
+        type: SemanticTokenTypes.operator,
+        mods: []
+      },
+      {
+        token: ctx.variableName().NAME(),
+        type: SemanticTokenTypes.variable,
+        mods: [SemanticTokenModifiers.declaration]
+      }
+    ]);
     return this.getVariableDeclaration(ctx, true);
   }
 
   visitFunctionDeclaration(ctx: FunctionDeclarationContext): FunctionDeclaration {
-    const name = this.getToken(ctx.functionName().NAME(), "string");
+    this.addSemanticTokenInfo([
+      { token: ctx.FUNCTION(), type: SemanticTokenTypes.keyword, mods: [] },
+      {
+        token: ctx.functionName().NAME(),
+        type: SemanticTokenTypes.function,
+        mods: [SemanticTokenModifiers.declaration]
+      }
+    ]);
+    const name = this.getToken(ctx.functionName().NAME(), 'string');
     const inputVariables = this.getInputVariables(ctx.parameterName());
     const statements = this.getStatements(ctx.statement());
     const range = this.getRangeFromList(statements, name.range);
-    return new FunctionDeclaration(
-      range,
-      name,
-      inputVariables,
-      statements
-    );
+    return new FunctionDeclaration(range, name, inputVariables, statements);
   }
 
   visitOutputBlock(ctx: OutputBlockContext): OutputBlock {
-    this.addSemanticTokenInfo([{ token: ctx.OUTPUT(), type: SemanticTokenTypes.keyword, mods: [] }, { token: ctx.END_OUTPUT(), type: SemanticTokenTypes.keyword, mods: [] }]);
+    this.addSemanticTokenInfo([
+      { token: ctx.OUTPUT(), type: SemanticTokenTypes.keyword, mods: [] },
+      { token: ctx.END_OUTPUT(), type: SemanticTokenTypes.keyword, mods: [] }
+    ]);
     const statements = this.getStatements(ctx.statement());
     const range = this.getRangeFromList(statements);
     return new OutputBlock(range, statements);
@@ -127,7 +159,7 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
       value = this.visitExpression(expressionCtx);
     } else {
       throw new Error(
-        "Impossible - VariableDeclaration, VariableAssignment, CreateCall, and FunctionCall cannot all be undefined (enforced by Parser)"
+        'Impossible - VariableDeclaration, VariableAssignment, CreateCall, and FunctionCall cannot all be undefined (enforced by Parser)'
       );
     }
 
@@ -135,33 +167,55 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
   }
 
   visitLoopBlock(ctx: LoopBlockContext): LoopBlock {
-    this.addSemanticTokenInfo([{ token: ctx.LOOP(), type: SemanticTokenTypes.keyword, mods: [] }, {
-      token: ctx.END_LOOP(),
-      type: SemanticTokenTypes.keyword,
-      mods: []
-    }, { token: ctx.TIMES(), type: SemanticTokenTypes.keyword, mods: [] }, { token: ctx.POSITIVE_NUMBER(), type: SemanticTokenTypes.number, mods: [] }]);
+    this.addSemanticTokenInfo([
+      { token: ctx.LOOP(), type: SemanticTokenTypes.keyword, mods: [] },
+      {
+        token: ctx.END_LOOP(),
+        type: SemanticTokenTypes.keyword,
+        mods: []
+      },
+      { token: ctx.TIMES(), type: SemanticTokenTypes.keyword, mods: [] },
+      { token: ctx.POSITIVE_NUMBER(), type: SemanticTokenTypes.number, mods: [] }
+    ]);
     const statements = this.getStatements(ctx.statement());
-    const range = this.getRangeFromList(statements, { start: ctx.LOOP().symbol.startIndex, end: ctx.LOOP().symbol.stopIndex });
-    return new LoopBlock(range, this.getToken(ctx.POSITIVE_NUMBER(), "number"), statements);
+    const range = this.getRangeFromList(statements, {
+      start: ctx.LOOP().symbol.startIndex,
+      end: ctx.LOOP().symbol.stopIndex
+    });
+    return new LoopBlock(range, this.getToken(ctx.POSITIVE_NUMBER(), 'number'), statements);
   }
 
   visitVariableAssignment(ctx: VariableAssignmentContext): VariableAssignment {
-    const name = this.getToken(ctx.variableName().NAME(), "string");
+    this.addSemanticTokenInfo([
+      { token: ctx.variableName().NAME(), type: SemanticTokenTypes.variable, mods: [SemanticTokenModifiers.modification] },
+      {
+        token: ctx.EQ(),
+        type: SemanticTokenTypes.operator,
+        mods: []
+      }
+    ]);
+    const name = this.getToken(ctx.variableName().NAME(), 'string');
     const value = this.visitExpression(ctx.expression());
     const range = { start: name.range.start, end: value.range.end };
-    return new VariableAssignment(
-      range,
-      name,
-      value
-    );
+    return new VariableAssignment(range, name, value);
   }
 
   visitLocalVariableDeclaration(ctx: LocalVariableDeclarationContext): VariableDeclaration {
+    this.addSemanticTokenInfo([
+      { token: ctx.VARIABLE(), type: SemanticTokenTypes.keyword, mods: [] },
+      {
+        token: ctx.EQ(),
+        type: SemanticTokenTypes.operator,
+        mods: []
+      },
+      { token: ctx.variableName().NAME(), type: SemanticTokenTypes.variable, mods: [SemanticTokenModifiers.declaration] }
+    ]);
     return this.getVariableDeclaration(ctx, false);
   }
 
   visitFunctionCall(ctx: FunctionCallContext): FunctionCall {
-    const name = this.getToken(ctx.functionName().NAME(), "string");
+    this.addSemanticTokenInfo([{ token: ctx.functionName().NAME(), type: SemanticTokenTypes.function, mods: [] }]);
+    const name = this.getToken(ctx.functionName().NAME(), 'string');
     const expressions = this.getExpressions(ctx.expression());
     const expRange = this.getRangeFromList(expressions, name.range);
     const range = { start: name.range.start, end: expRange.end };
@@ -169,6 +223,7 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
   }
 
   visitCreateCall(ctx: CreateCallContext): CreateMarker | CreatePolyline {
+    this.addSemanticTokenInfo([{ token: ctx.CREATE(), type: SemanticTokenTypes.keyword, mods: [] }]);
     const streetOutputCtx = ctx.streetOutput();
     const markerOutputCtx = ctx.markerOutput();
     if (streetOutputCtx) {
@@ -176,11 +231,12 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
     } else if (markerOutputCtx) {
       return this.visitMarkerOutput(markerOutputCtx);
     } else {
-      throw new Error("Impossible - MarkerOutput and StreetOutput cannot both be undefined (enforced by Parser)");
+      throw new Error('Impossible - MarkerOutput and StreetOutput cannot both be undefined (enforced by Parser)');
     }
   }
 
   visitMarkerOutput(ctx: MarkerOutputContext): CreateMarker {
+    this.addSemanticTokenInfo([{ token: ctx.AT(), type: SemanticTokenTypes.modifier, mods: [] }]);
     const busStopCtx = ctx.BUS_STOP();
     const trafficLightCtx = ctx.TRAFFIC_LIGHT();
     const stopSignCtx = ctx.STOP_SIGN();
@@ -198,16 +254,21 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
       type = trainStopCtx;
     } else {
       throw new Error(
-        "Impossible - Bus Stop, Traffic Light, Stop Sign, and Train Stop cannot all be undefined (enforced by Parser)"
+        'Impossible - Bus Stop, Traffic Light, Stop Sign, and Train Stop cannot all be undefined (enforced by Parser)'
       );
     }
-    const markerType = this.getToken(type, "string");
+    this.addSemanticTokenInfo([{ token: type, type: SemanticTokenTypes.type, mods: [] }]);
+    const markerType = this.getToken(type, 'string');
     const position = this.visitExpression(ctx.expression());
     const range = { start: markerType.range.start, end: position.range.end };
     return new CreateMarker(range, markerType, position);
   }
 
   visitStreetOutput(ctx: StreetOutputContext): CreatePolyline {
+    this.addSemanticTokenInfo([
+      { token: ctx.FROM(), type: SemanticTokenTypes.modifier, mods: [] },
+      { token: ctx.TO(), type: SemanticTokenTypes.modifier, mods: [] }
+    ]);
     const streetCtx = ctx.STREET();
     const highwayCtx = ctx.HIGHWAY();
     const bridgeCtx = ctx.BRIDGE();
@@ -221,13 +282,14 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
     } else if (bridgeCtx) {
       type = bridgeCtx;
     } else {
-      throw new Error("Impossible - Street, Highway, and Bridge cannot all be undefined (enforced by Parser)");
+      throw new Error('Impossible - Street, Highway, and Bridge cannot all be undefined (enforced by Parser)');
     }
+    this.addSemanticTokenInfo([{ token: type, type: SemanticTokenTypes.type, mods: [] }]);
 
     const exprCtx1 = ctx.expression(0);
     const exprCtx2 = ctx.expression(1);
 
-    const streetType = this.getToken(type, "string");
+    const streetType = this.getToken(type, 'string');
     const fromPosition = this.visitExpression(exprCtx1);
     const toPosition = this.visitExpression(exprCtx2);
     const range = { start: streetType.range.start, end: toPosition.range.end };
@@ -245,7 +307,7 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
       return this.visitOperableExpr(operableCtx);
     } else {
       throw new Error(
-        "Impossible - Position, Number, PositionAccess, and VariableName cannot all be undefined (enforced by Parser)"
+        'Impossible - Position, Number, PositionAccess, and VariableName cannot all be undefined (enforced by Parser)'
       );
     }
   }
@@ -272,17 +334,20 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
       leftExpression = this.visitFunctionCall(functionCall);
     } else if (positiveNumberCtx || negativeNumberCtx) {
       const number = positiveNumberCtx ? positiveNumberCtx : (negativeNumberCtx as TerminalNode);
-      leftExpression = this.getToken(number, "number");
+      leftExpression = this.getToken(number, 'number');
+      this.addSemanticTokenInfo([{ token: number, type: SemanticTokenTypes.number, mods: [] }]);
     } else if (variableNameCtx) {
-      leftExpression = this.getToken(variableNameCtx.NAME(), "assignedValue");
+      leftExpression = this.getToken(variableNameCtx.NAME(), 'assignedValue');
+      this.addSemanticTokenInfo([{ token: variableNameCtx.NAME(), type: SemanticTokenTypes.variable, mods: [] }]);
     } else {
-      throw new Error("Impossible - Number, PositionAccess, and VariableName cannot all be undefined (enforced by Parser)");
+      throw new Error('Impossible - Number, PositionAccess, and VariableName cannot all be undefined (enforced by Parser)');
     }
 
     const operationCtx = ctx.operation();
     if (operationCtx) {
       // This is some kind of operation (e.g. a + b)
-      const op = this.getToken(operationCtx.OPERATOR(), "string");
+      const op = this.getToken(operationCtx.OPERATOR(), 'string');
+      this.addSemanticTokenInfo([{ token: operationCtx.OPERATOR(), type: SemanticTokenTypes.operator, mods: [] }]);
       const rightExp = this.visitOperableExpr(operationCtx.operableExpr());
       const range = { start: leftExpression.range.start, end: rightExp.range.end };
       return new OpExpression(range, leftExpression, op, rightExp);
@@ -292,8 +357,12 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
   }
 
   visitPositionAccess(ctx: PositionAccessContext): CoordinateAccess {
-    const varName = this.getToken(ctx.NAME(), "string");
-    const coordinate = this.getToken(ctx.COORDINATE(), "string");
+    this.addSemanticTokenInfo([
+      { token: ctx.NAME(), type: SemanticTokenTypes.variable, mods: [] },
+      { token: ctx.COORDINATE(), type: SemanticTokenTypes.property, mods: [] }
+    ]);
+    const varName = this.getToken(ctx.NAME(), 'string');
+    const coordinate = this.getToken(ctx.COORDINATE(), 'string');
     const range = { start: varName.range.start, end: coordinate.range.end };
     return new CoordinateAccess(range, varName, coordinate);
   }
@@ -306,15 +375,10 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
     ctx: GlobalVariableDeclarationContext | LocalVariableDeclarationContext,
     isGlobalConstant: boolean
   ): VariableDeclaration {
-    const varName = this.getToken(ctx.variableName().NAME(), "string");
+    const varName = this.getToken(ctx.variableName().NAME(), 'string');
     const varValue = this.visitExpression(ctx.expression());
     const range = { start: varName.range.start, end: varValue.range.end };
-    return new VariableDeclaration(
-      range,
-      isGlobalConstant,
-      varName,
-      varValue
-    );
+    return new VariableDeclaration(range, isGlobalConstant, varName, varValue);
   }
 
   private getGlobalBody(elements: GlobalBodyElementContext[] | undefined): (FunctionDeclaration | VariableDeclaration)[] {
@@ -340,7 +404,8 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
   private getInputVariables(parameterNameContexts: ParameterNameContext[]): TokenNode[] {
     const inputVariables = [];
     for (const parameter of parameterNameContexts) {
-      inputVariables.push(this.getToken(parameter.NAME(), "string"));
+      this.addSemanticTokenInfo([{ token: parameter.NAME(), type: SemanticTokenTypes.parameter, mods: [] }]);
+      inputVariables.push(this.getToken(parameter.NAME(), 'string'));
     }
     return inputVariables;
   }
@@ -371,10 +436,12 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
     }
   }
 
-  private addSemanticTokenInfo(semanticInformation: { token: TerminalNode; type: SemanticTokenTypes; mods: SemanticTokenModifiers[] }[]) {
+  private addSemanticTokenInfo(
+    semanticInformation: { token: TerminalNode; type: SemanticTokenTypes; mods: SemanticTokenModifiers[] }[]
+  ) {
     for (const info of semanticInformation) {
       this.semanticTokenInfo.push({
-        range: { start: info.token.symbol.startIndex, end: info.token.symbol.stopIndex },
+        range: { start: info.token.symbol.startIndex, end: info.token.symbol.stopIndex + 1 },
         tokenType: info.type,
         tokenModifiers: info.mods
       });

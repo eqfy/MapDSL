@@ -18,17 +18,20 @@ import { MapApp } from "../app/rest/MapApp";
 import * as fs from "fs";
 import path from "path";
 import { availableTokenModifiers, availableTokenTypes } from "./util/semanticTokens";
+import SemanticTokenProvider from "./providers/SemanticTokenProvider";
 
 export default class LanguageServer {
 	connection: Connection;
 	documents: TextDocuments<TextDocument>;
 	errorProvider: ErrorProvider;
+	semanticTokenProvider: SemanticTokenProvider;
 
 	constructor() {
 		this.connection = createConnection(ProposedFeatures.all);
 		this.initLanguageServer();
 		this.initMapServer();
 		this.errorProvider = new ErrorProvider(this.connection);
+		this.semanticTokenProvider = new SemanticTokenProvider();
 		this.documents = new TextDocuments(TextDocument);
 		this.setupHandlers();
 		this.documents.listen(this.connection);
@@ -44,7 +47,7 @@ export default class LanguageServer {
 		this.connection.languages.semanticTokens.on(async (params) => {
 			try {
 				const document = this.documents.get(params.textDocument.uri);
-				this.semanticTokenProvider.getSemanticTokens(document);
+				if(document)  return this.semanticTokenProvider.getSemanticTokens(document);
 			} catch (error) {
 				throw new Error("onSemanticTokens");
 			}
@@ -85,6 +88,7 @@ export default class LanguageServer {
 						},
 					},
 					semanticTokensProvider: {
+						full: true,
 						legend: {
 							tokenTypes: availableTokenTypes,
 							tokenModifiers: availableTokenModifiers,
