@@ -1,0 +1,27 @@
+1. User creates an input
+
+3. Kyle parses input into AST
+- O(n)
+
+2. Kyle validates the input which will include type checking, missing variable checks, etc.
+- type checks are O(n), n being the length of the input
+- missing variable checks are O(n) , n being the length of the input
+
+3. Michael and Eric create a list of CreateStatement objects (according to interface spec) that are produced by the program
+- time complexity is difficult to say here because of function calls and loops but I think its the following:
+- O(n + (f*l) + (o*i))
+--> n being the size of the input
+--> f being the number of function calls
+--> l being the length of each function call (including loops)
+--> o being the number of loop calls (not in a function)
+--> i being the number of times each loop runs
+
+4. Kyle loops through the CreateStatement list and validates to ensure there are no overlapping streets
+- takes 0(n) time while leveraging maps with O(1) access, n being the size of the CreateStatement list
+
+5. Aidan and Maxwell are passed a list of CreateStatement objects.
+- These objects are in order. So if a CREATE street is called BEFORE CREATE highway, then the highway should be ON TOP of the street. Other than that sort of scenario, the order should not matter.
+- If its a street types, simply plot it on the map with the respective thickness/design you choose (as it will be different for streets vs bridges vs highways)
+- If its a marker type, simply plot it on the map at the coordinates (either directly on top of the street, or slightly above it - doesnt matter where you put it,
+as long as it accurately describes where the user intended it to be)
+- takes O(n) time, n being the size of the CreateStatement list

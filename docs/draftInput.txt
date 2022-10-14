@@ -1,0 +1,70 @@
+// defintions block is a block where users can define functions and global variables
+
+DEFINITIONS
+
+        // this is an example of a user defined function where they can create map items, or call other functions
+        FUNCTION createBlock(nwPosition, blockSize) {
+                VARIABLE nePosition = (nwPosition.x + blockSize, nwPosition.y);
+                VARIABLE sePosition = (nePosition.x, nePosition.y - blockSize);
+                VARIABLE swPosition = (nwPosition.x, nwPosition.y - blockSize);
+
+                CREATE street from nwPosition to nePosition;
+                CREATE street from nePosition to sePosition;
+                CREATE street from sePosition to swPosition;
+                CREATE street from swPosition to nwPosition;
+        }
+
+        FUNCTION createTrafficLight(position) {
+                CREATE traffic light at position;
+        }
+
+        // these are global variables
+        VARIABLE centerPosition = (0,0);
+        VARIABLE defaultBlockSize = 5;
+
+END_DEFINITIONS
+
+// this is an example of the output block that the user will define to actually put elements on to the map
+OUTPUT
+        // these are examples of functions calls
+        createBlock(centerPosition, defaultBlockSize, "North St", "East St", "South St", "West St");
+        createBlock((defaultBlockSize, 0), defaultBlockSize, "North St", "2nd East St", "South St", "East St");
+
+        // this is an example of how a user could create something without a function
+        CREATE straight highway named "North St Highway" from (-100,0) to (0,0);
+
+        createTrafficLight(centerPosition);
+        CREATE four way stop at (0 + defaultBlockSize, 0);
+        CREATE bus stop at (-50, 0);
+
+        VARIABLE eastStreetLightPosition = (centerPosition.x, centerPosition.y - 5);
+
+        // this an example of a loop where the user could leverage a changing variable to put map items at different locations
+        LOOP 3 TIMES
+            createTrafficLight(eastStreetLightPosition);
+            eastStreetLightPosition = (eastStreetLightPosition.x + defaultBlockSize, eastStreetLightPosition.y);
+        END_LOOP
+END_OUTPUT
+
+
+
+
+
+
+// This would create the following map
+
+
+(-100,0)                                           (0,0)
+=====North St Highway======<bus stop>=============<lights>--------------<4 way stop>--------North St---
+                                                    |                        |                        |
+                                                    |                        |                        |
+                                                    |                        |                        |
+                                                    |                        |                        |
+                                                    |                        |                        |
+                                                <lights>----South St------<lights>-----------------<lights>
+                                                    ^                        ^                        ^
+                                                  West St                  East St                 2nd East St
+
+
+
+

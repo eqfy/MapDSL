@@ -1,29 +1,44 @@
-# Map Generator
+# Project1Group9 Map Generator
 
-## Features List (Michael)
+## Milestone Grading
 
-## User Documentation (Aidan)
+See MILESTONES.md
+
+### Folder structure
+
+```
+/                # Root directory.
+|- docs/         # Documents leveraged and created throughout our project. This includes user documentation.
+|- user/         # .mg files that can be used for testing
+|- client/       # Our frontend client and VS Code client
+|- server/       # Our backend server for map generation (handles requests from frontend client), and our language server (handles requests from VS Code extension client)
+|- Makefile      # Makefile used for building our documents.
+```
+
+## Installation / Usage Instructions
+
+## User Documentation
 
 See docs/UserDocumentation.md
 
-## Installation / Usage Instructions (Kyle)
+## Features List
 
-## Progression Notes (Kyle)
+## DSL Motivation / Target Users
 
-### Milestone 1 Notes (Kyle)
+## Milestone 1 Progress/Reflection Summary
 
-### Milestone 2 Notes (Kyle)
+## Milestone 2 Progress/Reflection Summary
 
-### Milestone 3 Notes (Kyle)
+## Milestone 3 Progress/Reflection Summary
 
-### Milestone 4 Notes (Kyle)
+## Milestone 4 Progress/Reflection Summary
 
-### Milestone 5 Notes (Kyle)
+## Milestone 5 Progress/Reflection Summary
 
-## Results of User Study #1 (Kyle)
+## Results of User Study #1
 
-## Results of User Study #2 (Kyle)
+## Results of User Study #2
 
-## Self Evaluation of Language (Maxwell)
+## Self Evaluation of Language
 
 Cons

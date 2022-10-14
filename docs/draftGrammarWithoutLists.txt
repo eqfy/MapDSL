@@ -1,0 +1,43 @@
+// GRAMMAR CURRENTLY IGNORES WHITESPACE (will handle later)
+
+program : definitionBlock? outputBlock;
+definitionBlock : 'DEFINITIONS' (functionDeclaration | variableDeclaration)* 'END_DEFINITION';
+outputBlock : 'OUTPUT' (statement | loopBlock)* 'END_OUTPUT';
+
+functionDeclaration : 'FUNCTION' FUNCTION_NAME OPEN_PAREN VARIABLE_NAME (COMMA VARIABLE_NAME)* CLOSE_PAREN OPEN_CURLY (statement)* CLOSE_CURLY;
+variableDeclaration :'VARIABLE' variableAssignment;
+variableAssignment : NAME '=' (expression | position | STRING) SEMICOLON;
+
+statement: (variableDeclaration | variableAssignment | outputStatement | functionCall) SEMICOLON;
+functionCall: FUNCTION_NAME OPEN_PAREN VARIABLE_NAME (COMMA VARIABLE_NAME)* CLOSE_PAREN;
+outputStatement: CREATE (markerOutput | streetOutput);
+marketOutput : (BUS_STOP | STOP_SIGN | TRAFFIC_LIGHT | TRAIN_STOP) AT position;
+streetOutput : SHAPE (HIGHWAY | STREET) NAMED STRING FROM position TO position;
+
+expression : POSITION_COORDINATE | NUMBER| VARIABLE_NAME | ((POSITION_COORDINATE | NUMBER| VARIABLE_NAME) OPERATOR expression);
+position : OPEN_PAREN expression COMMA expression CLOSE_PAREN;
+position_coordinate : VARIABLE_NAME CHAIN_OP COORDINATE;
+
+SHAPE : "straight" | "curved";
+COORDINATE : ('x' | 'y');
+CHAIN_OP : '\.';
+NAMED : 'named';
+TO: 'to';
+FROM: 'from'
+AT : 'at';
+ASSIGNMENT_OP: ''=';
+OPEN_CURLY : '"{";
+CLOSE_CURLY : '"}";
+OPEN_PAREN : '"\(";
+CLOSE_PAREN : '"\)";
+COMMA : ',';
+STRING : '"' [A-Za-z]+ '"'
+NUMBER : [0-9]+;
+VARIABLE_NAME: [A-Za-z]+;
+FUNCTION_NAME: VARIABLE_NAME;
+WS : '\s'+
+SEMICOLON: ';';
+BUS_STOP : 'bus stop'
+STOP_SIGN : 'stop sign'
+TRAFFIC_LIGHT : 'traffic light'
+TRAIN_STOP : 'train stop'
