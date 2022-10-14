@@ -20,17 +20,31 @@ export class Canvas {
   }
 
   render(statements: CreateStatement[]) {
-    console.log(statements);
-    const polylines: google.maps.Polyline[] = [];
+    let polylines: google.maps.Polyline[] = [];
     const markers: google.maps.Marker[] = [];
 
     if (statements) {
+      // collections of various types of polyline and marker create statements based on layers
       const streetOutputs: PolylineCreateStatement[] = [];
+      const bridgeOutputs: PolylineCreateStatement[] = [];
+      const highwayOutputs: PolylineCreateStatement[] = [];
       const markerOutputs: MarkerCreateStatement[] = [];
 
       for (const statement of statements) {
         if (isPolylineCreateStatement(statement)) {
-          streetOutputs.push(statement);
+          switch (statement.type) {
+            case 'street':
+              streetOutputs.push(statement);
+              break;
+            case 'bridge':
+              bridgeOutputs.push(statement);
+            break;
+            case 'highway':
+              highwayOutputs.push(statement);
+            break;
+            default:
+              throw new Error('Invalid market output type');
+          }
         } else if (isMarkerCreateStatement(statement)) {
           markerOutputs.push(statement);
         } else {
@@ -38,10 +52,15 @@ export class Canvas {
         }
       }
 
-      // then create layers (bottom to top: polylines, markers)
-      for (let i = 0; i < streetOutputs.length; i++) {
-        polylines.push(this.createPolyline(streetOutputs[i]));
-      }
+      // then create layers (bottom to top: streets (2 layers), highways (2 layers), bridges (2 layers), markers)
+      polylines = polylines.concat(
+        this.createPolylines(streetOutputs, Constants.TILE_BORDER_COLOR, Constants.BRIDGE_STREET_BACK_WEIGHT),
+        this.createPolylines(streetOutputs, Constants.STREET_COLOR, Constants.STREET_WEIGHT),
+        this.createPolylines(highwayOutputs, Constants.HIGHWAY_BACK_COLOR, Constants.HIGHWAY_BACK_WEIGHT),
+        this.createPolylines(highwayOutputs, Constants.HIGHWAY_FRONT_COLOR, Constants.HIGHWAY_FRONT_WEIGHT),
+        this.createPolylines(bridgeOutputs, Constants.BRIDGE_BACK_COLOR, Constants.BRIDGE_STREET_BACK_WEIGHT),
+        this.createPolylines(bridgeOutputs, Constants.STREET_COLOR, Constants.STREET_WEIGHT),
+        );
 
       for (let i = 0; i < markerOutputs.length; i++) {
         markers.push(this.createMarker(markerOutputs[i]));
@@ -51,30 +70,40 @@ export class Canvas {
     this.markers = markers;
   }
 
-  private createPolyline(streetOutput: PolylineCreateStatement): google.maps.Polyline {
-    console.log(`Created a polyline for streetOutput: ${JSON.stringify(streetOutput)}`);
+  public createLegend(legend: HTMLElement) {
+    const markerMap = {
+      "street": Constants.STREET_LEGEND,
+      "bridge": Constants.BRIDGE_LEGEND,
+      "highway": Constants.HIGHWAY_LEGEND,
+      "stop sign": Constants.STOP_SIGN_PATH,
+      "traffic light": Constants.TRAFFICE_LIGHT_PATH,
+      "bus stop": Constants.BUS_STOP_PATH,
+      "train stop": Constants.TRAIN_STOP_PATH
+    };
 
-    let strokeColor;
-    switch (streetOutput.type) {
-      case 'bridge':
-        strokeColor = Constants.BRIDGE_COLOR;
-        break;
-      case 'highway':
-        strokeColor = Constants.HIGHWAY_COLOR;
-        break;
-      case 'street':
-        strokeColor = Constants.STREET_COLOR;
-        break;
-      default:
-        throw new Error('Invalid street output type');
+    let div: HTMLElement;
+
+    for (const description in markerMap) {
+      div = document.createElement('div');
+      div.innerHTML = `<img src="${markerMap[description]}" width=${Constants.LEGEND_SCALE}> ${description}`;
+      legend.appendChild(div);
     }
+  }
 
-    return new google.maps.Polyline({
-      path: [convertCoordinateToLatLng(streetOutput.startPosition), convertCoordinateToLatLng(streetOutput.endPosition)],
-      strokeColor,
+  private createPolylines(streetOutputs: PolylineCreateStatement[], strokeColor: string, strokeWeight: number): google.maps.Polyline[] {
+    const commonConfiguration = {
       strokeOpacity: 1,
-      strokeWeight: 5,
-      map: this.map
+      map: this.map,
+      strokeColor,
+      strokeWeight
+    };
+
+    return streetOutputs.map((streetOutput: PolylineCreateStatement) => {
+      console.log(`Created a polyline for streetOutput: ${JSON.stringify(streetOutput)}`);
+      return new google.maps.Polyline({
+        path: [convertCoordinateToLatLng(streetOutput.startPosition), convertCoordinateToLatLng(streetOutput.endPosition)],
+        ...commonConfiguration
+      })
     });
   }
 
