@@ -79,9 +79,6 @@ export default class LanguageServer {
 			const result: InitializeResult = {
 				capabilities: {
 					textDocumentSync: TextDocumentSyncKind.Incremental,
-					completionProvider: {
-						resolveProvider: true,
-					},
 					workspace: {
 						workspaceFolders: {
 							supported: true,

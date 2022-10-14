@@ -2,13 +2,13 @@ import ASTNode from './ASTNode';
 import { Visitor } from './Visitor';
 import DefinitionBlock from './DefinitionBlock';
 import OutputBlock from './OutputBlock';
-
+import { Range } from '../util/Range';
 export default class Program extends ASTNode {
   readonly definitionBlock?: DefinitionBlock;
   readonly outputBlock: OutputBlock;
 
-  constructor(outputBlock: OutputBlock, definitionBlock?: DefinitionBlock) {
-    super();
+  constructor(range: Range, outputBlock: OutputBlock, definitionBlock?: DefinitionBlock) {
+    super(range);
     this.definitionBlock = definitionBlock;
     this.outputBlock = outputBlock;
   }

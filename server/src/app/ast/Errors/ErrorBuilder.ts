@@ -19,7 +19,7 @@ export default class ErrorBuilder {
     this._errors = value;
   }
 
-  buildStaticError(msg: string, range: Range): void {
+  buildError(msg: string, range: Range): void {
     this._errors.push({ msg: msg, range: range });
   }
 }

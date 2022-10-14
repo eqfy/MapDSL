@@ -1,4 +1,4 @@
 export interface Range {
-  zeroIndexStart: number;
-  zeroIndexEnd: number;
+  start: number;
+  end: number;
 }

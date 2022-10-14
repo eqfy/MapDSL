@@ -19,7 +19,7 @@ export default class ErrorProvider {
 		this.connection = connection;
 	}
 
-	async validateTextDocument(textDocument: TextDocument): Promise<void> {
+	async validateTextDocument(textDocument: TextDocument){
 		const text = textDocument.getText();
 		const lexer = new MapGeneratorLexer(CharStreams.fromString(text));
 		const diagnostics: Diagnostic[] = [];
@@ -63,13 +63,13 @@ export default class ErrorProvider {
 		const errorBuilder = new ErrorBuilder();
 		if (!testing) {
 			programAST.accept(staticCheckVisitor, {
-				errorBuilder: errorBuilder,
+				staticErrorBuilder: errorBuilder,
 				variableTable: new Map(),
 				functionTable: new Map(),
 				constantTable: new Map(),
 			});
 			programAST.accept(outputVisitor, {
-				errorBuilder: errorBuilder,
+				dynamicErrorBuilder: errorBuilder,
 				createStatementBuilder: createStatementBuilder,
 				variableTable: new Map(),
 				functionTable: new Map(),
@@ -80,8 +80,8 @@ export default class ErrorProvider {
 			const diagnostic: Diagnostic = {
 				severity: DiagnosticSeverity.Error,
 				range: {
-					start: textDocument.positionAt(err.range.zeroIndexStart),
-					end: textDocument.positionAt(err.range.zeroIndexEnd),
+					start: textDocument.positionAt(err.range.start),
+					end: textDocument.positionAt(err.range.end),
 				},
 				message: err.msg,
 				source: 'mg',
