@@ -9,5 +9,6 @@
 		"esModuleInterop": true
 	},
 	"files": ["src/extension.ts"],
-	"exclude": ["node_modules", ".vscode-test", "src/map", "src/util", "src/index.ts", "src/CreateStatement.ts"]
+	"include": ["src"],
+	"exclude": ["node_modules", ".vscode-test"]
 }
