@@ -1,5 +1,29 @@
 # Project1Group9 Milestones
 
+## Milestone 5
+
+### Status of Implementation
+
+Project is fully implemented, aside from small additions/improvements. In other words, our project currently takes a user input according to our DSL documentation (still needs to be complete), and it is successfully converted into a visual map. If there are errors, the user is told so on the screen.
+
+### Status/results of final user study
+
+We completed one user study after we fully finished our implementation. After getting the user to walk through their thoughts while implementing an example map, and questioning them afterwards, they did not have any critical dislikes about our language itself. They only language specific comment they made was that they didnt think having "DEFINITIONS" and "OUTPUT" as separate sections was entirely necessary. However, the sections are in place to guide less technical users, so we think they are a good thing to keep. 
+
+The users biggest complaint was not being able to see error messages for their input, and not being able to see the map change in real time. They simply had a text file, then had to use the command line to run "npm run start" to see their map open up (assuming no errors). 
+
+We agreed that the user experience was terrible. So we created a VS Code language extension - users now have syntax highlighting for .mg files (the file extension for our DSL), descriptive error messages displayed to them in real time, and the ability to click a "build map" button directly within the VS Code editor to see the map. Then they can refresh the map as they code to see it change as they code.
+
+We plan to do another user study today or tomorrow (Friday or Saturday)
+
+### Any changes to the language design
+
+Nothing as of now.
+
+### Planned timeline for the remaining days
+
+Friday or Saturday another user study to hopefully get feedback on our language. Saturday last minute changes to language, accordingly. Saturday develop user documentation and a demo map for the video. Sunday record the video and submit.
+
 ## Milestone 4
 
 ### Status of Implementation
@@ -16,7 +40,7 @@ We hope to have the backend completely finished by Wednesday. Which means we wou
 
 ### Plans for final user study
 
-Our plans our to have a fully functioning implementation for a user to test on Wednesday. Then find relevant users (which we did not ask in our first user study) to test our DSL.
+Our plans our to have a fully functioning implementation for a user to test on Wednesday. Then find relevant users (which we did not ask in our first user study) to test our DSL.__
 
 ## Milestone 3
 

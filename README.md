@@ -2,7 +2,7 @@
 
 ## Milestone Grading
 
-See MILESTONES.md
+See docs/MILESTONES.md
 
 ### Folder structure
 
@@ -12,7 +12,6 @@ See MILESTONES.md
 |- user/         # .mg files that can be used for testing
 |- client/       # Our frontend client and VS Code client
 |- server/       # Our backend server for map generation (handles requests from frontend client), and our language server (handles requests from VS Code extension client)
-|- Makefile      # Makefile used for building our documents.
 ```
 
 ## Installation / Usage Instructions
