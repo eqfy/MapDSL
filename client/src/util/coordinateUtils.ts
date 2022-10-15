@@ -37,8 +37,8 @@ export class CoordinateUtils {
   static readonly COORDS_PER_DEGREE = Math.pow(2, this.maxZoom) * this.PIXELS_PER_TILE / this.PIXELS_PER_COORD_MAX_ZOOM / 360;
 
   // default canvas size
-  static readonly DEFAULT_CANVAS_WIDTH = 200000;
-  static readonly DEFAULT_CANVAS_HEIGHT = 100000;
+  static readonly DEFAULT_CANVAS_WIDTH = 20000;
+  static readonly DEFAULT_CANVAS_HEIGHT = 10000;
 
   // how much zoom out from the max zoom should (1) markers be visible (2) the default zoom level be
   static MARKER_VISIBLE_ZOOM_LEVEL_OFFSET = -4;
