@@ -74,6 +74,7 @@ export class CoordinateUtils {
     maxZoomYTiles *= Math.pow(2, zoomDiff);
 
     // record down different units of the canvas dimension for convenience
+    // the degree range used during map construction has one more out-of-bound tile horizontally and vertically to wrap around the border of the map
     this.canvasWidthInDegrees = 360 / Math.pow(2, this.maxZoom) * (maxZoomXTiles + 1);
     this.canvasHeightInDegrees = 360 / Math.pow(2, this.maxZoom) * (maxZoomYTiles + 1);
 

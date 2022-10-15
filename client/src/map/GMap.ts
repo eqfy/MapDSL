@@ -1,4 +1,3 @@
-import { Constants } from '../util/Constants';
 import { CoordinateUtils } from '../util/coordinateUtils';
 import { CreateStatement } from '../CreateStatement';
 import CoordMapType from './CoordMapType';
@@ -12,7 +11,7 @@ export default class GMap {
 
     const map = new google.maps.Map(document.getElementById('map') as HTMLElement, {
       zoom: CoordinateUtils.defaultZoom,
-      center: CoordinateUtils.convertCoordinateToLatLng({ x: 20, y: 20 }),
+      center: CoordinateUtils.convertCoordinateToLatLng({ x: 0, y: 0 }),
       streetViewControl: false,
       mapTypeId: 'tiled',
       mapTypeControlOptions: {
