@@ -12,7 +12,7 @@ export class Constants {
   static readonly TILE_SIDE_LENGTH = 256;
 
   // Number of tiles on canvas (under minimum zoom) in the latitude and longitude direction (should both be even for symmetry)
-  static readonly MAX_LATITUDE_TILES = 8;
+  static readonly MAX_LATITUDE_TILES = 16;
   static readonly MAX_LONGTITUDE_TILES = 16;
 
   // Latitude and longitutde range of the whole screen: for example, latitude range would be [-MAX_CANVAS_LATITUDE, MAX_CANVAS_LATITUDE]
