@@ -8,6 +8,7 @@ import {
   FunctionDeclarationContext,
   GlobalBodyElementContext,
   GlobalVariableDeclarationContext,
+  IfElseBlockContext,
   LocalVariableDeclarationContext,
   LoopBlockContext,
   MarkerOutputContext,
@@ -43,6 +44,7 @@ import CreateMarker from "../ast/statements/CreateMarker";
 import { Range } from "../util/Range";
 import { SemanticTokenInfo } from "../../languageServer/util/semanticTokens";
 import { SemanticTokenModifiers, SemanticTokenTypes } from "vscode-languageserver";
+import IfElseBlock, { BranchCtx } from "../ast/statements/IfElseBlock";
 
 export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> implements MapGeneratorParserVisitor<ASTNode> {
   semanticTokenInfo: SemanticTokenInfo[];
@@ -142,6 +144,7 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
     const createCallCtx = ctx.createCall();
     const expressionCtx = ctx.expression();
     const loopBlockCtx = ctx.loopBlock();
+    const ifElseBlockCtx = ctx.ifElseBlock();
 
     let value;
 
@@ -153,6 +156,8 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
       value = this.visitCreateCall(createCallCtx);
     } else if (loopBlockCtx) {
       value = this.visitLoopBlock(loopBlockCtx);
+    } else if (ifElseBlockCtx) {
+      value = this.visitIfElseBlock(ifElseBlockCtx);
     } else if (expressionCtx) {
       // An expression can also be used in a statement position. The reverse is not true.
       // Hence, our implementation has expression extend statement.
@@ -183,6 +188,28 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
       end: ctx.LOOP().symbol.stopIndex
     });
     return new LoopBlock(range, this.getToken(ctx.POSITIVE_NUMBER(), "number"), statements);
+  }
+
+  visitIfElseBlock(ctx: IfElseBlockContext): IfElseBlock {
+    // TODO
+    // this.addSemanticTokenInfo([
+    //   {token: ctx.IF(), type: SemanticTokenTypes.keyword, mods: [] },
+    //   {token: ctx.THEN(), type: SemanticTokenTypes.keyword, mods: [] },
+    //   {token: ctx.ELSE_IF(), type: SemanticTokenTypes.keyword, mods: [] },
+    //   {token: ctx.ELSE(), type: SemanticTokenTypes.keyword, mods: [] },
+    //   {token: ctx.END_IF(), type: SemanticTokenTypes.keyword, mods: [] }
+    // ])
+    const ifBranchTable: BranchCtx[] = [];
+    const numBranches = ctx.operableExpr().length;
+    for (let i = 0; i < numBranches; i++) {
+      ifBranchTable.push({
+        expression: this.visitOperableExpr(ctx.operableExpr()[i]),
+        statements: this.getStatements(ctx.branchBody()[i].statement())
+      });
+    }
+    const elseBranch = ctx.ELSE() ? this.getStatements(ctx.branchBody()[numBranches].statement()) : [];
+    const range = { start: ctx.IF().symbol.startIndex, end: ctx.END_IF().symbol.stopIndex };
+    return new IfElseBlock(range, ifBranchTable, elseBranch);
   }
 
   visitVariableAssignment(ctx: VariableAssignmentContext): VariableAssignment {
@@ -326,6 +353,8 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
     const positiveNumberCtx = ctx.POSITIVE_NUMBER();
     const negativeNumberCtx = ctx.NEGATIVE_NUMBER();
     const variableNameCtx = ctx.variableName();
+    const trueCtx = ctx.TRUE();
+    const falseCtx = ctx.FALSE();
 
     let leftExpression: OperableExpr;
     if (positionAccessCtx) {
@@ -336,6 +365,10 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
       const number = positiveNumberCtx ? positiveNumberCtx : (negativeNumberCtx as TerminalNode);
       leftExpression = this.getToken(number, "number");
       this.addSemanticTokenInfo([{ token: number, type: SemanticTokenTypes.number, mods: [] }]);
+    } else if (trueCtx || falseCtx) {
+      const truthValue = trueCtx ? trueCtx : (falseCtx as TerminalNode);
+      leftExpression = this.getToken(truthValue, "truthValue");
+      this.addSemanticTokenInfo([{ token: truthValue, type: SemanticTokenTypes.number, mods: [] }]);
     } else if (variableNameCtx) {
       leftExpression = this.getToken(variableNameCtx.NAME(), "assignedValue");
       this.addSemanticTokenInfo([{ token: variableNameCtx.NAME(), type: SemanticTokenTypes.variable, mods: [] }]);

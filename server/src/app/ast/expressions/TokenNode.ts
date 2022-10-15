@@ -19,4 +19,4 @@ export default class TokenNode extends OperableExpr {
   }
 }
 
-export type TokenCtxTargetValueType = 'string' | 'number' | 'assignedValue';
+export type TokenCtxTargetValueType = 'string' | 'number' | 'assignedValue' | 'truthValue';

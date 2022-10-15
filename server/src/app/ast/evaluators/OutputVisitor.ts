@@ -1,26 +1,32 @@
-import { Visitor } from "../Visitor";
-import DefinitionBlock from "../DefinitionBlock";
-import TokenNode from "../expressions/TokenNode";
-import OutputBlock from "../OutputBlock";
-import VariableAssignment from "../statements/VariableAssignment";
-import CreatePolyline from "../statements/CreatePolyline";
-import CoordinateAccess from "../expressions/CoordinateAccess";
-import FunctionDeclaration from "../FunctionDeclaration";
-import LoopBlock from "../statements/LoopBlock";
-import ASTNode from "../ASTNode";
-import VariableDeclaration from "../statements/VariableDeclaration";
-import FunctionCall from "../expressions/FunctionCall";
-import Program from "../Program";
-import Position from "../expressions/Position";
-import OpExpression from "../expressions/OpExpression";
-import { CreatePosition, isCreatePosition, MarkerCreateStatement, PolylineCreateStatement } from "../../CreateStatements/CreateStatementTypes";
-import CreateStatementBuilder from "../../CreateStatements/CreateStatementBuilder";
-import CreateMarker from "../statements/CreateMarker";
-import { isNumber, isString } from "../../util/typeChecking";
-import ErrorBuilder from "../Errors/ErrorBuilder";
+import { Visitor } from '../Visitor';
+import DefinitionBlock from '../DefinitionBlock';
+import TokenNode from '../expressions/TokenNode';
+import OutputBlock from '../OutputBlock';
+import VariableAssignment from '../statements/VariableAssignment';
+import CreatePolyline from '../statements/CreatePolyline';
+import CoordinateAccess from '../expressions/CoordinateAccess';
+import FunctionDeclaration from '../FunctionDeclaration';
+import LoopBlock from '../statements/LoopBlock';
+import ASTNode from '../ASTNode';
+import VariableDeclaration from '../statements/VariableDeclaration';
+import FunctionCall from '../expressions/FunctionCall';
+import Program from '../Program';
+import Position from '../expressions/Position';
+import OpExpression from '../expressions/OpExpression';
+import {
+  CreatePosition,
+  isCreatePosition,
+  MarkerCreateStatement,
+  PolylineCreateStatement
+} from '../../CreateStatements/CreateStatementTypes';
+import CreateStatementBuilder from '../../CreateStatements/CreateStatementBuilder';
+import CreateMarker from '../statements/CreateMarker';
+import { isBoolean, isNumber, isString } from '../../util/typeChecking';
+import ErrorBuilder from '../Errors/ErrorBuilder';
+import IfElseBlock from '../statements/IfElseBlock';
 
 // This type represents all values allowed in our language
-export type OutputVisitorReturnType = CreatePosition | number | string | void;
+export type OutputVisitorReturnType = CreatePosition | number | string | boolean | void;
 
 interface OutputVisitorContext {
   dynamicErrorBuilder: ErrorBuilder;
@@ -69,11 +75,29 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
     }
   }
 
+  visitIfElseBlock(n: IfElseBlock, t: OutputVisitorContext): OutputVisitorReturnType {
+    for (const branch of n.branchTable) {
+      const branchTruthiness = branch.expression.accept(this, t);
+      if (!isBoolean(branchTruthiness)) {
+        t.dynamicErrorBuilder.buildError('If/Else branch predicate should be a boolean', branch.expression.range);
+      }
+      if (branchTruthiness) {
+        for (const statement of branch.statements) {
+          statement.accept(this, t);
+        }
+        return;
+      }
+    }
+    for (const statement of n.elseBranch) {
+      statement.accept(this, t);
+    }
+    return undefined;
+  }
+
   visitFunctionCall(n: FunctionCall, t: OutputVisitorContext): OutputVisitorReturnType {
     const fnName = this.getStringTokenValue(n.name, t);
     const fnDec = t.functionTable.get(fnName);
     if (!fnDec) return;
-
 
     const argNames = fnDec.inputVariables;
     const argExprs = n.inputValues;
@@ -108,33 +132,52 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
     if (isCreatePosition(pos)) {
       return pos;
     } else {
-      t.dynamicErrorBuilder.buildError("Invalid position", {start: n.xCoordinate.range.start, end: n.yCoordinate.range.end});
+      t.dynamicErrorBuilder.buildError('Invalid position', {
+        start: n.xCoordinate.range.start,
+        end: n.yCoordinate.range.end
+      });
     }
   }
 
   visitOpExpression(n: OpExpression, t: OutputVisitorContext): OutputVisitorReturnType {
     const leftValue = n.leftExpression.accept(this, t);
-    if (!isNumber(leftValue)) {
-      t.dynamicErrorBuilder.buildError("Expected a number for left operand", n.leftExpression.range);
-      return;
-    }
-
-    let returnValue = leftValue;
     const rightValue = n.rightExpression.accept(this, t);
-    if (!isNumber(rightValue)) {
-      t.dynamicErrorBuilder.buildError("Expected a number for left operand", n.rightExpression.range);
-      return;
+    const operator = n.operator.accept(this, t);
+
+    if (!isNumber(leftValue) && !isBoolean(leftValue)) {
+      t.dynamicErrorBuilder.buildError('Expected a boolean or a number for left operand', n.leftExpression.range);
+    }
+    if (!isNumber(rightValue) && !isBoolean(rightValue)) {
+      t.dynamicErrorBuilder.buildError('Expected a boolean or a number for right operand', n.rightExpression.range);
     }
 
-    if (n.operator.accept(this, t) === "+") {
-      returnValue += rightValue;
-    } else if (n.operator.accept(this, t) === "-") {
-      returnValue -= rightValue;
-    } else {
-      t.dynamicErrorBuilder.buildError("Invalid operator", n.operator.range);
-      return;
+    // Valid operations for both booleans and numbers
+    if (n.operator.accept(this, t) === '==') {
+      return leftValue === rightValue;
+    } else if (n.operator.accept(this, t) === 'AND') {
+      return leftValue && rightValue;
+    } else if (n.operator.accept(this, t) === 'OR') {
+      return leftValue || rightValue;
     }
-    return returnValue;
+
+    // Valid operations for only numbers
+    if (isNumber(leftValue) && isNumber(rightValue)) {
+      if (n.operator.accept(this, t) === '+') {
+        return leftValue + rightValue;
+      } else if (n.operator.accept(this, t) === '-') {
+        return leftValue - rightValue;
+      } else if (n.operator.accept(this, t) === '>') {
+        return leftValue > rightValue;
+      } else if (n.operator.accept(this, t) === '<') {
+        return leftValue < rightValue;
+      } else if (n.operator.accept(this, t) === '>=') {
+        return leftValue >= rightValue;
+      } else if (n.operator.accept(this, t) === '<=') {
+        return leftValue <= rightValue;
+      }
+    } else {
+      t.dynamicErrorBuilder.buildError('Invalid operator for boolean values', n.operator.range);
+    }
   }
 
   visitVariableAssignment(n: VariableAssignment, t: OutputVisitorContext): void {
@@ -155,9 +198,9 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
 
     if (isCreatePosition(position)) {
       const coordinate = this.getStringTokenValue(n.coordinate, t);
-      if (coordinate === "x") {
+      if (coordinate === 'x') {
         return position.x;
-      } else if (coordinate === "y") {
+      } else if (coordinate === 'y') {
         return position.y;
       } else {
         t.dynamicErrorBuilder.buildError(`Coordinate was not x or y`, n.coordinate.range);
@@ -171,11 +214,11 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
 
   visitCreateMarker(n: CreateMarker, t: OutputVisitorContext): void {
     const type = this.getStringTokenValue(n.markerType, t);
-    if (type !== "stop sign" && type !== "traffic light" && type !== "bus stop" && type !== "train stop") return;
+    if (type !== 'stop sign' && type !== 'traffic light' && type !== 'bus stop' && type !== 'train stop') return;
 
     const position = n.position.accept(this, t);
     if (!isCreatePosition(position)) {
-      t.dynamicErrorBuilder.buildError("Invalid position", n.position.range);
+      t.dynamicErrorBuilder.buildError('Invalid position', n.position.range);
       return;
     }
 
@@ -189,13 +232,14 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
   visitCreatePolyline(n: CreatePolyline, t: OutputVisitorContext): void {
     const type = this.getStringTokenValue(n.streetType, t);
 
-    if (type !== "highway" && type !== "street" && type !== "bridge") return;
+    if (type !== 'highway' && type !== 'street' && type !== 'bridge') return;
 
     const startPosition = n.startPosition.accept(this, t);
     const endPosition = n.endPosition.accept(this, t);
     if (!isCreatePosition(startPosition) || !isCreatePosition(endPosition)) {
-      t.dynamicErrorBuilder.buildError("Invalid positions", {
-        start: n.startPosition.range.start, end: n.endPosition.range.end
+      t.dynamicErrorBuilder.buildError('Invalid positions', {
+        start: n.startPosition.range.start,
+        end: n.endPosition.range.end
       });
       return;
     }
@@ -210,10 +254,12 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
 
   visitTokenNode(n: TokenNode, t: OutputVisitorContext): OutputVisitorReturnType {
     switch (n.targetValueType) {
-      case "string":
+      case 'string':
         return n.tokenValue;
-      case "number":
+      case 'number':
         return Number(n.tokenValue);
+      case 'truthValue':
+        return Boolean(n.tokenValue);
     }
     const name = n.tokenValue;
     if (t.constantTable.has(name)) {
@@ -229,7 +275,7 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
 
   private getStringTokenValue(token: TokenNode, t: OutputVisitorContext): string {
     const str = token.accept(this, t);
-    return !isString(str) ? "" : str;
+    return !isString(str) ? '' : str;
   }
 
   private getNumberTokenValue(token: TokenNode, t: OutputVisitorContext): number {

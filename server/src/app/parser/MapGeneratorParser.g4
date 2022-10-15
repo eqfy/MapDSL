@@ -11,31 +11,33 @@ functionDeclaration: FUNCTION  functionName  OPEN_PAREN  parameterName  (COMMA  
 
 // Output Block
 outputBlock: OUTPUT statement+ END_OUTPUT;
-statement: (localVariableDeclaration | variableAssignment | createCall | loopBlock | expression);
+statement: (localVariableDeclaration | variableAssignment | createCall | loopBlock | ifElseBlock | expression);
 
 // Loop Block
 loopBlock: LOOP  POSITIVE_NUMBER  TIMES  statement+  END_LOOP;
+
+// Control Flow Block
+ifElseBlock: IF operableExpr THEN branchBody (ELSE_IF operableExpr THEN branchBody)* (ELSE branchBody)? END_IF;
+branchBody: statement+;
 
 // Variables
 variableAssignment: variableName  EQ  expression SEMICOLON;
 localVariableDeclaration: VARIABLE  variableName  EQ  expression SEMICOLON;
 globalVariableDeclaration: CONSTANT variableName EQ expression SEMICOLON;
 
-// Calls
-functionCall: functionName  OPEN_PAREN  expression  (COMMA  expression )* CLOSE_PAREN SEMICOLON;
-createCall: CREATE  (markerOutput | streetOutput) SEMICOLON;
-
 // Outputs
+createCall: CREATE  (markerOutput | streetOutput) SEMICOLON;
 markerOutput: (BUS_STOP | STOP_SIGN | TRAFFIC_LIGHT | TRAIN_STOP)  AT expression;
 streetOutput: (HIGHWAY | STREET | BRIDGE)  FROM  expression TO  expression;
 
 // Expressions
 // We do not allow operations on position
 expression: (operableExpr | position );
-operableExpr: (positionAccess | functionCall | variableName | NEGATIVE_NUMBER | POSITIVE_NUMBER) operation?;
+operableExpr: (positionAccess | functionCall | variableName | NEGATIVE_NUMBER | POSITIVE_NUMBER | TRUE | FALSE) operation?;
 operation: OPERATOR operableExpr;
-position: (OPEN_PAREN  operableExpr  COMMA  operableExpr  CLOSE_PAREN );
+position: OPEN_PAREN  operableExpr  COMMA  operableExpr  CLOSE_PAREN;
 positionAccess: NAME CHAIN_OP COORDINATE;
+functionCall: functionName  OPEN_PAREN  expression  (COMMA  expression )* CLOSE_PAREN SEMICOLON;
 
 // Misc.
 // lazy hack to make it easier to differentiate between names while preventing using lexer modes
