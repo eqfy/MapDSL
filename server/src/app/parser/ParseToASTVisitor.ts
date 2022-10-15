@@ -54,6 +54,7 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
 
   visitProgram(ctx: ProgramContext): Program {
     try {
+      console.debug('visitProgramParseToASTVisitor');
       const output = this.visitOutputBlock(ctx.outputBlock());
       const def = this.visitDefinitionBlock(ctx.definitionBlock());
       const range = { start: def ? def.range.start : output.range.start, end: output.range.end };

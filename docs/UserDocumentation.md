@@ -9,11 +9,14 @@ Positions are in the format `(x, y)`, where x and y are any two expressions that
 #### Position Usage examples:
 
 ```
-CREATE bus stop at (500,240);
-VARIABLE trafficLightPosition = (1000,600 + 50);
+CREATE bus stop at (250,200);
+VARIABLE trafficLightPosition = (100,600 - 500 + 25);
 CREATE traffic light at trafficLightPosition;
-CREATE stop sign at (trafficLightPosition.x, 1000 - trafficLightPosition.y);
+CREATE stop sign at (trafficLightPosition.x, 300 - trafficLightPosition.y);
 ```
+
+Creates the following map:
+![](./examplePhotos/1.png)
 
 ### Creating markers
 
@@ -29,6 +32,9 @@ CREATE stop sign at (trafficLightPosition.x, 1000 - trafficLightPosition.y);
 CREATE train stop at (100,100);
 ```
 
+Creates the following map:
+![](./examplePhotos/2.png)
+
 ### Creating Streets, Highways, and Bridges
 
 Creating streets can be done by specifying a street type, a start location, and an end location: `CREATE [street, highway, or bridge] from (x1,y1) to (x2,y2);`
@@ -36,13 +42,16 @@ Creating streets can be done by specifying a street type, a start location, and 
 #### CREATE Usage examples:
 
 ```
-CREATE street from (0,0) to (100,100);
-VARIABLE middleY = 1024;
-VARIABLE middleX = middleX;
+CREATE street from (500,500) to (250,250);
+VARIABLE middleY = 500;
+VARIABLE middleX = middleY;
 VARIABLE middlePosition = (middleX,middleY);
 CREATE highway from (0,middleY) to middlePosition;
-CREATE bridge from middlePosition to (2048, middlePosition.y);
+CREATE bridge from middlePosition to (middleX, 0);
 ```
+
+Creates the following map:
+![](./examplePhotos/3.png)
 
 ## Variables and Constants
 
@@ -84,6 +93,21 @@ CONSTANT number = 10 + 1000 - positionVariable.x;
 CONSTANT fun = (positionVariable.x + number, number - secondPositionVariable.y);
 ```
 
+### Accessing X and Y Coordinates From Variables/Constants
+
+Constants and variables can hold positions. Sometimes it can be useful to access the x or y position of the coordinate.
+
+#### Coordinate Access Examples:
+
+```
+VARIABLE trafficLightPosition = (100,600 - 500 + 25);
+CREATE traffic light at trafficLightPosition;
+CREATE stop sign at (trafficLightPosition.x, 200 - trafficLightPosition.y);
+```
+
+Creates the following map:
+![](./examplePhotos/4.png)
+
 ## Functions
 
 ### Function Declarations
@@ -94,32 +118,32 @@ Declaring functions allow for the quick creation of certain street or marker pat
 
 ```
 FUNCTION newTL(position) {
-	CREATE traffic light at position;
+        CREATE traffic light at position;
 }
 
 FUNCTION createStreetBlock(northWestPosition, blockSize) {
-	VARIABLE northEastPosition = (northWestPosition.x + blockSize, northWestPosition.y);
-	VARIABLE southEastPosition = (northWestPosition.x + blockSize, northWestPosition.y - blockSize);
-	VARIABLE southWestPosition = (northWestPosition.x, northWestPosition.y - blockSize);
+        VARIABLE northEastPosition = (northWestPosition.x + blockSize, northWestPosition.y);
+        VARIABLE southEastPosition = (northWestPosition.x + blockSize, northWestPosition.y - blockSize);
+        VARIABLE southWestPosition = (northWestPosition.x, northWestPosition.y - blockSize);
 
-	newTL(northWestPosition);
-	newTL(northEastPosition);
-	newTL(southWestPosition);
-	newTL(southEastPosition);
+        newTL(northWestPosition);
+        newTL(northEastPosition);
+        newTL(southWestPosition);
+        newTL(southEastPosition);
 
-	CREATE street from northWestPosition to northEastPosition;
-	CREATE street from northEastPosition to southEastPosition;
-	CREATE street from southEastPosition to southWestPosition;
-	CREATE street from southWestPosition to northWestPosition;
+        CREATE street from northWestPosition to northEastPosition;
+        CREATE street from northEastPosition to southEastPosition;
+        CREATE street from southEastPosition to southWestPosition;
+        CREATE street from southWestPosition to northWestPosition;
 }
 
 FUNCTION createCity(northWestPosition, blockSize) {
-	LOOP 3 TIMES
-		createStreetBlock(northWestPosition, blockSize);
-		createStreetBlock((northWestPosition.x + blockSize, northWestPosition.y), blockSize);
-		createStreetBlock((northWestPosition.x + blockSize + blockSize, northWestPosition.y), blockSize);
-		northWestPosition = (northWestPosition.x, northWestPosition.y - blockSize);
-	END_LOOP
+        LOOP 3 TIMES
+                createStreetBlock(northWestPosition, blockSize);
+                createStreetBlock((northWestPosition.x + blockSize, northWestPosition.y), blockSize);
+                createStreetBlock((northWestPosition.x + blockSize + blockSize, northWestPosition.y), blockSize);
+                northWestPosition = (northWestPosition.x, northWestPosition.y - blockSize);
+        END_LOOP
 }
 ```
 
@@ -130,11 +154,14 @@ Function calls can be made either within other functions, or within the [OUTPUT 
 #### Function call examples:
 
 ```
-newTL(1024, 1024);
+newTL((896, 768));
 createCity((1024,1024), 128);
-VARIABLE newBlockLocation = (0,1024);
+VARIABLE newBlockLocation = (1024 - 128,1024);
 createStreetBlock(newBlockLocation, 128);
 ```
+
+Creates the following map:
+![](./examplePhotos/5.png)
 
 ## Loops
 
@@ -143,21 +170,25 @@ Loops can be used to execute any number of statements any number of times. You m
 #### LOOP example usage:
 
 ```
+VARIABLE defaultBlockSize = 32;
 VARIABLE eastStreetLightPosition = (512,512);
 LOOP 5 TIMES
-	createTrafficLight(eastStreetLightPosition);
+	CREATE traffic light at eastStreetLightPosition;
 	eastStreetLightPosition = (eastStreetLightPosition.x + defaultBlockSize, eastStreetLightPosition.y);
 END_LOOP
 ```
 
+Creates the following map:
+![](./examplePhotos/6.png)
+
 ```
 FUNCTION createCity(northWestPosition, blockSize) {
-	LOOP 3 TIMES
-		createStreetBlock(northWestPosition, blockSize);
-		createStreetBlock((northWestPosition.x + blockSize, northWestPosition.y), blockSize);
-		createStreetBlock((northWestPosition.x + blockSize + blockSize, northWestPosition.y), blockSize);
-		northWestPosition = (northWestPosition.x, northWestPosition.y - blockSize);
-	END_LOOP
+        LOOP 3 TIMES
+                createStreetBlock(northWestPosition, blockSize);
+                createStreetBlock((northWestPosition.x + blockSize, northWestPosition.y), blockSize);
+                createStreetBlock((northWestPosition.x + blockSize + blockSize, northWestPosition.y), blockSize);
+                northWestPosition = (northWestPosition.x, northWestPosition.y - blockSize);
+        END_LOOP
 }
 ```
 
@@ -171,14 +202,17 @@ These are required. Output blocks contain all of the statements that are meant s
 
 ```
 OUTPUT
-	CREATE street from (0,0) to (100,100);
-	VARIABLE middleY = 1024;
-	VARIABLE middleX = middleX;
-	VARIABLE middlePosition = (middleX,middleY);
-	CREATE highway from (0,middleY) to middlePosition;
-	CREATE bridge from middlePosition to (2048, middlePosition.y);
+        CREATE street from (500,500) to (250,250);
+        VARIABLE middleY = 500;
+        VARIABLE middleX = middleY;
+        VARIABLE middlePosition = (middleX,middleY);
+        CREATE highway from (0,middleY) to middlePosition;
+        CREATE bridge from middlePosition to (middleX, 0);
 END_OUTPUT
 ```
+
+Creates the following map:
+![](./examplePhotos/2.png)
 
 ### DEFINITIONS Block
 
@@ -188,24 +222,24 @@ These are optional. If you define a DEFINITIONS block, it must be above the OUTP
 
 ```
 DEFINITIONS
+        FUNCTION newTL(position) {
+                CREATE traffic light at position;
+        }
+
         FUNCTION createStreetBlock(northWestPosition, blockSize) {
                 VARIABLE northEastPosition = (northWestPosition.x + blockSize, northWestPosition.y);
                 VARIABLE southEastPosition = (northWestPosition.x + blockSize, northWestPosition.y - blockSize);
                 VARIABLE southWestPosition = (northWestPosition.x, northWestPosition.y - blockSize);
 
-                CREATE traffic light at northWestPosition;
-                CREATE traffic light at northEastPosition;
-                CREATE traffic light at southWestPosition;
-                CREATE traffic light at southEastPosition;
+                newTL(northWestPosition);
+                newTL(northEastPosition);
+                newTL(southWestPosition);
+                newTL(southEastPosition);
 
                 CREATE street from northWestPosition to northEastPosition;
                 CREATE street from northEastPosition to southEastPosition;
                 CREATE street from southEastPosition to southWestPosition;
                 CREATE street from southWestPosition to northWestPosition;
-        }
-
-        FUNCTION createTrafficLight(position) {
-                CREATE traffic light at position;
         }
 
         FUNCTION createCity(northWestPosition, blockSize) {

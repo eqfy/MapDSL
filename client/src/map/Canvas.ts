@@ -38,10 +38,10 @@ export class Canvas {
               break;
             case 'bridge':
               bridgeOutputs.push(statement);
-            break;
+              break;
             case 'highway':
               highwayOutputs.push(statement);
-            break;
+              break;
             default:
               throw new Error('Invalid street output type');
           }
@@ -59,8 +59,8 @@ export class Canvas {
         this.createPolylines(highwayOutputs, Constants.HIGHWAY_BACK_COLOR, Constants.HIGHWAY_BACK_WEIGHT),
         this.createPolylines(highwayOutputs, Constants.HIGHWAY_FRONT_COLOR, Constants.HIGHWAY_FRONT_WEIGHT),
         this.createPolylines(bridgeOutputs, Constants.BRIDGE_BACK_COLOR, Constants.BRIDGE_STREET_BACK_WEIGHT),
-        this.createPolylines(bridgeOutputs, Constants.STREET_COLOR, Constants.STREET_WEIGHT),
-        );
+        this.createPolylines(bridgeOutputs, Constants.STREET_COLOR, Constants.STREET_WEIGHT)
+      );
 
       for (let i = 0; i < markerOutputs.length; i++) {
         markers.push(this.createMarker(markerOutputs[i]));
@@ -72,13 +72,13 @@ export class Canvas {
 
   public createLegend(legend: HTMLElement) {
     const markerMap = {
-      "street": Constants.STREET_LEGEND,
-      "bridge": Constants.BRIDGE_LEGEND,
-      "highway": Constants.HIGHWAY_LEGEND,
-      "stop sign": Constants.STOP_SIGN_PATH,
-      "traffic light": Constants.TRAFFICE_LIGHT_PATH,
-      "bus stop": Constants.BUS_STOP_PATH,
-      "train stop": Constants.TRAIN_STOP_PATH
+      street: Constants.STREET_LEGEND,
+      bridge: Constants.BRIDGE_LEGEND,
+      highway: Constants.HIGHWAY_LEGEND,
+      'stop sign': Constants.STOP_SIGN_PATH,
+      'traffic light': Constants.TRAFFICE_LIGHT_PATH,
+      'bus stop': Constants.BUS_STOP_PATH,
+      'train stop': Constants.TRAIN_STOP_PATH
     };
 
     let div: HTMLElement;
@@ -90,7 +90,11 @@ export class Canvas {
     }
   }
 
-  private createPolylines(streetOutputs: PolylineCreateStatement[], strokeColor: string, strokeWeight: number): google.maps.Polyline[] {
+  private createPolylines(
+    streetOutputs: PolylineCreateStatement[],
+    strokeColor: string,
+    strokeWeight: number
+  ): google.maps.Polyline[] {
     const commonConfiguration = {
       strokeOpacity: 1,
       map: this.map,
@@ -99,17 +103,14 @@ export class Canvas {
     };
 
     return streetOutputs.map((streetOutput: PolylineCreateStatement) => {
-      console.log(`Created a polyline for streetOutput: ${JSON.stringify(streetOutput)}`);
       return new google.maps.Polyline({
         path: [convertCoordinateToLatLng(streetOutput.startPosition), convertCoordinateToLatLng(streetOutput.endPosition)],
         ...commonConfiguration
-      })
+      });
     });
   }
 
   private createMarker(markerOutput: MarkerCreateStatement): google.maps.Marker {
-    console.log(`Created a marker for streetOutput: ${JSON.stringify(markerOutput)}`);
-
     let url;
     switch (markerOutput.type) {
       case 'stop sign':
