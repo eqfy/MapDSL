@@ -1,14 +1,18 @@
 import { Constants } from '../util/Constants';
-import { convertCoordinateToLatLng } from '../util/coordinateUtils';
+import { CoordinateUtils } from '../util/coordinateUtils';
 import { CreateStatement } from '../CreateStatement';
 import CoordMapType from './CoordMapType';
 import { Canvas } from './Canvas';
 
 export default class GMap {
   static initMap(): void {
+
+    // set up the coordinate system
+    CoordinateUtils.configure(CoordinateUtils.DEFAULT_CANVAS_WIDTH, CoordinateUtils.DEFAULT_CANVAS_HEIGHT);
+
     const map = new google.maps.Map(document.getElementById('map') as HTMLElement, {
-      zoom: Constants.DEFAULT_ZOOM,
-      center: convertCoordinateToLatLng({ x: 20, y: 20 }),
+      zoom: CoordinateUtils.defaultZoom,
+      center: CoordinateUtils.convertCoordinateToLatLng({ x: 20, y: 20 }),
       streetViewControl: false,
       mapTypeId: 'tiled',
       mapTypeControlOptions: {
@@ -17,12 +21,11 @@ export default class GMap {
       },
       restriction: {
         latLngBounds: {
-          east: Constants.MAX_SCREEN_LONGTITUDE,
-          west: -Constants.MAX_SCREEN_LONGTITUDE,
-          north: Constants.MAX_SCREEN_LATITUDE,
-          south: -Constants.MAX_SCREEN_LATITUDE
-        },
-        strictBounds: true
+          east: CoordinateUtils.canvasWidthInDegrees / 2,
+          west: -CoordinateUtils.canvasWidthInDegrees / 2,
+          north: CoordinateUtils.canvasHeightInDegrees / 2,
+          south: -CoordinateUtils.canvasHeightInDegrees / 2
+        }
       }
     });
 
@@ -42,6 +45,11 @@ export default class GMap {
       map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
       canvas.createLegend(legend);
     }
+
+    // Attach a listener for zoom level (so that markers can be hidden on small zoom level)
+    map.addListener("zoom_changed", () => {
+      canvas.updateMarkerVisibility(map.getZoom());
+    });
   }
 
   private static getMapCreateStatements(): CreateStatement[] {

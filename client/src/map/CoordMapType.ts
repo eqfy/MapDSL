@@ -1,10 +1,10 @@
 import { Constants } from '../util/Constants';
-import { convertTileToCoordinate, isCoordinateInCanvas, isTileInCanvas } from '../util/coordinateUtils';
+import { CoordinateUtils } from '../util/coordinateUtils';
 
 export default class CoordMapType {
-  tileSize = new google.maps.Size(Constants.TILE_SIDE_LENGTH, Constants.TILE_SIDE_LENGTH);
-  maxZoom = Constants.MAX_ZOOM;
-  minZoom = Constants.MIN_ZOOM;
+  tileSize = new google.maps.Size(CoordinateUtils.PIXELS_PER_TILE, CoordinateUtils.PIXELS_PER_TILE);
+  maxZoom = CoordinateUtils.maxZoom;
+  minZoom = CoordinateUtils.minZoom;
   name = 'Tiled';
   alt = 'Tiled Coordinate Map Type';
   tiled = true;
@@ -29,13 +29,13 @@ export default class CoordMapType {
     div.style.fontSize = '10';
 
     // convert into our coordinate system for computation and rendering
-    const convertedCoord = convertTileToCoordinate(coord, zoom);
+    const convertedCoord = CoordinateUtils.convertTileToCoordinate(coord, zoom);
 
-    const tileInCanvas = isTileInCanvas(convertedCoord);
+    const tileInCanvas = CoordinateUtils.isTileInCanvas(convertedCoord);
 
     if (this.tiled) {
       // if the tile coordinate is in-bound, the coordinate should be rendered
-      if (isCoordinateInCanvas(convertedCoord)) {
+      if (CoordinateUtils.isCoordinateInCanvas(convertedCoord)) {
         div.innerHTML = `(${convertedCoord.x}, ${convertedCoord.y})`;
       }
 
