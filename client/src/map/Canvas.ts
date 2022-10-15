@@ -5,13 +5,14 @@ import {
   MarkerCreateStatement,
   PolylineCreateStatement
 } from '../CreateStatement';
-import { convertCoordinateToLatLng } from '../util/coordinateUtils';
+import { CoordinateUtils } from '../util/coordinateUtils';
 import { Constants } from '../util/Constants';
 
 export class Canvas {
   map: google.maps.Map;
   polylines: google.maps.Polyline[];
   markers: google.maps.Marker[];
+  markerVisibility = true;
 
   constructor(map: google.maps.Map) {
     this.map = map;
@@ -90,6 +91,20 @@ export class Canvas {
     }
   }
 
+  public updateMarkerVisibility(zoom: number | undefined) {
+    if (!zoom) {
+      return;
+    }
+    const newVisibility = CoordinateUtils.shouldMarkersBeVisible(zoom);
+    if (newVisibility === this.markerVisibility) {
+      return;
+    }
+    this.markerVisibility = newVisibility;
+    this.markers.forEach((marker: google.maps.Marker) => {
+      marker.setVisible(newVisibility);
+    })
+  }
+
   private createPolylines(streetOutputs: PolylineCreateStatement[], strokeColor: string, strokeWeight: number): google.maps.Polyline[] {
     const commonConfiguration = {
       strokeOpacity: 1,
@@ -101,7 +116,7 @@ export class Canvas {
     return streetOutputs.map((streetOutput: PolylineCreateStatement) => {
       console.log(`Created a polyline for streetOutput: ${JSON.stringify(streetOutput)}`);
       return new google.maps.Polyline({
-        path: [convertCoordinateToLatLng(streetOutput.startPosition), convertCoordinateToLatLng(streetOutput.endPosition)],
+        path: [CoordinateUtils.convertCoordinateToLatLng(streetOutput.startPosition), CoordinateUtils.convertCoordinateToLatLng(streetOutput.endPosition)],
         ...commonConfiguration
       })
     });
@@ -129,7 +144,7 @@ export class Canvas {
     }
 
     return new google.maps.Marker({
-      position: convertCoordinateToLatLng(markerOutput.position),
+      position: CoordinateUtils.convertCoordinateToLatLng(markerOutput.position),
       icon: {
         url,
         scaledSize: new google.maps.Size(Constants.MARKER_SCALE, Constants.MARKER_SCALE)
