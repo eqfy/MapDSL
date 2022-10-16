@@ -73,7 +73,7 @@ export default class LanguageServer {
     console.info('App - starting');
     const app = new MapApp();
     (async () => {
-      await app.initServer(1338);
+      await app.initServer(1337);
     })();
   }
 

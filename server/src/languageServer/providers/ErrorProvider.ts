@@ -65,6 +65,7 @@ export default class ErrorProvider {
     const outputVisitor = new OutputVisitor();
     const staticCheckVisitor = new StaticCheckVisitor();
     const errorBuilder = new ErrorBuilder();
+    const canvas = { width: 0, height: 0 };
     if (!testing) {
       programAST.accept(staticCheckVisitor, {
         staticErrorBuilder: errorBuilder,
@@ -77,7 +78,8 @@ export default class ErrorProvider {
         createStatementBuilder: createStatementBuilder,
         variableTable: new Map(),
         functionTable: new Map(),
-        constantTable: new Map()
+        constantTable: new Map(),
+        canvas
       });
     }
     for (const err of errorBuilder.errors) {

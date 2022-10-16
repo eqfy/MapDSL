@@ -18,8 +18,7 @@ DEFINITIONS
                 CREATE street from southEastPosition to southWestPosition;
                 CREATE street from southWestPosition to northWestPosition;
 
-                LOOP 10 TIMES
-                END_LOOP
+               
         }
 
         FUNCTION createCity(northWestPosition, blockSize) {
@@ -30,10 +29,6 @@ DEFINITIONS
                         northWestPosition = (northWestPosition.x, northWestPosition.y - blockSize);
                 END_LOOP
 
-                LOOP 10 TIMES
-
-                    fdsdada
-                END_LOOP
         }
 
 
@@ -47,9 +42,6 @@ END_DEFINITIONS
 
 
 OUTPUT
-        LOOP
-
-
         CREATE highway from (0, centerY - defaultBlockSize) to (2048, centerY - defaultBlockSize);
         CREATE street from (centerX, centerY - defaultBlockSize) to (centerX + defaultBlockSize, centerY);
         newTL((centerX, centerY - defaultBlockSize));
