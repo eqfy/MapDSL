@@ -26,7 +26,7 @@ export default class SemanticTokenProvider {
       }
     });
     parser.program().accept(parseToASTVisitor);
-    console.log(parseToASTVisitor.semanticTokenInfo);
+    // console.log(parseToASTVisitor.semanticTokenInfo);
     const tokenInfo = parseToASTVisitor.semanticTokenInfo.sort((a, b) => a.range.start - b.range.start);
     for (const info of tokenInfo) {
       const pos = textDocument.positionAt(info.range.start);
