@@ -20,6 +20,7 @@ import CreateMarker from "../statements/CreateMarker";
 import { isNumber, isString } from "../../util/typeChecking";
 import ErrorBuilder from "../Errors/ErrorBuilder";
 import { DEFAULT_CANVAS_HEIGHT, DEFAULT_CANVAS_WIDTH, MAX_CANVAS_SIZE } from '../../util/constants';
+import { Range } from '../../util/Range';
 
 // This type represents all values allowed in our language
 export type OutputVisitorReturnType = CreatePosition | number | string | void;
@@ -129,9 +130,6 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
     const yPos = n.yCoordinate.accept(this, t);
     const pos = { x: xPos, y: yPos };
     if (isCreatePosition(pos)) {
-      if (pos.x < 0 || pos.x > t.canvas.width || pos.y < 0 || pos.y > t.canvas.height) {
-        t.dynamicErrorBuilder.buildError(`Position (${pos.x}, ${pos.y}) outside of canvas which is ${t.canvas.width} by ${t.canvas.height}`, {start: n.xCoordinate.range.start, end: n.yCoordinate.range.end});
-      }
       return pos;
     } else {
       t.dynamicErrorBuilder.buildError("Invalid position", {start: n.xCoordinate.range.start, end: n.yCoordinate.range.end});
@@ -203,6 +201,8 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
     if (!isCreatePosition(position)) {
       t.dynamicErrorBuilder.buildError("Invalid position", n.position.range);
       return;
+    } else if (!this.checkPositionInCanvas(position, t, n.position.range)) {
+      return;
     }
 
     const marker: MarkerCreateStatement = {
@@ -224,6 +224,13 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
         start: n.startPosition.range.start, end: n.endPosition.range.end
       });
       return;
+    } else {
+      // check both positions even if the first one is invalid
+      let valid = this.checkPositionInCanvas(startPosition, t, n.startPosition.range);
+      valid = this.checkPositionInCanvas(endPosition, t, n.endPosition.range) && valid;
+      if (!valid) {
+        return;
+      }
     }
 
     const polyline: PolylineCreateStatement = {
@@ -261,5 +268,14 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
   private getNumberTokenValue(token: TokenNode, t: OutputVisitorContext): number {
     const num = token.accept(this, t);
     return !isNumber(num) ? 0 : Number(num);
+  }
+
+  // check if a position is in canvas, return true if so, report dynamic error and return false otherwise
+  private checkPositionInCanvas(pos: CreatePosition, t: OutputVisitorContext, range: Range): boolean {
+    if (pos.x < 0 || pos.x > t.canvas.width || pos.y < 0 || pos.y > t.canvas.height) {
+      t.dynamicErrorBuilder.buildError(`Position (${pos.x}, ${pos.y}) outside of canvas which is ${t.canvas.width} by ${t.canvas.height}`, range);
+      return false;
+    }
+    return true;
   }
 }
