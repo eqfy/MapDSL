@@ -28,6 +28,7 @@ createCall: CREATE  (markerOutput | streetOutput) SEMICOLON;
 // Outputs
 markerOutput: (BUS_STOP | STOP_SIGN | TRAFFIC_LIGHT | TRAIN_STOP)  AT expression;
 streetOutput: (HIGHWAY | STREET | BRIDGE)  FROM  expression TO  expression;
+polygonOutput: (WATER | BUILDING) AT expression expression expression AND expression;
 
 // Expressions
 // We do not allow operations on position

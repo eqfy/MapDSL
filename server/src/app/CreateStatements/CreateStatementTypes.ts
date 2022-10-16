@@ -18,6 +18,11 @@ export interface MarkerCreateStatement {
   position: CreatePosition;
 }
 
+export interface PolygonCreateStatement {
+  type: 'water' | 'building';
+  positions: [CreatePosition, CreatePosition, CreatePosition, CreatePosition];
+}
+
 // Type checking
 export function isCreatePosition(pos: unknown): pos is CreatePosition {
   return (

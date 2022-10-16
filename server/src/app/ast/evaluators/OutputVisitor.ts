@@ -4,6 +4,7 @@ import TokenNode from "../expressions/TokenNode";
 import OutputBlock from "../OutputBlock";
 import VariableAssignment from "../statements/VariableAssignment";
 import CreatePolyline from "../statements/CreatePolyline";
+import CreatePolygon from '../statements/CreatePolygon';
 import CoordinateAccess from "../expressions/CoordinateAccess";
 import FunctionDeclaration from "../FunctionDeclaration";
 import LoopBlock from "../statements/LoopBlock";
@@ -13,11 +14,12 @@ import FunctionCall from "../expressions/FunctionCall";
 import Program from "../Program";
 import Position from "../expressions/Position";
 import OpExpression from "../expressions/OpExpression";
-import { CreatePosition, isCreatePosition, MarkerCreateStatement, PolylineCreateStatement } from "../../CreateStatements/CreateStatementTypes";
+import { CreatePosition, isCreatePosition, MarkerCreateStatement, PolygonCreateStatement, PolylineCreateStatement } from "../../CreateStatements/CreateStatementTypes";
 import CreateStatementBuilder from "../../CreateStatements/CreateStatementBuilder";
 import CreateMarker from "../statements/CreateMarker";
 import { isNumber, isString } from "../../util/typeChecking";
 import ErrorBuilder from "../Errors/ErrorBuilder";
+import Expression from '../expressions/Expression';
 
 // This type represents all values allowed in our language
 export type OutputVisitorReturnType = CreatePosition | number | string | void;
@@ -206,6 +208,30 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
       endPosition: endPosition
     };
     t.createStatementBuilder.buildPolyline(polyline);
+  }
+
+  visitCreatePolygon(n: CreatePolygon, t: OutputVisitorContext): void {
+    const type = this.getStringTokenValue(n.polygonType, t);
+
+    if (type !== 'water' && type !== 'building') return;
+
+    const positions = n.positions.map((position: Expression) => position.accept(this, t));
+
+    const invalidity = n.positions.reduce((invalidity: boolean, position: Expression) =>
+    invalidity || isCreatePosition(position), false);
+
+    if (invalidity) {
+      t.dynamicErrorBuilder.buildError("Invalid positions", {
+        start: n.positions[0].range.start, end: n.positions[n.positions.length - 1].range.end
+      });
+      return;
+    }
+
+    // const polygon: PolygonCreateStatement = {
+    //   type: type,
+    //   positions: positions
+    // };
+    // t.createStatementBuilder.buildPolyline(polyline);
   }
 
   visitTokenNode(n: TokenNode, t: OutputVisitorContext): OutputVisitorReturnType {

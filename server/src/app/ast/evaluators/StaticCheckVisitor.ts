@@ -4,6 +4,7 @@ import TokenNode from "../expressions/TokenNode";
 import OutputBlock from "../OutputBlock";
 import VariableAssignment from "../statements/VariableAssignment";
 import CreatePolyline from "../statements/CreatePolyline";
+import CreatePolygon from '../statements/CreatePolygon';
 import CoordinateAccess from "../expressions/CoordinateAccess";
 import FunctionDeclaration from "../FunctionDeclaration";
 import LoopBlock from "../statements/LoopBlock";
@@ -135,6 +136,13 @@ export class StaticCheckVisitor implements Visitor<StaticCheckVisitorContext, St
     const type = this.getStringTokenValue(n.streetType, t);
     if (type !== "highway" && type !== "street" && type !== "bridge") {
       t.staticErrorBuilder.buildError("Invalid street type", n.range);
+    }
+  }
+
+  visitCreatePolygon(n: CreatePolygon, t: StaticCheckVisitorContext): void {
+    const type = this.getStringTokenValue(n.polygonType, t);
+    if (type !== 'water' && type !== 'building') {
+      t.staticErrorBuilder.buildError('Invalid polygon type', n.range);
     }
   }
 
