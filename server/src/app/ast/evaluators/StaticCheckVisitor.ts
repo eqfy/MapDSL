@@ -1,27 +1,28 @@
-import { Visitor } from "../Visitor";
+import { Visitor } from '../Visitor';
 import CanvasConfiguration from "../CanvasConfiguration";
-import DefinitionBlock from "../DefinitionBlock";
-import TokenNode from "../expressions/TokenNode";
-import OutputBlock from "../OutputBlock";
-import VariableAssignment from "../statements/VariableAssignment";
-import CreatePolyline from "../statements/CreatePolyline";
-import CoordinateAccess from "../expressions/CoordinateAccess";
-import FunctionDeclaration from "../FunctionDeclaration";
-import LoopBlock from "../statements/LoopBlock";
-import ASTNode from "../ASTNode";
-import VariableDeclaration from "../statements/VariableDeclaration";
-import FunctionCall from "../expressions/FunctionCall";
-import Program from "../Program";
-import Position from "../expressions/Position";
-import OpExpression from "../expressions/OpExpression";
-import ErrorBuilder from "../Errors/ErrorBuilder";
-import { CreatePosition} from "../../CreateStatements/CreateStatementTypes";
-import CreateMarker from "../statements/CreateMarker";
-import { isNumber, isString } from "../../util/typeChecking";
+import DefinitionBlock from '../DefinitionBlock';
+import TokenNode from '../expressions/TokenNode';
+import OutputBlock from '../OutputBlock';
+import VariableAssignment from '../statements/VariableAssignment';
+import CreatePolyline from '../statements/CreatePolyline';
+import CoordinateAccess from '../expressions/CoordinateAccess';
+import FunctionDeclaration from '../FunctionDeclaration';
+import LoopBlock from '../statements/LoopBlock';
+import ASTNode from '../ASTNode';
+import VariableDeclaration from '../statements/VariableDeclaration';
+import FunctionCall from '../expressions/FunctionCall';
+import Program from '../Program';
+import Position from '../expressions/Position';
+import OpExpression from '../expressions/OpExpression';
+import ErrorBuilder from '../Errors/ErrorBuilder';
+import { CreatePosition } from '../../CreateStatements/CreateStatementTypes';
+import CreateMarker from '../statements/CreateMarker';
+import { isNumber, isString } from '../../util/typeChecking';
+import IfElseBlock from '../statements/IfElseBlock';
 import { MAX_CANVAS_SIZE } from '../../util/constants';
 
 // This type represents all values allowed in our language
-export type StaticCheckVisitorReturnType = CreatePosition | number | string | void;
+export type StaticCheckVisitorReturnType = CreatePosition | number | string | boolean | void;
 
 interface StaticCheckVisitorContext {
   staticErrorBuilder: ErrorBuilder;
@@ -41,7 +42,7 @@ export class StaticCheckVisitor implements Visitor<StaticCheckVisitorContext, St
     if (!n.width || !n.height) return;
     const width = this.getNumberTokenValue(n.width, t);
     const height = this.getNumberTokenValue(n.height, t);
-    
+
     if (width > MAX_CANVAS_SIZE || width <= 0) {
       t.staticErrorBuilder.buildError(`Invalid canvas width: > ${MAX_CANVAS_SIZE} or not positive`, n.width.range);
     }
@@ -84,6 +85,18 @@ export class StaticCheckVisitor implements Visitor<StaticCheckVisitorContext, St
     }
   }
 
+  visitIfElseBlock(n: IfElseBlock, t: StaticCheckVisitorContext): StaticCheckVisitorReturnType {
+    for (const branch of n.branchTable) {
+      for (const statement of branch.statements) {
+        statement.accept(this, t);
+      }
+    }
+    for (const statement of n.elseBranch) {
+      statement.accept(this, t);
+    }
+    return;
+  }
+
   visitFunctionCall(n: FunctionCall, t: StaticCheckVisitorContext): StaticCheckVisitorReturnType {
     const fnName = this.getStringTokenValue(n.name, t);
     const fnDec = t.functionTable.get(fnName);
@@ -101,7 +114,10 @@ export class StaticCheckVisitor implements Visitor<StaticCheckVisitorContext, St
       return;
     }
     if (argNames.length !== argExprs.length) {
-      t.staticErrorBuilder.buildError(`Number of arguments provided does not match number of arguments needed when calling ${fnName}`, n.range);
+      t.staticErrorBuilder.buildError(
+        `Number of arguments provided does not match number of arguments needed when calling ${fnName}`,
+        n.range
+      );
       return;
     }
 

@@ -11,18 +11,21 @@ import { FunctionDeclarationContext } from "./MapGeneratorParser";
 import { OutputBlockContext } from "./MapGeneratorParser";
 import { StatementContext } from "./MapGeneratorParser";
 import { LoopBlockContext } from "./MapGeneratorParser";
+import { IfElseBlockContext } from "./MapGeneratorParser";
+import { BranchBodyContext } from "./MapGeneratorParser";
 import { VariableAssignmentContext } from "./MapGeneratorParser";
 import { LocalVariableDeclarationContext } from "./MapGeneratorParser";
 import { GlobalVariableDeclarationContext } from "./MapGeneratorParser";
-import { FunctionCallContext } from "./MapGeneratorParser";
 import { CreateCallContext } from "./MapGeneratorParser";
 import { MarkerOutputContext } from "./MapGeneratorParser";
 import { StreetOutputContext } from "./MapGeneratorParser";
 import { ExpressionContext } from "./MapGeneratorParser";
-import { OperableExprContext } from "./MapGeneratorParser";
-import { OperationContext } from "./MapGeneratorParser";
+import { FirstOpExprContext } from "./MapGeneratorParser";
+import { OpExprContext } from "./MapGeneratorParser";
 import { PositionContext } from "./MapGeneratorParser";
 import { PositionAccessContext } from "./MapGeneratorParser";
+import { FunctionCallContext } from "./MapGeneratorParser";
+import { TokenContext } from "./MapGeneratorParser";
 import { FunctionNameContext } from "./MapGeneratorParser";
 import { ParameterNameContext } from "./MapGeneratorParser";
 import { VariableNameContext } from "./MapGeneratorParser";
@@ -122,6 +125,28 @@ export interface MapGeneratorParserListener extends ParseTreeListener {
 	exitLoopBlock?: (ctx: LoopBlockContext) => void;
 
 	/**
+	 * Enter a parse tree produced by `MapGeneratorParser.ifElseBlock`.
+	 * @param ctx the parse tree
+	 */
+	enterIfElseBlock?: (ctx: IfElseBlockContext) => void;
+	/**
+	 * Exit a parse tree produced by `MapGeneratorParser.ifElseBlock`.
+	 * @param ctx the parse tree
+	 */
+	exitIfElseBlock?: (ctx: IfElseBlockContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `MapGeneratorParser.branchBody`.
+	 * @param ctx the parse tree
+	 */
+	enterBranchBody?: (ctx: BranchBodyContext) => void;
+	/**
+	 * Exit a parse tree produced by `MapGeneratorParser.branchBody`.
+	 * @param ctx the parse tree
+	 */
+	exitBranchBody?: (ctx: BranchBodyContext) => void;
+
+	/**
 	 * Enter a parse tree produced by `MapGeneratorParser.variableAssignment`.
 	 * @param ctx the parse tree
 	 */
@@ -153,17 +178,6 @@ export interface MapGeneratorParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitGlobalVariableDeclaration?: (ctx: GlobalVariableDeclarationContext) => void;
-
-	/**
-	 * Enter a parse tree produced by `MapGeneratorParser.functionCall`.
-	 * @param ctx the parse tree
-	 */
-	enterFunctionCall?: (ctx: FunctionCallContext) => void;
-	/**
-	 * Exit a parse tree produced by `MapGeneratorParser.functionCall`.
-	 * @param ctx the parse tree
-	 */
-	exitFunctionCall?: (ctx: FunctionCallContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `MapGeneratorParser.createCall`.
@@ -210,26 +224,26 @@ export interface MapGeneratorParserListener extends ParseTreeListener {
 	exitExpression?: (ctx: ExpressionContext) => void;
 
 	/**
-	 * Enter a parse tree produced by `MapGeneratorParser.operableExpr`.
+	 * Enter a parse tree produced by `MapGeneratorParser.firstOpExpr`.
 	 * @param ctx the parse tree
 	 */
-	enterOperableExpr?: (ctx: OperableExprContext) => void;
+	enterFirstOpExpr?: (ctx: FirstOpExprContext) => void;
 	/**
-	 * Exit a parse tree produced by `MapGeneratorParser.operableExpr`.
+	 * Exit a parse tree produced by `MapGeneratorParser.firstOpExpr`.
 	 * @param ctx the parse tree
 	 */
-	exitOperableExpr?: (ctx: OperableExprContext) => void;
+	exitFirstOpExpr?: (ctx: FirstOpExprContext) => void;
 
 	/**
-	 * Enter a parse tree produced by `MapGeneratorParser.operation`.
+	 * Enter a parse tree produced by `MapGeneratorParser.opExpr`.
 	 * @param ctx the parse tree
 	 */
-	enterOperation?: (ctx: OperationContext) => void;
+	enterOpExpr?: (ctx: OpExprContext) => void;
 	/**
-	 * Exit a parse tree produced by `MapGeneratorParser.operation`.
+	 * Exit a parse tree produced by `MapGeneratorParser.opExpr`.
 	 * @param ctx the parse tree
 	 */
-	exitOperation?: (ctx: OperationContext) => void;
+	exitOpExpr?: (ctx: OpExprContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `MapGeneratorParser.position`.
@@ -252,6 +266,28 @@ export interface MapGeneratorParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitPositionAccess?: (ctx: PositionAccessContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `MapGeneratorParser.functionCall`.
+	 * @param ctx the parse tree
+	 */
+	enterFunctionCall?: (ctx: FunctionCallContext) => void;
+	/**
+	 * Exit a parse tree produced by `MapGeneratorParser.functionCall`.
+	 * @param ctx the parse tree
+	 */
+	exitFunctionCall?: (ctx: FunctionCallContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `MapGeneratorParser.token`.
+	 * @param ctx the parse tree
+	 */
+	enterToken?: (ctx: TokenContext) => void;
+	/**
+	 * Exit a parse tree produced by `MapGeneratorParser.token`.
+	 * @param ctx the parse tree
+	 */
+	exitToken?: (ctx: TokenContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `MapGeneratorParser.functionName`.

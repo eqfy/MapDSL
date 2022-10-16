@@ -1,18 +1,15 @@
-import Expression from './Expression';
 import { Visitor } from '../Visitor';
 import TokenNode from './TokenNode';
 import {OperableExpr} from "./OperableExpr";
 import { Range } from '../../util/Range';
-export default class OpExpression extends Expression {
-  leftExpression: OperableExpr;
-  operator: TokenNode;
-  rightExpression: OpExpression | OperableExpr;
+export default class OpExpression extends OperableExpr {
+  readonly expressions: OperableExpr[];
+  readonly operators: TokenNode[];
 
-  constructor(range: Range, leftExpression: OperableExpr, operator: TokenNode, rightExpression: OpExpression | OperableExpr) {
+  constructor(range: Range, expressions: OperableExpr[], operators: TokenNode[]) {
     super(range);
-    this.leftExpression = leftExpression;
-    this.operator = operator;
-    this.rightExpression = rightExpression;
+    this.expressions = expressions
+    this.operators = operators
   }
 
   accept<T, U>(v: Visitor<T, U>, t: T): U {

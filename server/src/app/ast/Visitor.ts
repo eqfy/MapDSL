@@ -9,13 +9,13 @@ import VariableAssignment from './statements/VariableAssignment';
 import CreatePolyline from './statements/CreatePolyline';
 import FunctionCall from './expressions/FunctionCall';
 import LoopBlock from './statements/LoopBlock';
-import Expression from './expressions/Expression';
 import Position from './expressions/Position';
 import CoordinateAccess from './expressions/CoordinateAccess';
 import TokenNode from './expressions/TokenNode';
 import ASTNode from './ASTNode';
 import OpExpression from './expressions/OpExpression';
-import CreateMarker from "./statements/CreateMarker";
+import CreateMarker from './statements/CreateMarker';
+import IfElseBlock from './statements/IfElseBlock';
 
 export interface Visitor<T = void, U = void> {
   visitProgram(n: Program, t: T): U;
@@ -39,6 +39,8 @@ export interface Visitor<T = void, U = void> {
   visitFunctionCall(n: FunctionCall, t: T): U;
 
   visitLoopBlock(n: LoopBlock, t: T): U;
+
+  visitIfElseBlock(n: IfElseBlock, t: T): U;
 
   visitOpExpression(n: OpExpression, t: T): U;
 

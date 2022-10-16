@@ -4,15 +4,15 @@ import {
   CreateCallContext,
   CanvasConfigurationContext,
   DefinitionBlockContext,
-  ExpressionContext,
+  ExpressionContext, FirstOpExprContext,
   FunctionCallContext,
   FunctionDeclarationContext,
   GlobalBodyElementContext,
   GlobalVariableDeclarationContext,
+  IfElseBlockContext,
   LocalVariableDeclarationContext,
   LoopBlockContext,
-  MarkerOutputContext,
-  OperableExprContext,
+  MarkerOutputContext, OpExprContext,
   OutputBlockContext,
   ParameterNameContext,
   PositionAccessContext,
@@ -45,6 +45,7 @@ import CreateMarker from "../ast/statements/CreateMarker";
 import { Range } from "../util/Range";
 import { SemanticTokenInfo } from "../../languageServer/util/semanticTokens";
 import { SemanticTokenModifiers, SemanticTokenTypes } from "vscode-languageserver";
+import IfElseBlock, { BranchCtx } from "../ast/statements/IfElseBlock";
 
 export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> implements MapGeneratorParserVisitor<ASTNode> {
   semanticTokenInfo: SemanticTokenInfo[];
@@ -169,6 +170,7 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
     const createCallCtx = ctx.createCall();
     const expressionCtx = ctx.expression();
     const loopBlockCtx = ctx.loopBlock();
+    const ifElseBlockCtx = ctx.ifElseBlock();
 
     let value;
 
@@ -180,6 +182,8 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
       value = this.visitCreateCall(createCallCtx);
     } else if (loopBlockCtx) {
       value = this.visitLoopBlock(loopBlockCtx);
+    } else if (ifElseBlockCtx) {
+      value = this.visitIfElseBlock(ifElseBlockCtx);
     } else if (expressionCtx) {
       // An expression can also be used in a statement position. The reverse is not true.
       // Hence, our implementation has expression extend statement.
@@ -210,6 +214,34 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
       end: ctx.LOOP().symbol.stopIndex
     });
     return new LoopBlock(range, this.getToken(ctx.POSITIVE_NUMBER(), "number"), statements);
+  }
+
+  visitIfElseBlock(ctx: IfElseBlockContext): IfElseBlock {
+    this.addSemanticTokenInfo([
+      {token: ctx.IF(), type: SemanticTokenTypes.keyword, mods: [] },
+      {token: ctx.END_IF(), type: SemanticTokenTypes.keyword, mods: [] },
+      ...ctx.THEN().map((value) => {
+        return { token: value, type: SemanticTokenTypes.keyword, mods: [] };
+      }),
+      ...ctx.ELSE_IF().map((value) => {
+        return { token: value, type: SemanticTokenTypes.keyword, mods: [] };
+      })
+    ])
+    if (ctx.ELSE()) {
+      this.addSemanticTokenInfo([{token: ctx.ELSE() as TerminalNode, type: SemanticTokenTypes.keyword, mods: [] }]);
+    }
+
+    const ifBranchTable: BranchCtx[] = [];
+    const numBranches = ctx.firstOpExpr().length;
+    for (let i = 0; i < numBranches; i++) {
+      ifBranchTable.push({
+        expression: this.visitFirstOpExpr(ctx.firstOpExpr()[i]),
+        statements: this.getStatements(ctx.branchBody()[i].statement())
+      });
+    }
+    const elseBranch = ctx.ELSE() ? this.getStatements(ctx.branchBody()[numBranches].statement()) : [];
+    const range = { start: ctx.IF().symbol.startIndex, end: ctx.END_IF().symbol.stopIndex };
+    return new IfElseBlock(range, ifBranchTable, elseBranch);
   }
 
   visitVariableAssignment(ctx: VariableAssignmentContext): VariableAssignment {
@@ -326,12 +358,15 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
   visitExpression(ctx: ExpressionContext): Expression {
     // Parser enforces that we only have one of the following
     const positionCtx = ctx.position();
-    const operableCtx = ctx.operableExpr();
+    const firstOpExpr = ctx.firstOpExpr();
+    const opExpr = ctx.opExpr();
 
     if (positionCtx) {
       return this.visitPosition(positionCtx);
-    } else if (operableCtx) {
-      return this.visitOperableExpr(operableCtx);
+    } else if (firstOpExpr) {
+      return this.visitFirstOpExpr(firstOpExpr);
+    } else if (opExpr) {
+      return this.visitOpExpr(opExpr);
     } else {
       throw new Error(
         "Impossible - Position, Number, PositionAccess, and VariableName cannot all be undefined (enforced by Parser)"
@@ -340,47 +375,82 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
   }
 
   visitPosition(ctx: PositionContext): Position {
-    const expressions = ctx.operableExpr();
-    const x = this.visitOperableExpr(expressions[0]);
-    const y = this.visitOperableExpr(expressions[1]);
+    const expressions = ctx.firstOpExpr();
+    const x = this.visitFirstOpExpr(expressions[0]);
+    const y = this.visitFirstOpExpr(expressions[1]);
     const range = { start: x.range.start, end: y.range.end };
     return new Position(range, x, y);
   }
 
-  visitOperableExpr(ctx: OperableExprContext): OperableExpr | OpExpression {
+  visitFirstOpExpr(ctx: FirstOpExprContext): OperableExpr {
+    const opExprs = ctx.opExpr();
+    const operators = ctx.OPERATOR();
+    if (opExprs.length == 1) {
+      return this.visitOpExpr(opExprs[0]);
+    }
+    // Parser enforces there must be n opExprUnits (n >= 1) and n - 1 operations
+    const operableExpressions: OperableExpr[] = [];
+    for (const opExp of opExprs) {
+      operableExpressions.push(this.visitOpExpr(opExp));
+    }
+    const operatorTokens: TokenNode[] = [];
+    for (const operator of operators) {
+      operatorTokens.push(this.getToken(operator, 'string'));
+    }
+    const range: Range = {start: ctx.start.startIndex, end: ctx.stop ? ctx.stop.stopIndex : ctx.start.startIndex + 1};
+    return new OpExpression(range, operableExpressions, operatorTokens);
+  }
+
+  visitOpExpr(ctx: OpExprContext): OperableExpr {
     const positionAccessCtx = ctx.positionAccess();
     const functionCall = ctx.functionCall();
-    const positiveNumberCtx = ctx.POSITIVE_NUMBER();
-    const negativeNumberCtx = ctx.NEGATIVE_NUMBER();
-    const variableNameCtx = ctx.variableName();
+    const tokenCtx = ctx.token();
+    const opExprs = ctx.opExpr();
+    const operators = ctx.OPERATOR();
 
-    let leftExpression: OperableExpr;
     if (positionAccessCtx) {
-      leftExpression = this.visitPositionAccess(positionAccessCtx);
+      return this.visitPositionAccess(positionAccessCtx);
     } else if (functionCall) {
-      leftExpression = this.visitFunctionCall(functionCall);
-    } else if (positiveNumberCtx || negativeNumberCtx) {
-      const number = positiveNumberCtx ? positiveNumberCtx : (negativeNumberCtx as TerminalNode);
-      leftExpression = this.getToken(number, "number");
-      this.addSemanticTokenInfo([{ token: number, type: SemanticTokenTypes.number, mods: [] }]);
-    } else if (variableNameCtx) {
-      leftExpression = this.getToken(variableNameCtx.NAME(), "assignedValue");
-      this.addSemanticTokenInfo([{ token: variableNameCtx.NAME(), type: SemanticTokenTypes.variable, mods: [] }]);
-    } else {
-      throw new Error("Impossible - Number, PositionAccess, and VariableName cannot all be undefined (enforced by Parser)");
-    }
+      return this.visitFunctionCall(functionCall);
+    } else if (tokenCtx) {
+      const positiveNumberCtx = tokenCtx.POSITIVE_NUMBER();
+      const negativeNumberCtx = tokenCtx.NEGATIVE_NUMBER();
+      const trueCtx = tokenCtx.TRUE();
+      const falseCtx = tokenCtx.FALSE();
+      const variableNameCtx = tokenCtx.variableName();
 
-    const operationCtx = ctx.operation();
-    if (operationCtx) {
-      // This is some kind of operation (e.g. a + b)
-      const op = this.getToken(operationCtx.OPERATOR(), "string");
-      this.addSemanticTokenInfo([{ token: operationCtx.OPERATOR(), type: SemanticTokenTypes.operator, mods: [] }]);
-      const rightExp = this.visitOperableExpr(operationCtx.operableExpr());
-      const range = { start: leftExpression.range.start, end: rightExp.range.end };
-      return new OpExpression(range, leftExpression, op, rightExp);
-    } else {
-      return leftExpression;
+      if (positiveNumberCtx) {
+        this.addSemanticTokenInfo([{ token: positiveNumberCtx, type: SemanticTokenTypes.number, mods: [] }]);
+        return this.getToken(positiveNumberCtx, "number");
+      } else if (negativeNumberCtx) {
+        this.addSemanticTokenInfo([{ token: negativeNumberCtx, type: SemanticTokenTypes.number, mods: [] }]);
+        return this.getToken(negativeNumberCtx, "number");
+      } else if (trueCtx) {
+        this.addSemanticTokenInfo([{ token: trueCtx, type: SemanticTokenTypes.number, mods: [] }]);
+        return this.getToken(trueCtx, "truthValue");
+      } else if (falseCtx) {
+        this.addSemanticTokenInfo([{ token: falseCtx, type: SemanticTokenTypes.number, mods: [] }]);
+        return this.getToken(falseCtx, "truthValue");
+      } else if (variableNameCtx) {
+        this.addSemanticTokenInfo([{ token: variableNameCtx.NAME(), type: SemanticTokenTypes.variable, mods: [] }]);
+        return this.getToken(variableNameCtx.NAME(), "assignedValue");
+      } else {
+        throw new Error(`Encountered an unknown token ${tokenCtx}`)
+      }
+    } else if (opExprs.length > 0 && opExprs.length == operators.length + 1) {
+      const operableExpressions: OperableExpr[] = []
+      for (const opExp of opExprs) {
+        operableExpressions.push(this.visitOpExpr(opExp));
+      }
+      const operatorTokens: TokenNode[] = [];
+      for (const operator of operators) {
+        this.addSemanticTokenInfo([{token: operator, type: SemanticTokenTypes.operator, mods: []}])
+        operatorTokens.push(this.getToken(operator, 'string'));
+      }
+      const range: Range = {start: ctx.start.startIndex, end: ctx.stop ? ctx.stop.stopIndex : ctx.start.startIndex + 1}
+      return new OpExpression(range, operableExpressions, operatorTokens)
     }
+    throw new Error("Impossible - OpExpression, Number, PositionAccess, and VariableName cannot all be undefined (enforced by Parser)");
   }
 
   visitPositionAccess(ctx: PositionAccessContext): CoordinateAccess {

@@ -1,11 +1,15 @@
 export function isNumber(value: unknown): value is number {
-    return !isNaN(Number(value));
+  return value !== true && value !== false && !Number.isNaN(value);
+}
+
+export function isBoolean(value: unknown): value is boolean {
+  return typeof value === 'boolean';
 }
 
 export function isString(value: unknown): value is string {
-    return typeof value === 'string' || value instanceof String;
+  return typeof value === 'string' || value instanceof String;
 }
 
 export function isObject(object: unknown): object is object {
-    return typeof object === 'object' && !Array.isArray(object) && object !== null;
+  return typeof object === 'object' && !Array.isArray(object) && object !== null;
 }
