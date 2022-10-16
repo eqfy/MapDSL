@@ -389,11 +389,15 @@ END_DEFINITIONS
 
 These are optional. If you define a DEFINITIONS block, it must be above the OUTPUT block. Definition blocks contain all of the constant and function declarations.
 
+## Other Features / Things to Know
+
+### Defining a Canvas Size Block
+
 ## Entire Program
 
 To sum things up: here is a list of everything that is allowed in each section of the program.
 
-- DEFINITIONS block
+- DEFINITIONS block (optional)
   - FUNCTION declarations
     - Variable Declarations
     - Loops

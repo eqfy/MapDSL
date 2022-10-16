@@ -55,7 +55,7 @@ public class MapGeneratorLexer extends Lexer {
 			"'at'", "'and'", "'highway'", "'street'", "'bridge'", "'TIMES'", "'CREATE'", 
 			"';'", "'stop'", "'train'", "'traffic'", "'bus'", "'sign'", "'light'", 
 			"'water'", "'building'", "'OUTPUT'", "'END_OUTPUT'", "'END_DEFINITIONS'", 
-			"'LOOP'", "'END_LOOP'", "'IF'", "'ELSE IF'", "'ELSE'", "'THEN'", "'END_IF'", 
+			"'LOOP'", "'END_LOOP'", "'IF'", "'ELSE_IF'", "'ELSE'", "'THEN'", "'END_IF'", 
 			"'CANVAS'", "'SIZE'", "'by'", null, null, "'true'", "'false'"
 		};
 	}
@@ -345,7 +345,7 @@ public class MapGeneratorLexer extends Lexer {
 		"\u0000\u0000\u014eJ\u0001\u0000\u0000\u0000\u014f\u0150\u0005I\u0000\u0000"+
 		"\u0150\u0151\u0005F\u0000\u0000\u0151L\u0001\u0000\u0000\u0000\u0152\u0153"+
 		"\u0005E\u0000\u0000\u0153\u0154\u0005L\u0000\u0000\u0154\u0155\u0005S"+
-		"\u0000\u0000\u0155\u0156\u0005E\u0000\u0000\u0156\u0157\u0005 \u0000\u0000"+
+		"\u0000\u0000\u0155\u0156\u0005E\u0000\u0000\u0156\u0157\u0005_\u0000\u0000"+
 		"\u0157\u0158\u0005I\u0000\u0000\u0158\u0159\u0005F\u0000\u0000\u0159N"+
 		"\u0001\u0000\u0000\u0000\u015a\u015b\u0005E\u0000\u0000\u015b\u015c\u0005"+
 		"L\u0000\u0000\u015c\u015d\u0005S\u0000\u0000\u015d\u015e\u0005E\u0000"+
