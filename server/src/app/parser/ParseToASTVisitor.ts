@@ -217,14 +217,20 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
   }
 
   visitIfElseBlock(ctx: IfElseBlockContext): IfElseBlock {
-    // TODO
-    // this.addSemanticTokenInfo([
-    //   {token: ctx.IF(), type: SemanticTokenTypes.keyword, mods: [] },
-    //   {token: ctx.THEN(), type: SemanticTokenTypes.keyword, mods: [] },
-    //   {token: ctx.ELSE_IF(), type: SemanticTokenTypes.keyword, mods: [] },
-    //   {token: ctx.ELSE(), type: SemanticTokenTypes.keyword, mods: [] },
-    //   {token: ctx.END_IF(), type: SemanticTokenTypes.keyword, mods: [] }
-    // ])
+    this.addSemanticTokenInfo([
+      {token: ctx.IF(), type: SemanticTokenTypes.keyword, mods: [] },
+      {token: ctx.END_IF(), type: SemanticTokenTypes.keyword, mods: [] },
+      ...ctx.THEN().map((value) => {
+        return { token: value, type: SemanticTokenTypes.keyword, mods: [] };
+      }),
+      ...ctx.ELSE_IF().map((value) => {
+        return { token: value, type: SemanticTokenTypes.keyword, mods: [] };
+      })
+    ])
+    if (ctx.ELSE()) {
+      this.addSemanticTokenInfo([{token: ctx.ELSE() as TerminalNode, type: SemanticTokenTypes.keyword, mods: [] }]);
+    }
+
     const ifBranchTable: BranchCtx[] = [];
     const numBranches = ctx.firstOpExpr().length;
     for (let i = 0; i < numBranches; i++) {
@@ -420,10 +426,10 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
         this.addSemanticTokenInfo([{ token: negativeNumberCtx, type: SemanticTokenTypes.number, mods: [] }]);
         return this.getToken(negativeNumberCtx, "number");
       } else if (trueCtx) {
-        this.addSemanticTokenInfo([{ token: trueCtx, type: SemanticTokenTypes.keyword, mods: [] }]);
+        this.addSemanticTokenInfo([{ token: trueCtx, type: SemanticTokenTypes.number, mods: [] }]);
         return this.getToken(trueCtx, "truthValue");
       } else if (falseCtx) {
-        this.addSemanticTokenInfo([{ token: falseCtx, type: SemanticTokenTypes.keyword, mods: [] }]);
+        this.addSemanticTokenInfo([{ token: falseCtx, type: SemanticTokenTypes.number, mods: [] }]);
         return this.getToken(falseCtx, "truthValue");
       } else if (variableNameCtx) {
         this.addSemanticTokenInfo([{ token: variableNameCtx.NAME(), type: SemanticTokenTypes.variable, mods: [] }]);
@@ -438,6 +444,7 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
       }
       const operatorTokens: TokenNode[] = [];
       for (const operator of operators) {
+        this.addSemanticTokenInfo([{token: operator, type: SemanticTokenTypes.operator, mods: []}])
         operatorTokens.push(this.getToken(operator, 'string'));
       }
       const range: Range = {start: ctx.start.startIndex, end: ctx.stop ? ctx.stop.stopIndex : ctx.start.startIndex + 1}

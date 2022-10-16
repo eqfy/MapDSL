@@ -164,7 +164,7 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
     const evaluatedValues: EvaluatedExpression[] = [];
     for (const expression of n.expressions) {
       const val = expression.accept(this, t);
-      if (val !== undefined) return;
+      if (val === undefined) return;
       if (isNumber(val) || isBoolean(val)) {
         evaluatedValues.push({ val, range: expression.range });
       } else {
@@ -174,7 +174,7 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
     const evaluatedOperators: EvaluatedOperator[] = [];
     for (const operator of n.operators) {
       const val = operator.accept(this, t);
-      if (val !== undefined) return;
+      if (val === undefined) return;
       if (isString(val)) {
         evaluatedOperators.push({ val, range: operator.range });
       } else {
@@ -203,7 +203,6 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
         i += 1;
       }
     }
-
     // console.log("expr eval 2", evaluatedValues, evaluatedOperators);
 
     i = 0;
