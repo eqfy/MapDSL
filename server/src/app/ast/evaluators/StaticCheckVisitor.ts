@@ -69,7 +69,7 @@ export class StaticCheckVisitor implements Visitor<StaticCheckVisitorContext, St
     }
   }
 
-  visitIfElseBlock(n: IfElseBlock, t: StaticCheckVisitorContext): OutputVisitorReturnType {
+  visitIfElseBlock(n: IfElseBlock, t: StaticCheckVisitorContext): StaticCheckVisitorReturnType {
     for (const branch of n.branchTable) {
       for (const statement of branch.statements) {
         statement.accept(this, t);
@@ -78,7 +78,7 @@ export class StaticCheckVisitor implements Visitor<StaticCheckVisitorContext, St
     for (const statement of n.elseBranch) {
       statement.accept(this, t);
     }
-    return undefined;
+    return;
   }
 
   visitFunctionCall(n: FunctionCall, t: StaticCheckVisitorContext): StaticCheckVisitorReturnType {
