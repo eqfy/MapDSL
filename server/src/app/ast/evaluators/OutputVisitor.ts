@@ -88,7 +88,11 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
   }
 
   visitLoopBlock(n: LoopBlock, t: OutputVisitorContext): void {
-    const loopNumber = this.getNumberTokenValue(n.loopNumber, t);
+    const loopNumber = n.loopNumber.accept(this, t);
+    if(!isNumber(loopNumber)) {
+      t.dynamicErrorBuilder.buildError("Loop number does not evaluate to a number", n.loopNumber.range);
+      return;
+    }
     for (let i = 0; i < loopNumber; i++) {
       for (const statement of n.body) {
         statement.accept(this, t);

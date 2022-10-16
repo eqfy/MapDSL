@@ -393,6 +393,51 @@ These are optional. If you define a DEFINITIONS block, it must be above the OUTP
 
 ### Defining a Canvas Size Block
 
+You can define the canvas size of your map by including ```CANVAS_SIZE = width by height;``` at the top of your file, where width and hieght are both positive numbers. If you do not define a canvas size, the default is 8192 by 4096 - meaning that your x coordinate can go up to 8192, and your y coordinate can go up to 4096.
+
+#### Canvas Size Example:
+```
+CANVAS_SIZE = 1000 by 1000;
+```
+### Comments
+
+You can put a line comment anywhere in your program using the syntax: ```// this is a line comment```.
+
+#### Comment Example:
+```
+VARIABLE cityCentreLocation = (100,100); // stores the location of the city centre
+```
+### Calling Functions Within Functions and Recursion
+
+You have full power to call functions within other functions, or do any type of recursion if necessary. An error will appear if you accidentally have infinite recursion in your code.
+
+#### Recursion vs Loop Example:
+```
+DEFINITIONS
+        FUNCTION createNHorizontalTrafficLightsRecursive(numberOfLights, position, gapSize) {
+                IF(numberOfLights > 0) THEN
+                        CREATE traffic light at position;
+                        createNHorizontalTrafficLightsRecursive(numberOfLights - 1, (position.x + gapSize, position.y), gapSize);
+                END_IF
+        }
+
+        FUNCTION createNHorizontalTrafficLightsWithLoop(numberOfLights, position, gapSize) {
+                LOOP numberOfLights TIMES
+                        CREATE traffic light at position;
+                        position = (position.x + gapSize, position.y);
+                END_LOOP
+        }
+END_DEFINITIONS
+
+OUTPUT
+        createNHorizontalTrafficLightsRecursive(10, (2000,2000), 100);
+        createNHorizontalTrafficLightsWithLoop(10, (2000,2200), 100);
+END_OUTPUT
+```
+
+Creates the following map:
+![](./examplePhotos/9.png)
+
 ## Entire Program
 
 To sum things up: here is a list of everything that is allowed in each section of the program.

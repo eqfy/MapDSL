@@ -209,15 +209,14 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
         type: SemanticTokenTypes.keyword,
         mods: []
       },
-      { token: ctx.TIMES(), type: SemanticTokenTypes.keyword, mods: [] },
-      { token: ctx.POSITIVE_NUMBER(), type: SemanticTokenTypes.number, mods: [] }
+      { token: ctx.TIMES(), type: SemanticTokenTypes.keyword, mods: [] }
     ]);
     const statements = this.getStatements(ctx.statement());
     const range = this.getRangeFromList(statements, {
       start: ctx.LOOP().symbol.startIndex,
       end: ctx.LOOP().symbol.stopIndex
     });
-    return new LoopBlock(range, this.getToken(ctx.POSITIVE_NUMBER(), "number"), statements);
+    return new LoopBlock(range, this.visitExpression(ctx.expression()), statements);
   }
 
   visitIfElseBlock(ctx: IfElseBlockContext): IfElseBlock {

@@ -1,5 +1,3 @@
-CANVAS_SIZE = 1500 by 1500;
-
 DEFINITIONS
         FUNCTION newTL(position) {
                 CREATE traffic light at position;
@@ -41,6 +39,20 @@ DEFINITIONS
                         (topLeftCorner.x + buildingSize, topLeftCorner.y);
         }
 
+        FUNCTION createNHorizontalTrafficLightsRecursive(numberOfLights, position, gapSize) {
+                IF(numberOfLights > 0) THEN
+                        CREATE traffic light at position;
+                        createNHorizontalTrafficLightsRecursive(numberOfLights - 1, (position.x + gapSize, position.y), gapSize);
+                END_IF
+        }
+
+        FUNCTION createNHorizontalTrafficLightsWithLoop(numberOfLights, position, gapSize) {
+                LOOP numberOfLights TIMES
+                        CREATE traffic light at position;
+                        position = (position.x + gapSize, position.y);
+                END_LOOP
+        }
+
 
         CONSTANT buildingSize = 75;
         CONSTANT centerX = 1024;
@@ -53,7 +65,7 @@ END_DEFINITIONS
 
 
 OUTPUT
-        CREATE highway from (0, centerY - defaultBlockSize) to (2048, centerY - defaultBlockSize);
+        CREATE highway from (0, centerY - defaultBlockSize) to (8192, centerY - defaultBlockSize);
         CREATE street from (centerX, centerY - defaultBlockSize) to (centerX + defaultBlockSize, centerY);
         newTL((centerX, centerY - defaultBlockSize));
         createCity((centerX + defaultBlockSize,centerY + threeBlocks), 128);
@@ -61,4 +73,7 @@ OUTPUT
         CREATE bridge from (centerX + threeBlocks, centerY) to (centerX + threeBlocks, centerY - defaultBlockSize);
 
         VARIABLE busStopX = centerX - threeBlocks + 100;
+
+        createNHorizontalTrafficLightsRecursive(10, (2000,2000), 100);
+        createNHorizontalTrafficLightsWithLoop(10, (2000,2200), 100);
 END_OUTPUT

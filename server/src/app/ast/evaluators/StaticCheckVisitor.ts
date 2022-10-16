@@ -78,7 +78,10 @@ export class StaticCheckVisitor implements Visitor<StaticCheckVisitorContext, St
   }
 
   visitLoopBlock(n: LoopBlock, t: StaticCheckVisitorContext): void {
-    const loopNumber = this.getNumberTokenValue(n.loopNumber, t);
+    const loopNumber = n.loopNumber.accept(this, t);
+    if(!isNumber(loopNumber)) {
+      return;
+    }
     for (let i = 0; i < loopNumber; i++) {
       for (const statement of n.body) {
         statement.accept(this, t);

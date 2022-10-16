@@ -525,7 +525,7 @@ export class MapGeneratorParser extends Parser {
 			this.state = 118;
 			this.match(MapGeneratorParser.LOOP);
 			this.state = 119;
-			this.match(MapGeneratorParser.POSITIVE_NUMBER);
+			this.expression();
 			this.state = 120;
 			this.match(MapGeneratorParser.TIMES);
 			this.state = 122;
@@ -1423,7 +1423,7 @@ export class MapGeneratorParser extends Parser {
 		"$\x02\x02o\r\x03\x02\x02\x02pw\x05\x18\r\x02qw\x05\x16\f\x02rw\x05\x1C" +
 		"\x0F\x02sw\x05\x10\t\x02tw\x05\x12\n\x02uw\x05$\x13\x02vp\x03\x02\x02" +
 		"\x02vq\x03\x02\x02\x02vr\x03\x02\x02\x02vs\x03\x02\x02\x02vt\x03\x02\x02" +
-		"\x02vu\x03\x02\x02\x02w\x0F\x03\x02\x02\x02xy\x07&\x02\x02yz\x070\x02" +
+		"\x02vu\x03\x02\x02\x02w\x0F\x03\x02\x02\x02xy\x07&\x02\x02yz\x05$\x13" +
 		"\x02z|\x07\x18\x02\x02{}\x05\x0E\b\x02|{\x03\x02\x02\x02}~\x03\x02\x02" +
 		"\x02~|\x03\x02\x02\x02~\x7F\x03\x02\x02\x02\x7F\x80\x03\x02\x02\x02\x80" +
 		"\x81\x07\'\x02\x02\x81\x11\x03\x02\x02\x02\x82\x83\x07(\x02\x02\x83\x84" +
@@ -1796,7 +1796,9 @@ export class StatementContext extends ParserRuleContext {
 
 export class LoopBlockContext extends ParserRuleContext {
 	public LOOP(): TerminalNode { return this.getToken(MapGeneratorParser.LOOP, 0); }
-	public POSITIVE_NUMBER(): TerminalNode { return this.getToken(MapGeneratorParser.POSITIVE_NUMBER, 0); }
+	public expression(): ExpressionContext {
+		return this.getRuleContext(0, ExpressionContext);
+	}
 	public TIMES(): TerminalNode { return this.getToken(MapGeneratorParser.TIMES, 0); }
 	public END_LOOP(): TerminalNode { return this.getToken(MapGeneratorParser.END_LOOP, 0); }
 	public statement(): StatementContext[];

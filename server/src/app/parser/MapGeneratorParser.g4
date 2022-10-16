@@ -17,7 +17,7 @@ outputBlock: OUTPUT statement+ END_OUTPUT;
 statement: (localVariableDeclaration | variableAssignment | createCall | loopBlock | ifElseBlock | expression);
 
 // Loop Block
-loopBlock: LOOP  POSITIVE_NUMBER  TIMES  statement+  END_LOOP;
+loopBlock: LOOP  expression  TIMES  statement+  END_LOOP;
 
 // Control Flow Block
 ifElseBlock: IF firstOpExpr THEN branchBody (ELSE_IF firstOpExpr THEN branchBody)* (ELSE branchBody)? END_IF;
