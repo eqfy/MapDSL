@@ -5,9 +5,11 @@ import { Canvas } from './Canvas';
 
 export default class GMap {
   static initMap(): void {
+    const {
+      canvas: { width, height },
+      result: listOfCreateStatements
+    } = GMap.getMapCreateStatements();
 
-    const { canvas: { width, height }, result: listOfCreateStatements } = GMap.getMapCreateStatements();
-    
     // set up the coordinate system based on canvas size
     CoordinateUtils.configure(width, height);
 
@@ -15,7 +17,7 @@ export default class GMap {
       zoom: CoordinateUtils.defaultZoom,
       center: CoordinateUtils.convertCoordinateToLatLng({ x: 0, y: 0 }),
       streetViewControl: false,
-      mapTypeId: 'untiled',
+      mapTypeId: 'tiled',
       mapTypeControlOptions: {
         mapTypeIds: ['tiled', 'untiled'],
         style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
@@ -46,12 +48,12 @@ export default class GMap {
     }
 
     // Attach a listener for zoom level (so that markers can be hidden on small zoom level)
-    map.addListener("zoom_changed", () => {
+    map.addListener('zoom_changed', () => {
       canvas.updateMarkerVisibility(map.getZoom());
     });
   }
 
-  private static getMapCreateStatements(): { canvas: { width: number, height: number }, result: CreateStatement[]} {
+  private static getMapCreateStatements(): { canvas: { width: number; height: number }; result: CreateStatement[] } {
     const xhr = new XMLHttpRequest();
     const url = '/map';
     xhr.open('GET', url, false);
@@ -62,7 +64,7 @@ export default class GMap {
     } else {
       console.error('request failed', xhr.response.error);
       return {
-        canvas: { width: CoordinateUtils.DEFAULT_CANVAS_WIDTH, height: CoordinateUtils.DEFAULT_CANVAS_HEIGHT},
+        canvas: { width: CoordinateUtils.DEFAULT_CANVAS_WIDTH, height: CoordinateUtils.DEFAULT_CANVAS_HEIGHT },
         result: []
       };
     }

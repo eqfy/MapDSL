@@ -430,6 +430,13 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
     }
     const operatorTokens: TokenNode[] = [];
     for (const operator of operators) {
+      this.addSemanticTokenInfo([
+        {
+          token: operator,
+          type: SemanticTokenTypes.operator,
+          mods: []
+        }
+      ])
       operatorTokens.push(this.getToken(operator, 'string'));
     }
     const range: Range = {start: ctx.start.startIndex, end: ctx.stop ? ctx.stop.stopIndex : ctx.start.startIndex + 1};
@@ -526,7 +533,7 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
     return new TokenNode(
       {
         start: terminal.symbol.startIndex,
-        end: terminal.symbol.stopIndex
+        end: terminal.symbol.stopIndex + 1
       },
       terminal.text,
       targetValueType

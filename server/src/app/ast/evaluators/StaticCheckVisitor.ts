@@ -1,24 +1,24 @@
 import { Visitor } from '../Visitor';
-import CanvasConfiguration from "../CanvasConfiguration";
-import DefinitionBlock from "../DefinitionBlock";
-import TokenNode from "../expressions/TokenNode";
-import OutputBlock from "../OutputBlock";
-import VariableAssignment from "../statements/VariableAssignment";
-import CreatePolyline from "../statements/CreatePolyline";
+import CanvasConfiguration from '../CanvasConfiguration';
+import DefinitionBlock from '../DefinitionBlock';
+import TokenNode from '../expressions/TokenNode';
+import OutputBlock from '../OutputBlock';
+import VariableAssignment from '../statements/VariableAssignment';
+import CreatePolyline from '../statements/CreatePolyline';
 import CreatePolygon from '../statements/CreatePolygon';
-import CoordinateAccess from "../expressions/CoordinateAccess";
-import FunctionDeclaration from "../FunctionDeclaration";
-import LoopBlock from "../statements/LoopBlock";
-import ASTNode from "../ASTNode";
-import VariableDeclaration from "../statements/VariableDeclaration";
-import FunctionCall from "../expressions/FunctionCall";
-import Program from "../Program";
-import Position from "../expressions/Position";
-import OpExpression from "../expressions/OpExpression";
-import ErrorBuilder from "../Errors/ErrorBuilder";
-import { CreatePosition} from "../../CreateStatements/CreateStatementTypes";
-import CreateMarker from "../statements/CreateMarker";
-import { isNumber, isString } from "../../util/typeChecking";
+import CoordinateAccess from '../expressions/CoordinateAccess';
+import FunctionDeclaration from '../FunctionDeclaration';
+import LoopBlock from '../statements/LoopBlock';
+import ASTNode from '../ASTNode';
+import VariableDeclaration from '../statements/VariableDeclaration';
+import FunctionCall from '../expressions/FunctionCall';
+import Program from '../Program';
+import Position from '../expressions/Position';
+import OpExpression from '../expressions/OpExpression';
+import ErrorBuilder from '../Errors/ErrorBuilder';
+import { CreatePosition } from '../../CreateStatements/CreateStatementTypes';
+import CreateMarker from '../statements/CreateMarker';
+import { isNumber, isString } from '../../util/typeChecking';
 import IfElseBlock from '../statements/IfElseBlock';
 import { MAX_CANVAS_SIZE } from '../../util/constants';
 
@@ -164,20 +164,21 @@ export class StaticCheckVisitor implements Visitor<StaticCheckVisitorContext, St
 
   visitCoordinateAccess(n: CoordinateAccess, t: StaticCheckVisitorContext): void {
     const name = this.getStringTokenValue(n.variableName, t);
-    if (!t.constantTable.has(name) && !t.variableTable.has(name)) t.staticErrorBuilder.buildError(`Variable ${name} is undefined`, n.variableName.range);
+    if (!t.constantTable.has(name) && !t.variableTable.has(name))
+      t.staticErrorBuilder.buildError(`Variable ${name} is undefined`, n.variableName.range);
   }
 
   visitCreateMarker(n: CreateMarker, t: StaticCheckVisitorContext): void {
     const type = this.getStringTokenValue(n.markerType, t);
-    if (type !== "stop sign" && type !== "traffic light" && type !== "bus stop" && type !== "train stop") {
-      t.staticErrorBuilder.buildError("Invalid marker type", n.range);
+    if (type !== 'stop sign' && type !== 'traffic light' && type !== 'bus stop' && type !== 'train stop') {
+      t.staticErrorBuilder.buildError('Invalid marker type', n.range);
     }
   }
 
   visitCreatePolyline(n: CreatePolyline, t: StaticCheckVisitorContext): void {
     const type = this.getStringTokenValue(n.streetType, t);
-    if (type !== "highway" && type !== "street" && type !== "bridge") {
-      t.staticErrorBuilder.buildError("Invalid street type", n.range);
+    if (type !== 'highway' && type !== 'street' && type !== 'bridge') {
+      t.staticErrorBuilder.buildError('Invalid street type', n.range);
     }
   }
 
@@ -190,12 +191,12 @@ export class StaticCheckVisitor implements Visitor<StaticCheckVisitorContext, St
 
   visitTokenNode(n: TokenNode, t: StaticCheckVisitorContext): StaticCheckVisitorReturnType {
     switch (n.targetValueType) {
-      case "string":
+      case 'string':
         return n.tokenValue;
-      case "number":
+      case 'number':
         return Number(n.tokenValue);
-      case "truthValue":
-        return n.tokenValue === "true";
+      case 'truthValue':
+        return n.tokenValue === 'true';
     }
     const name = n.tokenValue;
     if (t.constantTable.has(name)) {
@@ -203,7 +204,7 @@ export class StaticCheckVisitor implements Visitor<StaticCheckVisitorContext, St
     } else if (t.variableTable.has(name)) {
       return t.variableTable.get(name);
     } else {
-      t.staticErrorBuilder.buildError("Variable does not exist", n.range);
+      t.staticErrorBuilder.buildError(`Variable ${name} is undefined`, n.range);
       return 0;
     }
   }
@@ -215,8 +216,8 @@ export class StaticCheckVisitor implements Visitor<StaticCheckVisitorContext, St
   private getStringTokenValue(token: TokenNode, t: StaticCheckVisitorContext): string {
     const str = token.accept(this, t);
     if (!isString(str)) {
-      t.staticErrorBuilder.buildError("Token is not a string", token.range);
-      return "";
+      t.staticErrorBuilder.buildError('Token is not a string', token.range);
+      return '';
     }
     return str;
   }
@@ -224,7 +225,7 @@ export class StaticCheckVisitor implements Visitor<StaticCheckVisitorContext, St
   private getNumberTokenValue(token: TokenNode, t: StaticCheckVisitorContext): number {
     const num = token.accept(this, t);
     if (!isNumber(num)) {
-      t.staticErrorBuilder.buildError("Token is not a number", token.range);
+      t.staticErrorBuilder.buildError('Token is not a number', token.range);
       return 0;
     }
     return Number(num);

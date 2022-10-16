@@ -21,7 +21,7 @@ loopBlock: LOOP  POSITIVE_NUMBER  TIMES  statement+  END_LOOP;
 
 // Control Flow Block
 ifElseBlock: IF firstOpExpr THEN branchBody (ELSE_IF firstOpExpr THEN branchBody)* (ELSE branchBody)? END_IF;
-branchBody: statement+;
+branchBody: statement*;
 
 // Variables
 variableAssignment: variableName  EQ  expression SEMICOLON;
