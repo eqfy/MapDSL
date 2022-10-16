@@ -33,7 +33,7 @@ streetOutput: (HIGHWAY | STREET | BRIDGE)  FROM  expression TO  expression;
 // Expressions
 // We do not allow operations on position
 expression: (firstOpExpr | opExpr | position);
-firstOpExpr: opExpr (OPERATOR opExpr)*; // The first op expression does need parenthesis
+firstOpExpr: opExpr (OPERATOR opExpr)*; // The first op expression does not need parenthesis
 opExpr: OPEN_PAREN opExpr (OPERATOR opExpr)* CLOSE_PAREN | positionAccess | functionCall | token;
 position: (OPEN_PAREN  firstOpExpr  COMMA  firstOpExpr  CLOSE_PAREN );
 positionAccess: NAME CHAIN_OP COORDINATE;

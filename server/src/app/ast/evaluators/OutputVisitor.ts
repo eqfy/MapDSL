@@ -92,7 +92,6 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
     for (const statement of n.elseBranch) {
       statement.accept(this, t);
     }
-    return undefined;
   }
 
   visitFunctionCall(n: FunctionCall, t: OutputVisitorContext): OutputVisitorReturnType {
@@ -146,6 +145,7 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
     const evaluatedValues: EvaluatedExpression[] = [];
     for (const expression of n.expressions) {
       const val = expression.accept(this, t);
+      if (val !== undefined) return;
       if (isNumber(val) || isBoolean(val)) {
         evaluatedValues.push({val, range: expression.range});
       } else {
@@ -155,7 +155,7 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
     const evaluatedOperators: EvaluatedOperator[] = [];
     for (const operator of n.operators) {
       const val = operator.accept(this, t);
-      if (!val) return;
+      if (val !== undefined) return;
       if (isString(val)) {
         evaluatedOperators.push({val, range: operator.range});
       } else {
@@ -176,7 +176,7 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
         const leftValue = evaluatedValues[i];
         const rightValue = evaluatedValues[i + 1];
         const finalVal = numOpEvaluator(operator, leftValue, rightValue, t.dynamicErrorBuilder);
-        if (!finalVal) return;
+        if (finalVal===undefined) return;
         evaluatedValues[i] = finalVal;
         evaluatedValues.splice(i+1, 1);
         evaluatedOperators.splice(i, 1);
@@ -194,7 +194,7 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
         const leftValue = evaluatedValues[i];
         const rightValue = evaluatedValues[i + 1];
         const finalVal = numOpEvaluator(operator, leftValue, rightValue, t.dynamicErrorBuilder);
-        if (!finalVal) return;
+        if (finalVal===undefined) return;
         evaluatedValues[i] = finalVal;
         evaluatedValues.splice(i+1, 1);
         evaluatedOperators.splice(i, 1);
@@ -212,7 +212,7 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
       const rightValue = evaluatedValues[i + 1];
       if (isNumber(leftValue.val) && isNumber(rightValue.val)) {
         const finalVal = numOpEvaluator(operator, leftValue, rightValue, t.dynamicErrorBuilder);
-        if (!finalVal) return;
+        if (finalVal===undefined) return;
         evaluatedValues[i] = finalVal;
         evaluatedValues.splice(i+1, 1);
         evaluatedOperators.splice(i, 1);
@@ -229,7 +229,7 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
       const leftValue = evaluatedValues[i];
       const rightValue = evaluatedValues[i + 1];
       const finalVal = booleanOpEvaluator(operator, leftValue, rightValue, t.dynamicErrorBuilder);
-      if (!finalVal) return;
+      if (finalVal===undefined) return;
       evaluatedValues[i] = finalVal;
       evaluatedValues.splice(i+1, 1);
       evaluatedOperators.splice(i, 1);
@@ -237,6 +237,9 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
     }
     // console.log("expr eval 5", evaluatedValues, evaluatedOperators);
 
+    if (evaluatedOperators.length > 1) {
+      t.dynamicErrorBuilder.buildError("Expression cannot be fully reduced", n.range);
+    }
     return evaluatedValues[0].val;
   }
 

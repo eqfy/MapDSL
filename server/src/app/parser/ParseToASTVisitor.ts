@@ -356,7 +356,7 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
       return this.visitOpExpr(opExprs[0]);
     }
     // Parser enforces there must be n opExprUnits (n >= 1) and n - 1 operations
-    const operableExpressions: OperableExpr[] = []
+    const operableExpressions: OperableExpr[] = [];
     for (const opExp of opExprs) {
       operableExpressions.push(this.visitOpExpr(opExp));
     }
