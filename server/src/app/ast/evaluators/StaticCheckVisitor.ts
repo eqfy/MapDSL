@@ -1,4 +1,5 @@
 import { Visitor } from "../Visitor";
+import CanvasConfiguration from "../CanvasConfiguration";
 import DefinitionBlock from "../DefinitionBlock";
 import TokenNode from "../expressions/TokenNode";
 import OutputBlock from "../OutputBlock";
@@ -17,6 +18,7 @@ import ErrorBuilder from "../Errors/ErrorBuilder";
 import { CreatePosition} from "../../CreateStatements/CreateStatementTypes";
 import CreateMarker from "../statements/CreateMarker";
 import { isNumber, isString } from "../../util/typeChecking";
+import { MAX_CANVAS_SIZE } from '../../util/constants';
 
 // This type represents all values allowed in our language
 export type StaticCheckVisitorReturnType = CreatePosition | number | string | void;
@@ -30,8 +32,23 @@ interface StaticCheckVisitorContext {
 
 export class StaticCheckVisitor implements Visitor<StaticCheckVisitorContext, StaticCheckVisitorReturnType> {
   visitProgram(n: Program, t: StaticCheckVisitorContext): void {
+    n.canvasConfiguration?.accept(this, t);
     n.definitionBlock?.accept(this, t);
     n.outputBlock.accept(this, t);
+  }
+
+  visitCanvasConfiguration(n: CanvasConfiguration, t: StaticCheckVisitorContext): StaticCheckVisitorReturnType {
+    if (!n.width || !n.height) return;
+    const width = this.getNumberTokenValue(n.width, t);
+    const height = this.getNumberTokenValue(n.height, t);
+    
+    if (width > MAX_CANVAS_SIZE || width <= 0) {
+      t.staticErrorBuilder.buildError(`Invalid canvas width: > ${MAX_CANVAS_SIZE} or not positive`, n.width.range);
+    }
+
+    if (height > MAX_CANVAS_SIZE || height <= 0) {
+      t.staticErrorBuilder.buildError(`Invalid canvas height: > ${MAX_CANVAS_SIZE} or not positive`, n.height.range);
+    }
   }
 
   visitDefinitionBlock(n: DefinitionBlock, t: StaticCheckVisitorContext): void {

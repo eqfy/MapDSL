@@ -2,6 +2,7 @@ import { MapGeneratorParserVisitor } from "./gen/MapGeneratorParserVisitor";
 import { AbstractParseTreeVisitor } from "antlr4ts/tree";
 import {
   CreateCallContext,
+  CanvasConfigurationContext,
   DefinitionBlockContext,
   ExpressionContext,
   FunctionCallContext,
@@ -24,6 +25,7 @@ import {
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
 import Program from "../ast/Program";
 import ASTNode from "../ast/ASTNode";
+import CanvasConfiguration from '../ast/CanvasConfiguration';
 import DefinitionBlock from "../ast/DefinitionBlock";
 import OutputBlock from "../ast/OutputBlock";
 import VariableAssignment from "../ast/statements/VariableAssignment";
@@ -56,12 +58,37 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
     try {
       const output = this.visitOutputBlock(ctx.outputBlock());
       const def = this.visitDefinitionBlock(ctx.definitionBlock());
-      const range = { start: def ? def.range.start : output.range.start, end: output.range.end };
-      return new Program(range, output, def);
+      const canvas = this.visitCanvasConfiguration(ctx.canvasConfiguration());
+      const range = {
+        start: canvas? canvas.range.start : (def ? def.range.start : output.range.start),
+        end: output.range.end
+      };
+      return new Program(range, output, canvas, def);
     } catch (err) {
       console.error(err);
       return new Program({ start: 0, end: 0 }, new OutputBlock({ start: 0, end: 0 }, []));
     }
+  }
+
+  visitCanvasConfiguration(ctx: CanvasConfigurationContext | undefined): CanvasConfiguration {
+    const range = { start: 0, end: 0 };
+    let width, height;
+    if (ctx) {
+      this.addSemanticTokenInfo([
+        { token: ctx.CANVAS_SIZE(), type: SemanticTokenTypes.keyword, mods: [] },
+        { token: ctx.POSITIVE_NUMBER(0), type: SemanticTokenTypes.number, mods: [] },
+        { token: ctx.BY(), type: SemanticTokenTypes.modifier, mods: [] },
+        { token: ctx.POSITIVE_NUMBER(1), type: SemanticTokenTypes.number, mods: [] }
+      ]);
+
+
+      width = this.getToken(ctx.POSITIVE_NUMBER(0), "number");
+      height = this.getToken(ctx.POSITIVE_NUMBER(1), "number");
+
+      range.start = this.getToken(ctx.CANVAS_SIZE(), "string").range.start;
+      range.end = height.range.end;
+    }
+    return new CanvasConfiguration(range, width, height);
   }
 
   visitDefinitionBlock(ctx: DefinitionBlockContext | undefined): DefinitionBlock {

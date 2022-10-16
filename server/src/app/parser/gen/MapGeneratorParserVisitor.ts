@@ -1,9 +1,10 @@
-// Generated from ./src/parser/MapGeneratorParser.g4 by ANTLR 4.9.0-SNAPSHOT
+// Generated from ./src/app/parser/MapGeneratorParser.g4 by ANTLR 4.9.0-SNAPSHOT
 
 
 import { ParseTreeVisitor } from "antlr4ts/tree/ParseTreeVisitor";
 
 import { ProgramContext } from "./MapGeneratorParser";
+import { CanvasConfigurationContext } from "./MapGeneratorParser";
 import { DefinitionBlockContext } from "./MapGeneratorParser";
 import { GlobalBodyElementContext } from "./MapGeneratorParser";
 import { FunctionDeclarationContext } from "./MapGeneratorParser";
@@ -41,6 +42,13 @@ export interface MapGeneratorParserVisitor<Result> extends ParseTreeVisitor<Resu
 	 * @return the visitor result
 	 */
 	visitProgram?: (ctx: ProgramContext) => Result;
+
+	/**
+	 * Visit a parse tree produced by `MapGeneratorParser.canvasConfiguration`.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	visitCanvasConfiguration?: (ctx: CanvasConfigurationContext) => Result;
 
 	/**
 	 * Visit a parse tree produced by `MapGeneratorParser.definitionBlock`.
