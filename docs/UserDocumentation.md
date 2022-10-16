@@ -22,7 +22,7 @@ Creates the following map:
 
 Creating markers can be done by specifying a marker type, and a location like: `CREATE [bus stop, traffic light, stop sign, or train stop] at (x,y);`
 
-#### CREATE Usage examples:
+#### CREATE (Marker) Usage examples:
 
 ```
 CREATE bus stop at (500,240);
@@ -39,7 +39,7 @@ Creates the following map:
 
 Creating streets can be done by specifying a street type, a start location, and an end location: `CREATE [street, highway, or bridge] from (x1,y1) to (x2,y2);`
 
-#### CREATE Usage examples:
+#### CREATE (Line) Usage examples:
 
 ```
 CREATE street from (500,500) to (250,250);
@@ -52,6 +52,37 @@ CREATE bridge from middlePosition to (middleX, 0);
 
 Creates the following map:
 ![](./examplePhotos/3.png)
+
+### Creating Buildings and Water
+
+Creating buildings or water can be done by specifying four coordinate positions, in any logical order that creates a rectangle: `CREATE [water or building] at pos1 pos2 pos3 pos4;`
+
+You can think of it like this: `CREATE [water or building] at NorthWestPosition NorthEastPosition SouthEastPosition SouthWestPosition;`
+Or this: `CREATE [water or building] at SouthWestPosition SouthEastPosition NorthEastPosition NorthWestPosition;`
+
+#### CREATE (Polygon) Usage examples:
+
+Note: Code is unnecessary verbose so that you can understand the documentation better
+
+```
+VARIABLE riverWidth = 25;
+VARIABLE riverLength = 1000;
+VARIABLE riverNWPos = (300,300);
+VARIABLE riverNEPos = (riverNWPos.x + riverLength, riverNWPos.y);
+VARIABLE riverSEPos = (riverNWPos.x + riverLength, riverNWPos.y - riverWidth);
+VARIABLE riverSWPos = (riverNWPos.x, riverNWPos.y - riverWidth);
+CREATE water at riverNWPos riverNEPos riverSEPos riverSWPos;
+
+VARIABLE buildingSize = 100;
+VARIABLE buildingSWPos = riverNWPos;
+VARIABLE buildingSEPos = (buildingSWPos.x + buildingSize, buildingSWPos.y);
+VARIABLE buildingNEPos = (buildingSEPos.x, buildingSEPos.y + buildingSize);
+VARIABLE buildingNWPos = (buildingSWPos.x, buildingSWPos.y + buildingSize);
+CREATE building at buildingSWPos buildingSEPos buildingNEPos buildingNWPos;
+```
+
+Creates the following map:
+![](./examplePhotos/7.png)
 
 ## Variables and Constants
 
@@ -163,11 +194,13 @@ createStreetBlock(newBlockLocation, 128);
 Creates the following map:
 ![](./examplePhotos/5.png)
 
-## Loops
+## Control Flow
+
+### Loops
 
 Loops can be used to execute any number of statements any number of times. You must specify the number of times to loop.
 
-#### LOOP example usage:
+#### LOOP example usage 1:
 
 ```
 VARIABLE defaultBlockSize = 32;
@@ -181,6 +214,8 @@ END_LOOP
 Creates the following map:
 ![](./examplePhotos/6.png)
 
+#### LOOP example usage 2:
+
 ```
 FUNCTION createCity(northWestPosition, blockSize) {
         LOOP 3 TIMES
@@ -191,6 +226,100 @@ FUNCTION createCity(northWestPosition, blockSize) {
         END_LOOP
 }
 ```
+
+### IF / ELSE_IF / ELSE
+
+You can use IF blocks to conditionally preform operations in your program. IF blocks can contain ELSE_IF, as well as ELSE blocks. IF blocks can also be nested.
+
+#### IF / ELSE_IF / ELSE example usage 1:
+
+```
+IF 1 > 2 THEN
+        // do something
+ELSE
+        // do something else
+END_IF
+
+IF myBooleanVariable THEN
+        // do something
+ELSE_IF myFirstNumberVariable > mySecondNumberVariable THEN
+        // do something else if
+END_IF
+```
+
+#### IF / ELSE_IF / ELSE example usage 2:
+
+```
+DEFINITIONS
+        FUNCTION createSquare(squareType, squareSize, nwPos) {
+                VARIABLE nePos = (nwPos.x + squareSize, nwPos.y);
+                VARIABLE sePos = (nwPos.x + squareSize, nwPos.y - squareSize);
+                VARIABLE swPos = (nwPos.x, nwPos.y - squareSize);
+
+                IF squareType == 1 THEN // squareType 1 means water
+                        CREATE water at nwPos nePos sePos swPos;
+                ELSE_IF squareType == 2 THEN // squareType 2 means water
+                        CREATE building at nwPos nePos sePos swPos;
+                END_IF
+        }
+
+        FUNCTION createStreetBlock(northWestPosition, blockSize, addStopLights) {
+
+
+                IF blockSize <= blockSizeLimit THEN
+                        // do nothing, the block size is good!
+                ELSE_IF (blockSize / 2 < blockSizeLimit) THEN
+                        // try to cut the block size in half first
+                        blockSize = blockSize / 2;
+                ELSE
+                        // if cutting in half doesnt work, then just use the blockSizeLimit
+                        blockSize = blockSizeLimit;
+                END_IF
+
+                VARIABLE northEastPosition = (northWestPosition.x + blockSize, northWestPosition.y);
+                VARIABLE southEastPosition = (northWestPosition.x + blockSize, northWestPosition.y - blockSize);
+                VARIABLE southWestPosition = (northWestPosition.x, northWestPosition.y - blockSize);
+
+                IF addStopLights AND addMarkers THEN
+                        newTL(northWestPosition);
+                        newTL(northEastPosition);
+                        newTL(southWestPosition);
+                        newTL(southEastPosition);
+                END_IF
+
+                CREATE street from northWestPosition to northEastPosition;
+                CREATE street from northEastPosition to southEastPosition;
+                CREATE street from southEastPosition to southWestPosition;
+                CREATE street from southWestPosition to northWestPosition;
+        }
+
+        FUNCTION createCity(northWestPosition, blockSize, addStopLights) {
+                LOOP 3 TIMES
+                        createStreetBlock(northWestPosition, blockSize, addStopLights);
+                        createStreetBlock((northWestPosition.x + blockSize, northWestPosition.y), blockSize, addStopLights);
+                        createStreetBlock((northWestPosition.x + blockSize + blockSize, northWestPosition.y), blockSize, addStopLights);
+                        northWestPosition = (northWestPosition.x, northWestPosition.y - blockSize);
+                END_LOOP
+
+        }
+
+        FUNCTION newTL(position) {
+                CREATE traffic light at position;
+        }
+
+        CONSTANT addMarkers = true;
+        CONSTANT blockSizeLimit = 1000;
+END_DEFINITIONS
+
+OUTPUT
+        createSquare(1, 500, (1000,1000));
+        createSquare(2, 100, (1610,985));
+        createCity((1600,1000), 128, true);
+END_OUTPUT
+```
+
+Creates the following map:
+![](./examplePhotos/8.png)
 
 ## Program Structure
 

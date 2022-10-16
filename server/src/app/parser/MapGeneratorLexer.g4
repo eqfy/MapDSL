@@ -2,6 +2,7 @@ lexer grammar MapGeneratorLexer;
 
 // (DEFAULT_MODE)
 WS : [\r\n\t ]+ -> skip;
+LINE_COMMENT : '//' ~[\r\n]* -> skip;
 OPEN_CURLY : '{';
 CLOSE_CURLY : '}';
 OPEN_PAREN : '(';
@@ -38,7 +39,7 @@ END_DEFINITION: 'END_DEFINITIONS';
 LOOP: 'LOOP';
 END_LOOP: 'END_LOOP';
 IF: 'IF';
-ELSE_IF: 'ELSE IF';
+ELSE_IF: 'ELSE_IF';
 ELSE: 'ELSE';
 THEN: 'THEN';
 END_IF: 'END_IF';

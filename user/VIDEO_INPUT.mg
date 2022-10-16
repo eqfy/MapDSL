@@ -57,6 +57,6 @@ OUTPUT
         createCity((centerX + defaultBlockSize,centerY + threeBlocks), 128);
         createWater((1375, 925));
         CREATE bridge from (centerX + threeBlocks, centerY) to (centerX + threeBlocks, centerY - defaultBlockSize);
-
+ 
         VARIABLE busStopX = centerX - threeBlocks + 100;
 END_OUTPUT
