@@ -4,6 +4,7 @@ import TokenNode from "../expressions/TokenNode";
 import OutputBlock from "../OutputBlock";
 import VariableAssignment from "../statements/VariableAssignment";
 import CreatePolyline from "../statements/CreatePolyline";
+import CreatePolygon from '../statements/CreatePolygon';
 import CoordinateAccess from "../expressions/CoordinateAccess";
 import FunctionDeclaration from "../FunctionDeclaration";
 import LoopBlock from "../statements/LoopBlock";
@@ -13,15 +14,16 @@ import FunctionCall from "../expressions/FunctionCall";
 import Program from "../Program";
 import Position from "../expressions/Position";
 import OpExpression from "../expressions/OpExpression";
-import { CreatePosition, isCreatePosition, MarkerCreateStatement, PolylineCreateStatement } from "../../CreateStatements/CreateStatementTypes";
+import { CreatePosition, isCreatePosition, MarkerCreateStatement, PolygonCreateStatement, PolylineCreateStatement } from "../../CreateStatements/CreateStatementTypes";
 import CreateStatementBuilder from "../../CreateStatements/CreateStatementBuilder";
 import CreateMarker from "../statements/CreateMarker";
 import { isBoolean, isNumber, isString } from "../../util/typeChecking";
 import ErrorBuilder from "../Errors/ErrorBuilder";
 import IfElseBlock from "../statements/IfElseBlock";
 import { booleanOpEvaluator, EvaluatedExpression, EvaluatedOperator, numOpEvaluator } from "./OpExprHelper";
-import { DEFAULT_CANVAS_HEIGHT, DEFAULT_CANVAS_WIDTH, MAX_CANVAS_SIZE } from "../../util/constants";
-import { Range } from "../../util/Range";
+import Expression from '../expressions/Expression';
+import { DEFAULT_CANVAS_HEIGHT, DEFAULT_CANVAS_WIDTH, MAX_CANVAS_SIZE } from '../../util/constants';
+import { Range } from '../../util/Range';
 import CanvasConfiguration from "../CanvasConfiguration";
 
 // This type represents all values allowed in our language
@@ -342,6 +344,48 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
     t.createStatementBuilder.buildPolyline(polyline);
   }
 
+  visitCreatePolygon(n: CreatePolygon, t: OutputVisitorContext): void {
+    const type = this.getStringTokenValue(n.polygonType, t);
+
+    if (type !== 'water' && type !== 'building') return;
+
+    const positions: CreatePosition[] = [];
+
+    for (const expr of n.positions) {
+      const position = expr.accept(this, t);
+      if (!isCreatePosition(position)) {
+        t.dynamicErrorBuilder.buildError("Invalid positions", {
+          start: n.positions[0].range.start, end: n.positions[n.positions.length - 1].range.end
+        });
+        return;
+      }
+      positions.push(position);
+    }
+
+    let valid = false;
+    for (let i = 0; i < positions.length; i ++) {
+      this.checkPositionInCanvas(positions[i], t, n.positions[i].range);
+      valid = true;
+    }
+
+    if (!valid) {
+      return;
+    }
+
+    if (positions.length < 4) {
+      t.dynamicErrorBuilder.buildError("Impossible - CREATE polygon has fewer than 4 positions (enforced by Parser", {
+        start: n.positions[0].range.start, end: n.positions[n.positions.length - 1].range.end
+      });
+      return;
+    }
+
+    const polygon: PolygonCreateStatement = {
+      type: type,
+      positions: [positions[0], positions[1], positions[2], positions[3]]
+    };
+    t.createStatementBuilder.buildPolygon(polygon);
+  }
+
   visitTokenNode(n: TokenNode, t: OutputVisitorContext): OutputVisitorReturnType {
     switch (n.targetValueType) {
       case "string":
@@ -375,6 +419,7 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
 
   // check if a position is in canvas, return true if so, report dynamic error and return false otherwise
   private checkPositionInCanvas(pos: CreatePosition, t: OutputVisitorContext, range: Range): boolean {
+    if (!pos) return false;
     if (pos.x < 0 || pos.x > t.canvas.width || pos.y < 0 || pos.y > t.canvas.height) {
       t.dynamicErrorBuilder.buildError(`Position (${pos.x}, ${pos.y}) outside of canvas which is ${t.canvas.width} by ${t.canvas.height}`, range);
       return false;

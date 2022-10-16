@@ -5,7 +5,7 @@ export interface CreatePosition {
   y: number;
 }
 
-export type CreateStatement = PolylineCreateStatement | MarkerCreateStatement;
+export type CreateStatement = PolylineCreateStatement | MarkerCreateStatement | PolygonCreateStatement;
 
 export interface PolylineCreateStatement {
   type: 'highway' | 'street' | 'bridge';
@@ -16,6 +16,11 @@ export interface PolylineCreateStatement {
 export interface MarkerCreateStatement {
   type: 'bus stop' | 'traffic light' | 'stop sign' | 'train stop';
   position: CreatePosition;
+}
+
+export interface PolygonCreateStatement {
+  type: 'water' | 'building';
+  positions: [CreatePosition, CreatePosition, CreatePosition, CreatePosition];
 }
 
 // Type checking
