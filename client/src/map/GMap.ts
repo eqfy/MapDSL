@@ -6,8 +6,10 @@ import { Canvas } from './Canvas';
 export default class GMap {
   static initMap(): void {
 
-    // set up the coordinate system
-    CoordinateUtils.configure(CoordinateUtils.DEFAULT_CANVAS_WIDTH, CoordinateUtils.DEFAULT_CANVAS_HEIGHT);
+    const { canvas: { width, height }, result: listOfCreateStatements } = GMap.getMapCreateStatements();
+    
+    // set up the coordinate system based on canvas size
+    CoordinateUtils.configure(width, height);
 
     const map = new google.maps.Map(document.getElementById('map') as HTMLElement, {
       zoom: CoordinateUtils.defaultZoom,
@@ -27,8 +29,6 @@ export default class GMap {
         }
       }
     });
-
-    const listOfCreateStatements = GMap.getMapCreateStatements();
 
     // The tiled and untiled variants of our coordinate map - the roads/markers remain in place when switching variants
     map.mapTypes.set('tiled', new CoordMapType(new google.maps.Size(256, 256), true));
@@ -51,17 +51,20 @@ export default class GMap {
     });
   }
 
-  private static getMapCreateStatements(): CreateStatement[] {
+  private static getMapCreateStatements(): { canvas: { width: number, height: number }, result: CreateStatement[]} {
     const xhr = new XMLHttpRequest();
     const url = '/map';
     xhr.open('GET', url, false);
     xhr.setRequestHeader('Content-type', 'application/json');
     xhr.send(null);
     if (xhr.status === 200) {
-      return JSON.parse(xhr.response).result;
+      return JSON.parse(xhr.response);
     } else {
       console.error('request failed', xhr.response.error);
-      return xhr.response;
+      return {
+        canvas: { width: CoordinateUtils.DEFAULT_CANVAS_WIDTH, height: CoordinateUtils.DEFAULT_CANVAS_HEIGHT},
+        result: []
+      };
     }
   }
 }
