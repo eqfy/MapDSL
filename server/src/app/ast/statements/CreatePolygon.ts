@@ -5,12 +5,12 @@ import Expression from '../expressions/Expression';
 import { Range } from '../../util/Range';
 export default class CreatePolygon extends CreateStatement {
   readonly polygonType: TokenNode;
-  readonly positions: [Expression, Expression, Expression, Expression];
+  readonly positions: Expression[];
 
-  constructor(range: Range, polygonType: TokenNode, positions: [Expression, Expression, Expression, Expression]) {
+  constructor(range: Range, polygonType: TokenNode, positions: Expression[]) {
     super(range);
     this.polygonType = polygonType;
-	this.positions = positions;
+	  this.positions = positions;
   }
 
   accept<T, U>(v: Visitor<T, U>, t: T): U {

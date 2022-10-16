@@ -349,23 +349,43 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
 
     if (type !== 'water' && type !== 'building') return;
 
-    const positions = n.positions.map((position: Expression) => position.accept(this, t));
+    n.positions.map((position: Expression) => position.accept(this, t));
 
-    const invalidity = n.positions.reduce((invalidity: boolean, position: Expression) =>
-    invalidity || isCreatePosition(position), false);
+    const positions: CreatePosition[] = [];
 
-    if (invalidity) {
-      t.dynamicErrorBuilder.buildError("Invalid positions", {
+    for (const expr of n.positions) {
+      const position = expr.accept(this, t);
+      if (!isCreatePosition(position)) {
+        t.dynamicErrorBuilder.buildError("Invalid positions", {
+          start: n.positions[0].range.start, end: n.positions[n.positions.length - 1].range.end
+        });
+        return;
+      }
+      positions.push(position);
+    }
+
+    let valid = false;
+    for (let i = 0; i < positions.length; i ++) {
+      this.checkPositionInCanvas(positions[i], t, n.positions[i].range);
+      valid = true;
+    }
+
+    if (!valid) {
+      return;
+    }
+
+    if (positions.length < 4) {
+      t.dynamicErrorBuilder.buildError("Impossible - CREATE polygon has fewer than 4 positions (enforced by Parser", {
         start: n.positions[0].range.start, end: n.positions[n.positions.length - 1].range.end
       });
       return;
     }
 
-    // const polygon: PolygonCreateStatement = {
-    //   type: type,
-    //   positions: positions
-    // };
-    // t.createStatementBuilder.buildPolyline(polyline);
+    const polygon: PolygonCreateStatement = {
+      type: type,
+      positions: [positions[0], positions[1], positions[2], positions[3]]
+    };
+    t.createStatementBuilder.buildPolygon(polygon);
   }
 
   visitTokenNode(n: TokenNode, t: OutputVisitorContext): OutputVisitorReturnType {
@@ -401,6 +421,7 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
 
   // check if a position is in canvas, return true if so, report dynamic error and return false otherwise
   private checkPositionInCanvas(pos: CreatePosition, t: OutputVisitorContext, range: Range): boolean {
+    if (!pos) return false;
     if (pos.x < 0 || pos.x > t.canvas.width || pos.y < 0 || pos.y > t.canvas.height) {
       t.dynamicErrorBuilder.buildError(`Position (${pos.x}, ${pos.y}) outside of canvas which is ${t.canvas.width} by ${t.canvas.height}`, range);
       return false;

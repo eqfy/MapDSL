@@ -19,6 +19,7 @@ import { GlobalVariableDeclarationContext } from "./MapGeneratorParser";
 import { CreateCallContext } from "./MapGeneratorParser";
 import { MarkerOutputContext } from "./MapGeneratorParser";
 import { StreetOutputContext } from "./MapGeneratorParser";
+import { PolygonOutputContext } from "./MapGeneratorParser";
 import { ExpressionContext } from "./MapGeneratorParser";
 import { FirstOpExprContext } from "./MapGeneratorParser";
 import { OpExprContext } from "./MapGeneratorParser";
@@ -211,6 +212,17 @@ export interface MapGeneratorParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitStreetOutput?: (ctx: StreetOutputContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `MapGeneratorParser.polygonOutput`.
+	 * @param ctx the parse tree
+	 */
+	enterPolygonOutput?: (ctx: PolygonOutputContext) => void;
+	/**
+	 * Exit a parse tree produced by `MapGeneratorParser.polygonOutput`.
+	 * @param ctx the parse tree
+	 */
+	exitPolygonOutput?: (ctx: PolygonOutputContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `MapGeneratorParser.expression`.

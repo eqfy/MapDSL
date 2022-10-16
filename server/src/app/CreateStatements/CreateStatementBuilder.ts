@@ -1,4 +1,4 @@
-import { CreateStatement, MarkerCreateStatement, PolylineCreateStatement } from './CreateStatementTypes';
+import { CreateStatement, MarkerCreateStatement, PolygonCreateStatement, PolylineCreateStatement } from './CreateStatementTypes';
 import { testing } from '../util/constants';
 
 export default class CreateStatementBuilder {
@@ -43,6 +43,10 @@ export default class CreateStatementBuilder {
 
   buildPolyline(polylineCreateStatement: PolylineCreateStatement): void {
     this._createStatements.push(polylineCreateStatement);
+  }
+
+  buildPolygon(polygonCreateStatement: PolygonCreateStatement): void {
+    this._createStatements.push(polygonCreateStatement);
   }
 
   buildMarker(markerCreateStatement: MarkerCreateStatement): void {

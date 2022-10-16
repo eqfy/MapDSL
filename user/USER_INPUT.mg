@@ -12,10 +12,19 @@ DEFINITIONS
         
         FUNCTION createTrafficLight(position) {
                 CREATE traffic light at position;
-        } 
+        }
+
+        FUNCTION createBuilding(topLeftCorner) {
+                CREATE building at
+                        topLeftCorner
+                        (topLeftCorner.x, topLeftCorner.y + buildingSize)
+                        (topLeftCorner.x + buildingSize, topLeftCorner.y + buildingSize)
+                        (topLeftCorner.x + buildingSize, topLeftCorner.y);
+        }
 
         CONSTANT centerPosition = (512,512);
         CONSTANT defaultBlockSize = 256;
+        CONSTANT buildingSize = 100;
 END_DEFINITIONS
 
 OUTPUT
@@ -33,9 +42,16 @@ OUTPUT
         VARIABLE loops= 10;
 
         VARIABLE eastStreetLightPosition = (centerPosition.x, centerPosition.y);
+        VARIABLE buildingCornerPosition = (centerPosition.x + 20, centerPosition.y + 20);
+
+        CREATE water at (0, 0) (512, 0) (512, 1024) (0, 1024);
 
         LOOP 10 TIMES
             createTrafficLight(eastStreetLightPosition);
+            createBuilding(buildingCornerPosition);
+            createBuilding((buildingCornerPosition.x + 130, buildingCornerPosition.y + buildingSize));
+
             eastStreetLightPosition = (eastStreetLightPosition.x + defaultBlockSize, eastStreetLightPosition.y);
+            buildingCornerPosition = (buildingCornerPosition.x + defaultBlockSize, buildingCornerPosition.y);
         END_LOOP
 END_OUTPUT

@@ -29,10 +29,10 @@ localVariableDeclaration: VARIABLE  variableName  EQ  expression SEMICOLON;
 globalVariableDeclaration: CONSTANT variableName EQ expression SEMICOLON;
 
 // Outputs
-createCall: CREATE  (markerOutput | streetOutput) SEMICOLON;
+createCall: CREATE  (markerOutput | streetOutput | polygonOutput) SEMICOLON;
 markerOutput: (BUS_STOP | STOP_SIGN | TRAFFIC_LIGHT | TRAIN_STOP)  AT expression;
 streetOutput: (HIGHWAY | STREET | BRIDGE)  FROM  expression TO  expression;
-polygonOutput: (WATER | BUILDING) AT expression expression expression AND expression;
+polygonOutput: (WATER | BUILDING) AT expression expression expression expression;
 
 // Expressions
 // We do not allow operations on position

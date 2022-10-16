@@ -12,7 +12,8 @@ import {
   IfElseBlockContext,
   LocalVariableDeclarationContext,
   LoopBlockContext,
-  MarkerOutputContext, OpExprContext,
+  MarkerOutputContext,
+  OpExprContext,
   OutputBlockContext,
   ParameterNameContext,
   PositionAccessContext,
@@ -20,6 +21,7 @@ import {
   ProgramContext,
   StatementContext,
   StreetOutputContext,
+  PolygonOutputContext,
   VariableAssignmentContext
 } from "./gen/MapGeneratorParser";
 import { TerminalNode } from "antlr4ts/tree/TerminalNode";
@@ -35,6 +37,7 @@ import Expression from "../ast/expressions/Expression";
 import VariableDeclaration from "../ast/statements/VariableDeclaration";
 import FunctionCall from "../ast/expressions/FunctionCall";
 import CreatePolyline from "../ast/statements/CreatePolyline";
+import CreatePolygon from '../ast/statements/CreatePolygon';
 import CoordinateAccess from "../ast/expressions/CoordinateAccess";
 import TokenNode, { TokenCtxTargetValueType } from "../ast/expressions/TokenNode";
 import Position from "../ast/expressions/Position";
@@ -281,14 +284,17 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
     return new FunctionCall(range, name, expressions);
   }
 
-  visitCreateCall(ctx: CreateCallContext): CreateMarker | CreatePolyline {
+  visitCreateCall(ctx: CreateCallContext): CreateMarker | CreatePolyline | CreatePolygon {
     this.addSemanticTokenInfo([{ token: ctx.CREATE(), type: SemanticTokenTypes.keyword, mods: [] }]);
     const streetOutputCtx = ctx.streetOutput();
     const markerOutputCtx = ctx.markerOutput();
+    const polygonOutputCtx = ctx.polygonOutput();
     if (streetOutputCtx) {
       return this.visitStreetOutput(streetOutputCtx);
     } else if (markerOutputCtx) {
       return this.visitMarkerOutput(markerOutputCtx);
+    } else if (polygonOutputCtx) {
+      return this.visitPolygonOutput(polygonOutputCtx);
     } else {
       throw new Error("Impossible - MarkerOutput and StreetOutput cannot both be undefined (enforced by Parser)");
     }
@@ -353,6 +359,34 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
     const toPosition = this.visitExpression(exprCtx2);
     const range = { start: streetType.range.start, end: toPosition.range.end };
     return new CreatePolyline(range, streetType, fromPosition, toPosition);
+  }
+
+  visitPolygonOutput(ctx: PolygonOutputContext): CreatePolygon {
+    this.addSemanticTokenInfo([
+      { token: ctx.AT(), type: SemanticTokenTypes.modifier, mods: [] }
+    ]);
+    const waterCtx = ctx.WATER();
+    const buildingCtx = ctx.BUILDING();
+
+    let type;
+
+    if (waterCtx) {
+      type = waterCtx;
+    } else if (buildingCtx) {
+      type = buildingCtx;
+    } else {
+      throw new Error("Impossible - Water and Building cannot both be undefined (enforced by Parser)");
+    }
+    this.addSemanticTokenInfo([{ token: type, type: SemanticTokenTypes.type, mods: [] }]);
+
+    const positions = [];
+    for (let i = 0; i < 4; i ++) {
+      positions.push(this.visitExpression(ctx.expression(i)));
+    }
+
+    const polygonType = this.getToken(type, "string");
+    const range = { start: polygonType.range.start, end: positions[3].range.end };
+    return new CreatePolygon(range, polygonType, positions);
   }
 
   visitExpression(ctx: ExpressionContext): Expression {
