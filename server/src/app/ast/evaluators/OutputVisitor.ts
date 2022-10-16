@@ -349,8 +349,6 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
 
     if (type !== 'water' && type !== 'building') return;
 
-    n.positions.map((position: Expression) => position.accept(this, t));
-
     const positions: CreatePosition[] = [];
 
     for (const expr of n.positions) {
