@@ -15,7 +15,7 @@ export default class GMap {
       zoom: CoordinateUtils.defaultZoom,
       center: CoordinateUtils.convertCoordinateToLatLng({ x: 0, y: 0 }),
       streetViewControl: false,
-      mapTypeId: 'tiled',
+      mapTypeId: 'untiled',
       mapTypeControlOptions: {
         mapTypeIds: ['tiled', 'untiled'],
         style: google.maps.MapTypeControlStyle.DROPDOWN_MENU

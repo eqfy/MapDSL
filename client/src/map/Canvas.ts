@@ -47,10 +47,10 @@ export class Canvas {
               break;
             case 'bridge':
               bridgeOutputs.push(statement);
-            break;
+              break;
             case 'highway':
               highwayOutputs.push(statement);
-            break;
+              break;
             default:
               throw new Error('Invalid street output type');
           }
@@ -98,13 +98,13 @@ export class Canvas {
 
   public createLegend(legend: HTMLElement) {
     const markerMap = {
-      "street": Constants.STREET_LEGEND,
-      "bridge": Constants.BRIDGE_LEGEND,
-      "highway": Constants.HIGHWAY_LEGEND,
-      "stop sign": Constants.STOP_SIGN_PATH,
-      "traffic light": Constants.TRAFFICE_LIGHT_PATH,
-      "bus stop": Constants.BUS_STOP_PATH,
-      "train stop": Constants.TRAIN_STOP_PATH
+      street: Constants.STREET_LEGEND,
+      bridge: Constants.BRIDGE_LEGEND,
+      highway: Constants.HIGHWAY_LEGEND,
+      'stop sign': Constants.STOP_SIGN_PATH,
+      'traffic light': Constants.TRAFFICE_LIGHT_PATH,
+      'bus stop': Constants.BUS_STOP_PATH,
+      'train stop': Constants.TRAIN_STOP_PATH
     };
 
     let div: HTMLElement;
@@ -139,17 +139,14 @@ export class Canvas {
     };
 
     return streetOutputs.map((streetOutput: PolylineCreateStatement) => {
-      console.log(`Created a polyline for streetOutput: ${JSON.stringify(streetOutput)}`);
       return new google.maps.Polyline({
         path: [CoordinateUtils.convertCoordinateToLatLng(streetOutput.startPosition), CoordinateUtils.convertCoordinateToLatLng(streetOutput.endPosition)],
         ...commonConfiguration
-      })
+      });
     });
   }
 
   private createMarker(markerOutput: MarkerCreateStatement): google.maps.Marker {
-    console.log(`Created a marker for streetOutput: ${JSON.stringify(markerOutput)}`);
-
     let url;
     switch (markerOutput.type) {
       case 'stop sign':

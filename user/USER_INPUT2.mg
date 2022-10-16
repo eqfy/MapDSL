@@ -1,34 +1,60 @@
 DEFINITIONS
-        FUNCTION createBlock(nwPosition, blockSize) {
-                VARIABLE nePosition = (nwPosition.x + blockSize, nwPosition.y);
-                VARIABLE sePosition = (nePosition.x, nePosition.y - blockSize);
-                VARIABLE swPosition = (nwPosition.x, nwPosition.y - blockSize);
-
-                CREATE street from nwPosition to nePosition;
-                CREATE street from nePosition to sePosition;
-                CREATE street from sePosition to swPosition;
-                CREATE street from swPosition to nwPosition;
-        }
-        
-        FUNCTION createTrafficLight(position) {
+        FUNCTION newTL(position) {
                 CREATE traffic light at position;
         }
 
-        CONSTANT centerPosition = (512,512);
-        CONSTANT defaultBlockSize = 256;
+        FUNCTION createStreetBlock(northWestPosition, blockSize) {
+                VARIABLE northEastPosition = (northWestPosition.x + blockSize, northWestPosition.y);
+                VARIABLE southEastPosition = (northWestPosition.x + blockSize, northWestPosition.y - blockSize);
+                VARIABLE southWestPosition = (northWestPosition.x, northWestPosition.y - blockSize);
+
+                newTL(northWestPosition);
+                newTL(northEastPosition);
+                newTL(southWestPosition);
+                newTL(southEastPosition);
+
+                CREATE street from northWestPosition to northEastPosition;
+                CREATE street from northEastPosition to southEastPosition;
+                CREATE street from southEastPosition to southWestPosition;
+                CREATE street from southWestPosition to northWestPosition;
+
+                LOOP 10 TIMES
+                END_LOOP
+        }
+
+        FUNCTION createCity(northWestPosition, blockSize) {
+                LOOP 3 TIMES
+                        createStreetBlock(northWestPosition, blockSize);
+                        createStreetBlock((northWestPosition.x + blockSize, northWestPosition.y), blockSize);
+                        createStreetBlock((northWestPosition.x + blockSize + blockSize, northWestPosition.y), blockSize);
+                        northWestPosition = (northWestPosition.x, northWestPosition.y - blockSize);
+                END_LOOP
+
+                LOOP 10 TIMES
+
+                    fdsdada
+                END_LOOP
+        }
+
+
+        CONSTANT centerX = 1024;
+        CONSTANT centerY = 1024;
+        CONSTANT centerPosition = (centerX, centerY);
+        CONSTANT defaultBlockSize = 128;
+        CONSTANT threeBlocks = defaultBlockSize + defaultBlockSize + defaultBlockSize;
 END_DEFINITIONS
 
+
+
 OUTPUT
-        createBlock(centerPosition, defaultBlockSize);
-        createBlock((centerPosition.x + defaultBlockSize, centerPosition.y), defaultBlockSize);
+        LOOP
 
-        CREATE highway from (0,centerPosition.y) to centerPosition;
-        CREATE bridge from (0,0) to centerPosition;
 
-        createTrafficLight(centerPosition);
-        CREATE stop sign at (512, 256);
-        CREATE bus stop at (768, 384);
-        CREATE train stop at (1024, 384);
+        CREATE highway from (0, centerY - defaultBlockSize) to (2048, centerY - defaultBlockSize);
+        CREATE street from (centerX, centerY - defaultBlockSize) to (centerX + defaultBlockSize, centerY);
+        newTL((centerX, centerY - defaultBlockSize));
+        createCity((centerX + defaultBlockSize,centerY + threeBlocks), 128);
+        CREATE bridge from (centerX + threeBlocks, centerY) to (centerX + threeBlocks, centerY - defaultBlockSize);
 
-        VARIABLE eastStreetLightPosition = (centerPosition.x, centerPosition.y);
+        VARIABLE busStopX = centerX - threeBlocks + 100;
 END_OUTPUT

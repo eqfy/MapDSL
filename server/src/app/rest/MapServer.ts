@@ -64,6 +64,7 @@ export default class MapServer {
 
   private getMapOutput(req: Request, res: Response) {
     try {
+      console.debug('getMapOutput');
       const content = readFileSync(path.join(__dirname, "../../USER_INPUT.mg")).toString();
       const lexer = new MapGeneratorLexer(CharStreams.fromString(content));
       lexer.addErrorListener({

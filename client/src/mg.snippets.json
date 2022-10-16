@@ -1,0 +1,17 @@
+{
+  "DEFINITIONS": {
+    "prefix": ["DEFINITIONS"],
+    "body": ["DEFINITIONS", "\t$0", "END_DEFINITIONS", ""],
+    "description": "Definitions block"
+  },
+  "OUTPUT": {
+    "prefix": ["OUTPUT"],
+    "body": ["OUTPUT", "\t$0", "END_OUTPUT", ""],
+    "description": "Output block"
+  },
+  "LOOP": {
+    "prefix": "LOOP",
+    "body": ["LOOP ${1:Number} TIMES", "\t$0", "END_LOOP;", ""],
+    "description": "Define LOOP"
+  }
+}
