@@ -1,5 +1,6 @@
 // See https://refactoring.guru/design-patterns/visitor/typescript/example
 import Program from './Program';
+import CanvasConfiguration from './CanvasConfiguration';
 import DefinitionBlock from './DefinitionBlock';
 import OutputBlock from './OutputBlock';
 import FunctionDeclaration from './FunctionDeclaration';
@@ -18,6 +19,8 @@ import CreateMarker from "./statements/CreateMarker";
 
 export interface Visitor<T = void, U = void> {
   visitProgram(n: Program, t: T): U;
+
+  visitCanvasConfiguration(n: CanvasConfiguration, t: T): U;
 
   visitDefinitionBlock(n: DefinitionBlock, t: T): U;
 

@@ -74,6 +74,7 @@ export default class ErrorProvider {
 				variableTable: new Map(),
 				functionTable: new Map(),
 				constantTable: new Map(),
+				canvas: { width: 0, height: 0 },
 			});
 		}
 		for(const err of errorBuilder.errors) {

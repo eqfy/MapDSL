@@ -1,4 +1,5 @@
 import { Visitor } from "../Visitor";
+import CanvasConfiguration from '../CanvasConfiguration';
 import DefinitionBlock from "../DefinitionBlock";
 import TokenNode from "../expressions/TokenNode";
 import OutputBlock from "../OutputBlock";
@@ -18,6 +19,7 @@ import CreateStatementBuilder from "../../CreateStatements/CreateStatementBuilde
 import CreateMarker from "../statements/CreateMarker";
 import { isNumber, isString } from "../../util/typeChecking";
 import ErrorBuilder from "../Errors/ErrorBuilder";
+import { DEFAULT_CANVAS_HEIGHT, DEFAULT_CANVAS_WIDTH, MAX_CANVAS_SIZE } from '../../util/constants';
 
 // This type represents all values allowed in our language
 export type OutputVisitorReturnType = CreatePosition | number | string | void;
@@ -28,12 +30,32 @@ interface OutputVisitorContext {
   variableTable: Map<string, OutputVisitorReturnType>;
   functionTable: Map<string, FunctionDeclaration>; // always global
   constantTable: Map<string, OutputVisitorReturnType>; // always global
+  canvas: { width: number, height: number }; // canvas dimension
 }
 
 export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisitorReturnType> {
   visitProgram(n: Program, t: OutputVisitorContext): void {
+    n.canvasConfiguration?.accept(this, t);
     n.definitionBlock?.accept(this, t);
     n.outputBlock.accept(this, t);
+  }
+
+  visitCanvasConfiguration(n: CanvasConfiguration, t: OutputVisitorContext): OutputVisitorReturnType {
+    // set default canvas size if unspecified / invalid
+    if (!n.width || !n.height) {
+      t.canvas.width = DEFAULT_CANVAS_WIDTH;
+      t.canvas.height = DEFAULT_CANVAS_HEIGHT;
+    } else {
+      const width = this.getNumberTokenValue(n.width, t);
+      const height = this.getNumberTokenValue(n.height, t);
+      if (width > MAX_CANVAS_SIZE || width <= 0 || height > MAX_CANVAS_SIZE || height <= 0) {
+        t.canvas.width = DEFAULT_CANVAS_WIDTH;
+        t.canvas.height = DEFAULT_CANVAS_HEIGHT;
+      } else {
+        t.canvas.width = width;
+        t.canvas.height = height;
+      }
+    }
   }
 
   visitDefinitionBlock(n: DefinitionBlock, t: OutputVisitorContext): void {
@@ -96,7 +118,8 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
         createStatementBuilder: t.createStatementBuilder,
         variableTable: newVariableTable,
         constantTable: t.constantTable,
-        functionTable: t.functionTable
+        functionTable: t.functionTable,
+        canvas: t.canvas
       });
     }
   }
@@ -106,6 +129,9 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
     const yPos = n.yCoordinate.accept(this, t);
     const pos = { x: xPos, y: yPos };
     if (isCreatePosition(pos)) {
+      if (pos.x < 0 || pos.x > t.canvas.width || pos.y < 0 || pos.y > t.canvas.height) {
+        t.dynamicErrorBuilder.buildError(`Position (${pos.x}, ${pos.y}) outside of canvas which is ${t.canvas.width} by ${t.canvas.height}`, {start: n.xCoordinate.range.start, end: n.yCoordinate.range.end});
+      }
       return pos;
     } else {
       t.dynamicErrorBuilder.buildError("Invalid position", {start: n.xCoordinate.range.start, end: n.yCoordinate.range.end});
