@@ -28,4 +28,11 @@ export class Constants {
 
   static readonly MARKER_SCALE = 50;
   static readonly LEGEND_SCALE = 25;
+
+  // PolygonOutput
+  static readonly POLYGON_STROKE_WEIGHT = 2;
+
+  static readonly WATER_COLOR = '#42BCF5';
+  static readonly BUILDING_COLOR = '#D6D6D6';
+  static readonly BUILDING_BORDER_COLOR = '#C9C9C9';
 }
