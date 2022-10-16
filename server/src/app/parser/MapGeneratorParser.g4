@@ -42,7 +42,7 @@ opExpr: OPEN_PAREN opExpr (OPERATOR opExpr)* CLOSE_PAREN | positionAccess | func
 position: (OPEN_PAREN  firstOpExpr  COMMA  firstOpExpr  CLOSE_PAREN );
 positionAccess: NAME CHAIN_OP COORDINATE;
 functionCall: functionName  OPEN_PAREN  expression  (COMMA  expression )* CLOSE_PAREN SEMICOLON;
-token: variableName | NEGATIVE_NUMBER | POSITIVE_NUMBER | TRUE | FALSE;
+token: NEGATIVE_NUMBER | POSITIVE_NUMBER | TRUE | FALSE | variableName;
 
 // Misc.
 // lazy hack to make it easier to differentiate between names while preventing using lexer modes

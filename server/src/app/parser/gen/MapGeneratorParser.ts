@@ -1228,39 +1228,39 @@ export class MapGeneratorParser extends Parser {
 			this.state = 250;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
-			case MapGeneratorParser.NAME:
+			case MapGeneratorParser.NEGATIVE_NUMBER:
 				this.enterOuterAlt(_localctx, 1);
 				{
 				this.state = 245;
-				this.variableName();
-				}
-				break;
-			case MapGeneratorParser.NEGATIVE_NUMBER:
-				this.enterOuterAlt(_localctx, 2);
-				{
-				this.state = 246;
 				this.match(MapGeneratorParser.NEGATIVE_NUMBER);
 				}
 				break;
 			case MapGeneratorParser.POSITIVE_NUMBER:
-				this.enterOuterAlt(_localctx, 3);
+				this.enterOuterAlt(_localctx, 2);
 				{
-				this.state = 247;
+				this.state = 246;
 				this.match(MapGeneratorParser.POSITIVE_NUMBER);
 				}
 				break;
 			case MapGeneratorParser.TRUE:
-				this.enterOuterAlt(_localctx, 4);
+				this.enterOuterAlt(_localctx, 3);
 				{
-				this.state = 248;
+				this.state = 247;
 				this.match(MapGeneratorParser.TRUE);
 				}
 				break;
 			case MapGeneratorParser.FALSE:
+				this.enterOuterAlt(_localctx, 4);
+				{
+				this.state = 248;
+				this.match(MapGeneratorParser.FALSE);
+				}
+				break;
+			case MapGeneratorParser.NAME:
 				this.enterOuterAlt(_localctx, 5);
 				{
 				this.state = 249;
-				this.match(MapGeneratorParser.FALSE);
+				this.variableName();
 				}
 				break;
 			default:
@@ -1461,8 +1461,8 @@ export class MapGeneratorParser extends Parser {
 		"\xED\x03\x02\x02\x02\xF0\xF3\x03\x02\x02\x02\xF1\xEF\x03\x02\x02\x02\xF1" +
 		"\xF2\x03\x02\x02\x02\xF2\xF4\x03\x02\x02\x02\xF3\xF1\x03\x02\x02\x02\xF4" +
 		"\xF5\x07\x07\x02\x02\xF5\xF6\x07\x19\x02\x02\xF6/\x03\x02\x02\x02\xF7" +
-		"\xFD\x056\x1C\x02\xF8\xFD\x070\x02\x02\xF9\xFD\x07/\x02\x02\xFA\xFD\x07" +
-		"1\x02\x02\xFB\xFD\x072\x02\x02\xFC\xF7\x03\x02\x02\x02\xFC\xF8\x03\x02" +
+		"\xFD\x070\x02\x02\xF8\xFD\x07/\x02\x02\xF9\xFD\x071\x02\x02\xFA\xFD\x07" +
+		"2\x02\x02\xFB\xFD\x056\x1C\x02\xFC\xF7\x03\x02\x02\x02\xFC\xF8\x03\x02" +
 		"\x02\x02\xFC\xF9\x03\x02\x02\x02\xFC\xFA\x03\x02\x02\x02\xFC\xFB\x03\x02" +
 		"\x02\x02\xFD1\x03\x02\x02\x02\xFE\xFF\x079\x02\x02\xFF3\x03\x02\x02\x02" +
 		"\u0100\u0101\x079\x02\x02\u01015\x03\x02\x02\x02\u0102\u0103\x079\x02" +
@@ -2476,13 +2476,13 @@ export class FunctionCallContext extends ParserRuleContext {
 
 
 export class TokenContext extends ParserRuleContext {
-	public variableName(): VariableNameContext | undefined {
-		return this.tryGetRuleContext(0, VariableNameContext);
-	}
 	public NEGATIVE_NUMBER(): TerminalNode | undefined { return this.tryGetToken(MapGeneratorParser.NEGATIVE_NUMBER, 0); }
 	public POSITIVE_NUMBER(): TerminalNode | undefined { return this.tryGetToken(MapGeneratorParser.POSITIVE_NUMBER, 0); }
 	public TRUE(): TerminalNode | undefined { return this.tryGetToken(MapGeneratorParser.TRUE, 0); }
 	public FALSE(): TerminalNode | undefined { return this.tryGetToken(MapGeneratorParser.FALSE, 0); }
+	public variableName(): VariableNameContext | undefined {
+		return this.tryGetRuleContext(0, VariableNameContext);
+	}
 	constructor(parent: ParserRuleContext | undefined, invokingState: number) {
 		super(parent, invokingState);
 	}

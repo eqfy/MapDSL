@@ -194,6 +194,8 @@ export class StaticCheckVisitor implements Visitor<StaticCheckVisitorContext, St
         return n.tokenValue;
       case "number":
         return Number(n.tokenValue);
+      case "truthValue":
+        return n.tokenValue === "true";
     }
     const name = n.tokenValue;
     if (t.constantTable.has(name)) {
