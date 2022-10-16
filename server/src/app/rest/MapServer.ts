@@ -83,16 +83,18 @@ export default class MapServer {
       const createStatementBuilder = new CreateStatementBuilder();
       const errorBuilder = new ErrorBuilder();
       const outputVisitor = new OutputVisitor();
+      const canvas = { width: 0, height: 0 };
       if (!testing) {
         programAST.accept(outputVisitor, {
           dynamicErrorBuilder: errorBuilder,
           createStatementBuilder: createStatementBuilder,
           variableTable: new Map(),
           functionTable: new Map(),
-          constantTable: new Map()
+          constantTable: new Map(),
+          canvas
         });
       }
-      res.status(200).json({ result: createStatementBuilder.createStatements });
+      res.status(200).json({ canvas, result: createStatementBuilder.createStatements });
     } catch (e: any) {
       res.status(400).json({ error: e.message });
     }

@@ -1,4 +1,5 @@
 import { Visitor } from '../Visitor';
+import CanvasConfiguration from "../CanvasConfiguration";
 import DefinitionBlock from '../DefinitionBlock';
 import TokenNode from '../expressions/TokenNode';
 import OutputBlock from '../OutputBlock';
@@ -18,7 +19,7 @@ import { CreatePosition } from '../../CreateStatements/CreateStatementTypes';
 import CreateMarker from '../statements/CreateMarker';
 import { isNumber, isString } from '../../util/typeChecking';
 import IfElseBlock from '../statements/IfElseBlock';
-import { OutputVisitorReturnType } from './OutputVisitor';
+import { MAX_CANVAS_SIZE } from '../../util/constants';
 
 // This type represents all values allowed in our language
 export type StaticCheckVisitorReturnType = CreatePosition | number | string | boolean | void;
@@ -32,8 +33,23 @@ interface StaticCheckVisitorContext {
 
 export class StaticCheckVisitor implements Visitor<StaticCheckVisitorContext, StaticCheckVisitorReturnType> {
   visitProgram(n: Program, t: StaticCheckVisitorContext): void {
+    n.canvasConfiguration?.accept(this, t);
     n.definitionBlock?.accept(this, t);
     n.outputBlock.accept(this, t);
+  }
+
+  visitCanvasConfiguration(n: CanvasConfiguration, t: StaticCheckVisitorContext): StaticCheckVisitorReturnType {
+    if (!n.width || !n.height) return;
+    const width = this.getNumberTokenValue(n.width, t);
+    const height = this.getNumberTokenValue(n.height, t);
+
+    if (width > MAX_CANVAS_SIZE || width <= 0) {
+      t.staticErrorBuilder.buildError(`Invalid canvas width: > ${MAX_CANVAS_SIZE} or not positive`, n.width.range);
+    }
+
+    if (height > MAX_CANVAS_SIZE || height <= 0) {
+      t.staticErrorBuilder.buildError(`Invalid canvas height: > ${MAX_CANVAS_SIZE} or not positive`, n.height.range);
+    }
   }
 
   visitDefinitionBlock(n: DefinitionBlock, t: StaticCheckVisitorContext): void {
@@ -138,32 +154,29 @@ export class StaticCheckVisitor implements Visitor<StaticCheckVisitorContext, St
 
   visitCoordinateAccess(n: CoordinateAccess, t: StaticCheckVisitorContext): void {
     const name = this.getStringTokenValue(n.variableName, t);
-    if (!t.constantTable.has(name) && !t.variableTable.has(name))
-      t.staticErrorBuilder.buildError(`Variable ${name} is undefined`, n.variableName.range);
+    if (!t.constantTable.has(name) && !t.variableTable.has(name)) t.staticErrorBuilder.buildError(`Variable ${name} is undefined`, n.variableName.range);
   }
 
   visitCreateMarker(n: CreateMarker, t: StaticCheckVisitorContext): void {
     const type = this.getStringTokenValue(n.markerType, t);
-    if (type !== 'stop sign' && type !== 'traffic light' && type !== 'bus stop' && type !== 'train stop') {
-      t.staticErrorBuilder.buildError('Invalid marker type', n.range);
+    if (type !== "stop sign" && type !== "traffic light" && type !== "bus stop" && type !== "train stop") {
+      t.staticErrorBuilder.buildError("Invalid marker type", n.range);
     }
   }
 
   visitCreatePolyline(n: CreatePolyline, t: StaticCheckVisitorContext): void {
     const type = this.getStringTokenValue(n.streetType, t);
-    if (type !== 'highway' && type !== 'street' && type !== 'bridge') {
-      t.staticErrorBuilder.buildError('Invalid street type', n.range);
+    if (type !== "highway" && type !== "street" && type !== "bridge") {
+      t.staticErrorBuilder.buildError("Invalid street type", n.range);
     }
   }
 
   visitTokenNode(n: TokenNode, t: StaticCheckVisitorContext): StaticCheckVisitorReturnType {
     switch (n.targetValueType) {
-      case 'string':
+      case "string":
         return n.tokenValue;
-      case 'number':
+      case "number":
         return Number(n.tokenValue);
-      case 'truthValue':
-        return Boolean(n.tokenValue);
     }
     const name = n.tokenValue;
     if (t.constantTable.has(name)) {
@@ -171,7 +184,7 @@ export class StaticCheckVisitor implements Visitor<StaticCheckVisitorContext, St
     } else if (t.variableTable.has(name)) {
       return t.variableTable.get(name);
     } else {
-      t.staticErrorBuilder.buildError('Variable does not exist', n.range);
+      t.staticErrorBuilder.buildError("Variable does not exist", n.range);
       return 0;
     }
   }
@@ -183,8 +196,8 @@ export class StaticCheckVisitor implements Visitor<StaticCheckVisitorContext, St
   private getStringTokenValue(token: TokenNode, t: StaticCheckVisitorContext): string {
     const str = token.accept(this, t);
     if (!isString(str)) {
-      t.staticErrorBuilder.buildError('Token is not a string', token.range);
-      return '';
+      t.staticErrorBuilder.buildError("Token is not a string", token.range);
+      return "";
     }
     return str;
   }
@@ -192,7 +205,7 @@ export class StaticCheckVisitor implements Visitor<StaticCheckVisitorContext, St
   private getNumberTokenValue(token: TokenNode, t: StaticCheckVisitorContext): number {
     const num = token.accept(this, t);
     if (!isNumber(num)) {
-      t.staticErrorBuilder.buildError('Token is not a number', token.range);
+      t.staticErrorBuilder.buildError("Token is not a number", token.range);
       return 0;
     }
     return Number(num);

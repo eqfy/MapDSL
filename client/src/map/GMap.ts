@@ -1,14 +1,19 @@
-import { Constants } from '../util/Constants';
-import { convertCoordinateToLatLng } from '../util/coordinateUtils';
+import { CoordinateUtils } from '../util/coordinateUtils';
 import { CreateStatement } from '../CreateStatement';
 import CoordMapType from './CoordMapType';
 import { Canvas } from './Canvas';
 
 export default class GMap {
   static initMap(): void {
+
+    const { canvas: { width, height }, result: listOfCreateStatements } = GMap.getMapCreateStatements();
+    
+    // set up the coordinate system based on canvas size
+    CoordinateUtils.configure(width, height);
+
     const map = new google.maps.Map(document.getElementById('map') as HTMLElement, {
-      zoom: Constants.DEFAULT_ZOOM,
-      center: convertCoordinateToLatLng({ x: 20, y: 20 }),
+      zoom: CoordinateUtils.defaultZoom,
+      center: CoordinateUtils.convertCoordinateToLatLng({ x: 0, y: 0 }),
       streetViewControl: false,
       mapTypeId: 'tiled',
       mapTypeControlOptions: {
@@ -17,16 +22,13 @@ export default class GMap {
       },
       restriction: {
         latLngBounds: {
-          east: Constants.MAX_SCREEN_LONGTITUDE,
-          west: -Constants.MAX_SCREEN_LONGTITUDE,
-          north: Constants.MAX_SCREEN_LATITUDE,
-          south: -Constants.MAX_SCREEN_LATITUDE
-        },
-        strictBounds: true
+          east: CoordinateUtils.canvasWidthInDegrees / 2,
+          west: -CoordinateUtils.canvasWidthInDegrees / 2,
+          north: CoordinateUtils.canvasHeightInDegrees / 2,
+          south: -CoordinateUtils.canvasHeightInDegrees / 2
+        }
       }
     });
-
-    const listOfCreateStatements = GMap.getMapCreateStatements();
 
     // The tiled and untiled variants of our coordinate map - the roads/markers remain in place when switching variants
     map.mapTypes.set('tiled', new CoordMapType(new google.maps.Size(256, 256), true));
@@ -42,19 +44,27 @@ export default class GMap {
       map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
       canvas.createLegend(legend);
     }
+
+    // Attach a listener for zoom level (so that markers can be hidden on small zoom level)
+    map.addListener("zoom_changed", () => {
+      canvas.updateMarkerVisibility(map.getZoom());
+    });
   }
 
-  private static getMapCreateStatements(): CreateStatement[] {
+  private static getMapCreateStatements(): { canvas: { width: number, height: number }, result: CreateStatement[]} {
     const xhr = new XMLHttpRequest();
     const url = '/map';
     xhr.open('GET', url, false);
     xhr.setRequestHeader('Content-type', 'application/json');
     xhr.send(null);
     if (xhr.status === 200) {
-      return JSON.parse(xhr.response).result;
+      return JSON.parse(xhr.response);
     } else {
       console.error('request failed', xhr.response.error);
-      return xhr.response;
+      return {
+        canvas: { width: CoordinateUtils.DEFAULT_CANVAS_WIDTH, height: CoordinateUtils.DEFAULT_CANVAS_HEIGHT},
+        result: []
+      };
     }
   }
 }

@@ -74,6 +74,7 @@ export default class ErrorProvider {
 				variableTable: new Map(),
 				functionTable: new Map(),
 				constantTable: new Map(),
+				canvas: { width: 0, height: 0 },
 			});
 		}
 		for(const err of errorBuilder.errors) {
@@ -81,7 +82,7 @@ export default class ErrorProvider {
 				severity: DiagnosticSeverity.Error,
 				range: {
 					start: textDocument.positionAt(err.range.start),
-					end: textDocument.positionAt(err.range.end),
+					end: textDocument.positionAt(err.range.end + 1), // exclusive end by diagnotics, would require + 1
 				},
 				message: err.msg,
 				source: 'mg',

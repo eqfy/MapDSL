@@ -2,7 +2,10 @@ parser grammar MapGeneratorParser;
 options { tokenVocab=MapGeneratorLexer; }
 
 // Top Level
-program: (definitionBlock )? outputBlock EOF;
+program: (canvasConfiguration)? (definitionBlock )? outputBlock EOF;
+
+// Canvas configuration
+canvasConfiguration: CANVAS_SIZE POSITIVE_NUMBER BY POSITIVE_NUMBER;
 
 // Defintion Block
 definitionBlock: DEFINITIONS  globalBodyElement+  END_DEFINITION;

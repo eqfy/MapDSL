@@ -1,30 +1,28 @@
-import { Visitor } from '../Visitor';
-import DefinitionBlock from '../DefinitionBlock';
-import TokenNode from '../expressions/TokenNode';
-import OutputBlock from '../OutputBlock';
-import VariableAssignment from '../statements/VariableAssignment';
-import CreatePolyline from '../statements/CreatePolyline';
-import CoordinateAccess from '../expressions/CoordinateAccess';
-import FunctionDeclaration from '../FunctionDeclaration';
-import LoopBlock from '../statements/LoopBlock';
-import ASTNode from '../ASTNode';
-import VariableDeclaration from '../statements/VariableDeclaration';
-import FunctionCall from '../expressions/FunctionCall';
-import Program from '../Program';
-import Position from '../expressions/Position';
-import OpExpression from '../expressions/OpExpression';
-import {
-  CreatePosition,
-  isCreatePosition,
-  MarkerCreateStatement,
-  PolylineCreateStatement
-} from '../../CreateStatements/CreateStatementTypes';
-import CreateStatementBuilder from '../../CreateStatements/CreateStatementBuilder';
-import CreateMarker from '../statements/CreateMarker';
-import { isBoolean, isNumber, isString } from '../../util/typeChecking';
-import ErrorBuilder from '../Errors/ErrorBuilder';
-import IfElseBlock from '../statements/IfElseBlock';
+import { Visitor } from "../Visitor";
+import DefinitionBlock from "../DefinitionBlock";
+import TokenNode from "../expressions/TokenNode";
+import OutputBlock from "../OutputBlock";
+import VariableAssignment from "../statements/VariableAssignment";
+import CreatePolyline from "../statements/CreatePolyline";
+import CoordinateAccess from "../expressions/CoordinateAccess";
+import FunctionDeclaration from "../FunctionDeclaration";
+import LoopBlock from "../statements/LoopBlock";
+import ASTNode from "../ASTNode";
+import VariableDeclaration from "../statements/VariableDeclaration";
+import FunctionCall from "../expressions/FunctionCall";
+import Program from "../Program";
+import Position from "../expressions/Position";
+import OpExpression from "../expressions/OpExpression";
+import { CreatePosition, isCreatePosition, MarkerCreateStatement, PolylineCreateStatement } from "../../CreateStatements/CreateStatementTypes";
+import CreateStatementBuilder from "../../CreateStatements/CreateStatementBuilder";
+import CreateMarker from "../statements/CreateMarker";
+import { isBoolean, isNumber, isString } from "../../util/typeChecking";
+import ErrorBuilder from "../Errors/ErrorBuilder";
+import IfElseBlock from "../statements/IfElseBlock";
 import { booleanOpEvaluator, EvaluatedExpression, EvaluatedOperator, numOpEvaluator } from "./OpExprHelper";
+import { DEFAULT_CANVAS_HEIGHT, DEFAULT_CANVAS_WIDTH, MAX_CANVAS_SIZE } from "../../util/constants";
+import { Range } from "../../util/Range";
+import CanvasConfiguration from "../CanvasConfiguration";
 
 // This type represents all values allowed in our language
 export type OutputVisitorReturnType = CreatePosition | number | string | boolean | void;
@@ -35,12 +33,32 @@ interface OutputVisitorContext {
   variableTable: Map<string, OutputVisitorReturnType>;
   functionTable: Map<string, FunctionDeclaration>; // always global
   constantTable: Map<string, OutputVisitorReturnType>; // always global
+  canvas: { width: number, height: number }; // canvas dimension
 }
 
 export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisitorReturnType> {
   visitProgram(n: Program, t: OutputVisitorContext): void {
+    n.canvasConfiguration?.accept(this, t);
     n.definitionBlock?.accept(this, t);
     n.outputBlock.accept(this, t);
+  }
+
+  visitCanvasConfiguration(n: CanvasConfiguration, t: OutputVisitorContext): OutputVisitorReturnType {
+    // set default canvas size if unspecified / invalid
+    if (!n.width || !n.height) {
+      t.canvas.width = DEFAULT_CANVAS_WIDTH;
+      t.canvas.height = DEFAULT_CANVAS_HEIGHT;
+    } else {
+      const width = this.getNumberTokenValue(n.width, t);
+      const height = this.getNumberTokenValue(n.height, t);
+      if (width > MAX_CANVAS_SIZE || width <= 0 || height > MAX_CANVAS_SIZE || height <= 0) {
+        t.canvas.width = DEFAULT_CANVAS_WIDTH;
+        t.canvas.height = DEFAULT_CANVAS_HEIGHT;
+      } else {
+        t.canvas.width = width;
+        t.canvas.height = height;
+      }
+    }
   }
 
   visitDefinitionBlock(n: DefinitionBlock, t: OutputVisitorContext): void {
@@ -80,7 +98,7 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
     for (const branch of n.branchTable) {
       const branchTruthiness = branch.expression.accept(this, t);
       if (!isBoolean(branchTruthiness)) {
-        t.dynamicErrorBuilder.buildError('If/Else branch predicate should be a boolean', branch.expression.range);
+        t.dynamicErrorBuilder.buildError("If/Else branch predicate should be a boolean", branch.expression.range);
       }
       if (branchTruthiness) {
         for (const statement of branch.statements) {
@@ -120,7 +138,8 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
         createStatementBuilder: t.createStatementBuilder,
         variableTable: newVariableTable,
         constantTable: t.constantTable,
-        functionTable: t.functionTable
+        functionTable: t.functionTable,
+        canvas: t.canvas
       });
     }
   }
@@ -132,7 +151,7 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
     if (isCreatePosition(pos)) {
       return pos;
     } else {
-      t.dynamicErrorBuilder.buildError('Invalid position', {
+      t.dynamicErrorBuilder.buildError("Invalid position", {
         start: n.xCoordinate.range.start,
         end: n.yCoordinate.range.end
       });
@@ -147,9 +166,9 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
       const val = expression.accept(this, t);
       if (val !== undefined) return;
       if (isNumber(val) || isBoolean(val)) {
-        evaluatedValues.push({val, range: expression.range});
+        evaluatedValues.push({ val, range: expression.range });
       } else {
-        t.dynamicErrorBuilder.buildError('Expected a boolean or a number for operands', expression.range);
+        t.dynamicErrorBuilder.buildError("Expected a boolean or a number for operands", expression.range);
       }
     }
     const evaluatedOperators: EvaluatedOperator[] = [];
@@ -157,10 +176,10 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
       const val = operator.accept(this, t);
       if (val !== undefined) return;
       if (isString(val)) {
-        evaluatedOperators.push({val, range: operator.range});
+        evaluatedOperators.push({ val, range: operator.range });
       } else {
         // Impossible, parser enforces operator to be a string
-        t.dynamicErrorBuilder.buildError('Expected a string for operator', operator.range);
+        t.dynamicErrorBuilder.buildError("Expected a string for operator", operator.range);
       }
     }
 
@@ -172,13 +191,13 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
     let i = 0;
     while (i < evaluatedOperators.length) {
       const operator = evaluatedOperators[i];
-      if (['*', '/'].includes(operator.val)) {
+      if (["*", "/"].includes(operator.val)) {
         const leftValue = evaluatedValues[i];
         const rightValue = evaluatedValues[i + 1];
         const finalVal = numOpEvaluator(operator, leftValue, rightValue, t.dynamicErrorBuilder);
-        if (finalVal===undefined) return;
+        if (finalVal === undefined) return;
         evaluatedValues[i] = finalVal;
-        evaluatedValues.splice(i+1, 1);
+        evaluatedValues.splice(i + 1, 1);
         evaluatedOperators.splice(i, 1);
       } else {
         i += 1;
@@ -190,13 +209,13 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
     i = 0;
     while (i < evaluatedOperators.length) {
       const operator = evaluatedOperators[i];
-      if (['+', '-'].includes(operator.val)) {
+      if (["+", "-"].includes(operator.val)) {
         const leftValue = evaluatedValues[i];
         const rightValue = evaluatedValues[i + 1];
         const finalVal = numOpEvaluator(operator, leftValue, rightValue, t.dynamicErrorBuilder);
-        if (finalVal===undefined) return;
+        if (finalVal === undefined) return;
         evaluatedValues[i] = finalVal;
-        evaluatedValues.splice(i+1, 1);
+        evaluatedValues.splice(i + 1, 1);
         evaluatedOperators.splice(i, 1);
       } else {
         i += 1;
@@ -212,9 +231,9 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
       const rightValue = evaluatedValues[i + 1];
       if (isNumber(leftValue.val) && isNumber(rightValue.val)) {
         const finalVal = numOpEvaluator(operator, leftValue, rightValue, t.dynamicErrorBuilder);
-        if (finalVal===undefined) return;
+        if (finalVal === undefined) return;
         evaluatedValues[i] = finalVal;
-        evaluatedValues.splice(i+1, 1);
+        evaluatedValues.splice(i + 1, 1);
         evaluatedOperators.splice(i, 1);
       } else {
         i += 1;
@@ -229,9 +248,9 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
       const leftValue = evaluatedValues[i];
       const rightValue = evaluatedValues[i + 1];
       const finalVal = booleanOpEvaluator(operator, leftValue, rightValue, t.dynamicErrorBuilder);
-      if (finalVal===undefined) return;
+      if (finalVal === undefined) return;
       evaluatedValues[i] = finalVal;
-      evaluatedValues.splice(i+1, 1);
+      evaluatedValues.splice(i + 1, 1);
       evaluatedOperators.splice(i, 1);
       i += 1;
     }
@@ -261,9 +280,9 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
 
     if (isCreatePosition(position)) {
       const coordinate = this.getStringTokenValue(n.coordinate, t);
-      if (coordinate === 'x') {
+      if (coordinate === "x") {
         return position.x;
-      } else if (coordinate === 'y') {
+      } else if (coordinate === "y") {
         return position.y;
       } else {
         t.dynamicErrorBuilder.buildError(`Coordinate was not x or y`, n.coordinate.range);
@@ -277,11 +296,13 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
 
   visitCreateMarker(n: CreateMarker, t: OutputVisitorContext): void {
     const type = this.getStringTokenValue(n.markerType, t);
-    if (type !== 'stop sign' && type !== 'traffic light' && type !== 'bus stop' && type !== 'train stop') return;
+    if (type !== "stop sign" && type !== "traffic light" && type !== "bus stop" && type !== "train stop") return;
 
     const position = n.position.accept(this, t);
     if (!isCreatePosition(position)) {
-      t.dynamicErrorBuilder.buildError('Invalid position', n.position.range);
+      t.dynamicErrorBuilder.buildError("Invalid position", n.position.range);
+      return;
+    } else if (!this.checkPositionInCanvas(position, t, n.position.range)) {
       return;
     }
 
@@ -295,16 +316,23 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
   visitCreatePolyline(n: CreatePolyline, t: OutputVisitorContext): void {
     const type = this.getStringTokenValue(n.streetType, t);
 
-    if (type !== 'highway' && type !== 'street' && type !== 'bridge') return;
+    if (type !== "highway" && type !== "street" && type !== "bridge") return;
 
     const startPosition = n.startPosition.accept(this, t);
     const endPosition = n.endPosition.accept(this, t);
     if (!isCreatePosition(startPosition) || !isCreatePosition(endPosition)) {
-      t.dynamicErrorBuilder.buildError('Invalid positions', {
+      t.dynamicErrorBuilder.buildError("Invalid positions", {
         start: n.startPosition.range.start,
         end: n.endPosition.range.end
       });
       return;
+    } else {
+      // check both positions even if the first one is invalid
+      let valid = this.checkPositionInCanvas(startPosition, t, n.startPosition.range);
+      valid = this.checkPositionInCanvas(endPosition, t, n.endPosition.range) && valid;
+      if (!valid) {
+        return;
+      }
     }
 
     const polyline: PolylineCreateStatement = {
@@ -317,13 +345,12 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
 
   visitTokenNode(n: TokenNode, t: OutputVisitorContext): OutputVisitorReturnType {
     switch (n.targetValueType) {
-      case 'string':
+      case "string":
         return n.tokenValue;
-      case 'number':
+      case "number":
         return Number(n.tokenValue);
-      case 'truthValue':
-        console.log(n.tokenValue, n.tokenValue === 'true');
-        return n.tokenValue === 'true';
+      case "truthValue":
+        return n.tokenValue === "true";
     }
     const name = n.tokenValue;
     if (t.constantTable.has(name)) {
@@ -339,11 +366,20 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
 
   private getStringTokenValue(token: TokenNode, t: OutputVisitorContext): string {
     const str = token.accept(this, t);
-    return !isString(str) ? '' : str;
+    return !isString(str) ? "" : str;
   }
 
   private getNumberTokenValue(token: TokenNode, t: OutputVisitorContext): number {
     const num = token.accept(this, t);
     return !isNumber(num) ? 0 : Number(num);
+  }
+
+  // check if a position is in canvas, return true if so, report dynamic error and return false otherwise
+  private checkPositionInCanvas(pos: CreatePosition, t: OutputVisitorContext, range: Range): boolean {
+    if (pos.x < 0 || pos.x > t.canvas.width || pos.y < 0 || pos.y > t.canvas.height) {
+      t.dynamicErrorBuilder.buildError(`Position (${pos.x}, ${pos.y}) outside of canvas which is ${t.canvas.width} by ${t.canvas.height}`, range);
+      return false;
+    }
+    return true;
   }
 }
