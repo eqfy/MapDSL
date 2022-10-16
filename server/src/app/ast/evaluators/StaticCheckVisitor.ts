@@ -192,7 +192,7 @@ export class StaticCheckVisitor implements Visitor<StaticCheckVisitorContext, St
     } else if (t.variableTable.has(name)) {
       return t.variableTable.get(name);
     } else {
-      t.staticErrorBuilder.buildError("Variable does not exist", n.range);
+      t.staticErrorBuilder.buildError(`Variable ${name} is undefined`, n.range);
       return 0;
     }
   }

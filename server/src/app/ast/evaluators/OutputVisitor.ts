@@ -166,7 +166,7 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
     const evaluatedValues: EvaluatedExpression[] = [];
     for (const expression of n.expressions) {
       const val = expression.accept(this, t);
-      if (val === undefined) return;
+      if (val === undefined) t.dynamicErrorBuilder.buildError("Expected a boolean or a number for operands, but got something else (could be undefined)", expression.range);
       if (isNumber(val) || isBoolean(val)) {
         evaluatedValues.push({ val, range: expression.range });
       } else {
@@ -176,7 +176,7 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
     const evaluatedOperators: EvaluatedOperator[] = [];
     for (const operator of n.operators) {
       const val = operator.accept(this, t);
-      if (val === undefined) return;
+      if (val === undefined) t.dynamicErrorBuilder.buildError("Expected an operator, but found something else", operator.range);
       if (isString(val)) {
         evaluatedOperators.push({ val, range: operator.range });
       } else {
@@ -400,6 +400,9 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
       return t.constantTable.get(name);
     } else if (t.variableTable.has(name)) {
       return t.variableTable.get(name);
+    } else {
+      t.dynamicErrorBuilder.buildError(`Variable ${name} is undefined`, n.range);
+      return 0;
     }
   }
 

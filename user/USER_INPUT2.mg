@@ -31,7 +31,16 @@ DEFINITIONS
 
         }
 
+        FUNCTION createWater(topLeftCorner) {
+                CREATE water at
+                        topLeftCorner
+                        (topLeftCorner.x, topLeftCorner.y + buildingSize)
+                        (topLeftCorner.x + buildingSize, topLeftCorner.y + buildingSize)
+                        (topLeftCorner.x + buildingSize, topLeftCorner.y);
+        }
 
+
+        CONSTANT buildingSize = 75;
         CONSTANT centerX = 1024;
         CONSTANT centerY = 1024;
         CONSTANT centerPosition = (centerX, centerY);
@@ -46,6 +55,7 @@ OUTPUT
         CREATE street from (centerX, centerY - defaultBlockSize) to (centerX + defaultBlockSize, centerY);
         newTL((centerX, centerY - defaultBlockSize));
         createCity((centerX + defaultBlockSize,centerY + threeBlocks), 128);
+        createWater((1375, 925));
         CREATE bridge from (centerX + threeBlocks, centerY) to (centerX + threeBlocks, centerY - defaultBlockSize);
 
         VARIABLE busStopX = centerX - threeBlocks + 100;

@@ -526,7 +526,7 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
     return new TokenNode(
       {
         start: terminal.symbol.startIndex,
-        end: terminal.symbol.stopIndex
+        end: terminal.symbol.stopIndex + 1
       },
       terminal.text,
       targetValueType
