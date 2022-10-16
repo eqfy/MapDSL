@@ -24,6 +24,7 @@ import CreateMarker from '../statements/CreateMarker';
 import { isBoolean, isNumber, isString } from '../../util/typeChecking';
 import ErrorBuilder from '../Errors/ErrorBuilder';
 import IfElseBlock from '../statements/IfElseBlock';
+import { booleanOpEvaluator, EvaluatedExpression, EvaluatedOperator, numOpEvaluator } from "./OpExprHelper";
 
 // This type represents all values allowed in our language
 export type OutputVisitorReturnType = CreatePosition | number | string | boolean | void;
@@ -139,45 +140,104 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
     }
   }
 
-  visitOpExpression(n: OpExpression, t: OutputVisitorContext): OutputVisitorReturnType {
-    const leftValue = n.leftExpression.accept(this, t);
-    const rightValue = n.rightExpression.accept(this, t);
-    const operator = n.operator.accept(this, t);
-
-    if (!isNumber(leftValue) && !isBoolean(leftValue)) {
-      t.dynamicErrorBuilder.buildError('Expected a boolean or a number for left operand', n.leftExpression.range);
-    }
-    if (!isNumber(rightValue) && !isBoolean(rightValue)) {
-      t.dynamicErrorBuilder.buildError('Expected a boolean or a number for right operand', n.rightExpression.range);
-    }
-
-    // Valid operations for both booleans and numbers
-    if (n.operator.accept(this, t) === '==') {
-      return leftValue === rightValue;
-    } else if (n.operator.accept(this, t) === 'AND') {
-      return leftValue && rightValue;
-    } else if (n.operator.accept(this, t) === 'OR') {
-      return leftValue || rightValue;
-    }
-
-    // Valid operations for only numbers
-    if (isNumber(leftValue) && isNumber(rightValue)) {
-      if (n.operator.accept(this, t) === '+') {
-        return leftValue + rightValue;
-      } else if (n.operator.accept(this, t) === '-') {
-        return leftValue - rightValue;
-      } else if (n.operator.accept(this, t) === '>') {
-        return leftValue > rightValue;
-      } else if (n.operator.accept(this, t) === '<') {
-        return leftValue < rightValue;
-      } else if (n.operator.accept(this, t) === '>=') {
-        return leftValue >= rightValue;
-      } else if (n.operator.accept(this, t) === '<=') {
-        return leftValue <= rightValue;
+  visitOpExpression(n: OpExpression, t: OutputVisitorContext): number | boolean | undefined {
+    // Evaluate all subexpressions first
+    // Subexpressions are either a token or another OpExpression corresponding to a parenthesized expression
+    const evaluatedValues: EvaluatedExpression[] = [];
+    for (const expression of n.expressions) {
+      const val = expression.accept(this, t);
+      if (isNumber(val) || isBoolean(val)) {
+        evaluatedValues.push({val, range: expression.range});
+      } else {
+        t.dynamicErrorBuilder.buildError('Expected a boolean or a number for operands', expression.range);
       }
-    } else {
-      t.dynamicErrorBuilder.buildError('Invalid operator for boolean values', n.operator.range);
     }
+    const evaluatedOperators: EvaluatedOperator[] = [];
+    for (const operator of n.operators) {
+      const val = operator.accept(this, t);
+      if (!val) return;
+      if (isString(val)) {
+        evaluatedOperators.push({val, range: operator.range});
+      } else {
+        // Impossible, parser enforces operator to be a string
+        t.dynamicErrorBuilder.buildError('Expected a string for operator', operator.range);
+      }
+    }
+
+    // These log statements are for verifying if the order of operations are correct.
+    // console.log("expr eval 1", evaluatedValues, evaluatedOperators);
+
+    // Evaluate in order of operator precedence
+    // '*' '/' then  '+' '-'  then  '==' 'AND' 'OR' '>' '<' '>=' '<='
+    let i = 0;
+    while (i < evaluatedOperators.length) {
+      const operator = evaluatedOperators[i];
+      if (['*', '/'].includes(operator.val)) {
+        const leftValue = evaluatedValues[i];
+        const rightValue = evaluatedValues[i + 1];
+        const finalVal = numOpEvaluator(operator, leftValue, rightValue, t.dynamicErrorBuilder);
+        if (!finalVal) return;
+        evaluatedValues[i] = finalVal;
+        evaluatedValues.splice(i+1, 1);
+        evaluatedOperators.splice(i, 1);
+      } else {
+        i += 1;
+      }
+    }
+
+    // console.log("expr eval 2", evaluatedValues, evaluatedOperators);
+
+    i = 0;
+    while (i < evaluatedOperators.length) {
+      const operator = evaluatedOperators[i];
+      if (['+', '-'].includes(operator.val)) {
+        const leftValue = evaluatedValues[i];
+        const rightValue = evaluatedValues[i + 1];
+        const finalVal = numOpEvaluator(operator, leftValue, rightValue, t.dynamicErrorBuilder);
+        if (!finalVal) return;
+        evaluatedValues[i] = finalVal;
+        evaluatedValues.splice(i+1, 1);
+        evaluatedOperators.splice(i, 1);
+      } else {
+        i += 1;
+      }
+    }
+    // console.log("expr eval 3", evaluatedValues, evaluatedOperators);
+
+    // handles '==' 'AND' 'OR' '>' '<' '>=' '<=' for numbers
+    i = 0;
+    while (i < evaluatedOperators.length) {
+      const operator = evaluatedOperators[i];
+      const leftValue = evaluatedValues[i];
+      const rightValue = evaluatedValues[i + 1];
+      if (isNumber(leftValue.val) && isNumber(rightValue.val)) {
+        const finalVal = numOpEvaluator(operator, leftValue, rightValue, t.dynamicErrorBuilder);
+        if (!finalVal) return;
+        evaluatedValues[i] = finalVal;
+        evaluatedValues.splice(i+1, 1);
+        evaluatedOperators.splice(i, 1);
+      } else {
+        i += 1;
+      }
+    }
+    // console.log("expr eval 4", evaluatedValues, evaluatedOperators);
+
+    // handles '==' 'AND' 'OR' for booleans
+    i = 0;
+    while (i < evaluatedOperators.length) {
+      const operator = evaluatedOperators[i];
+      const leftValue = evaluatedValues[i];
+      const rightValue = evaluatedValues[i + 1];
+      const finalVal = booleanOpEvaluator(operator, leftValue, rightValue, t.dynamicErrorBuilder);
+      if (!finalVal) return;
+      evaluatedValues[i] = finalVal;
+      evaluatedValues.splice(i+1, 1);
+      evaluatedOperators.splice(i, 1);
+      i += 1;
+    }
+    // console.log("expr eval 5", evaluatedValues, evaluatedOperators);
+
+    return evaluatedValues[0].val;
   }
 
   visitVariableAssignment(n: VariableAssignment, t: OutputVisitorContext): void {
@@ -259,7 +319,8 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
       case 'number':
         return Number(n.tokenValue);
       case 'truthValue':
-        return Boolean(n.tokenValue);
+        console.log(n.tokenValue, n.tokenValue === 'true');
+        return n.tokenValue === 'true';
     }
     const name = n.tokenValue;
     if (t.constantTable.has(name)) {

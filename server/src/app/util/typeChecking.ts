@@ -1,5 +1,5 @@
 export function isNumber(value: unknown): value is number {
-  return !isNaN(Number(value));
+  return value !== true && value !== false && !Number.isNaN(value);
 }
 
 export function isBoolean(value: unknown): value is boolean {

@@ -17,7 +17,7 @@ statement: (localVariableDeclaration | variableAssignment | createCall | loopBlo
 loopBlock: LOOP  POSITIVE_NUMBER  TIMES  statement+  END_LOOP;
 
 // Control Flow Block
-ifElseBlock: IF operableExpr THEN branchBody (ELSE_IF operableExpr THEN branchBody)* (ELSE branchBody)? END_IF;
+ifElseBlock: IF firstOpExpr THEN branchBody (ELSE_IF firstOpExpr THEN branchBody)* (ELSE branchBody)? END_IF;
 branchBody: statement+;
 
 // Variables
@@ -32,12 +32,13 @@ streetOutput: (HIGHWAY | STREET | BRIDGE)  FROM  expression TO  expression;
 
 // Expressions
 // We do not allow operations on position
-expression: (operableExpr | position );
-operableExpr: (positionAccess | functionCall | variableName | NEGATIVE_NUMBER | POSITIVE_NUMBER | TRUE | FALSE) operation?;
-operation: OPERATOR operableExpr;
-position: OPEN_PAREN  operableExpr  COMMA  operableExpr  CLOSE_PAREN;
+expression: (firstOpExpr | opExpr | position);
+firstOpExpr: opExpr (OPERATOR opExpr)*; // The first op expression does need parenthesis
+opExpr: OPEN_PAREN opExpr (OPERATOR opExpr)* CLOSE_PAREN | positionAccess | functionCall | token;
+position: (OPEN_PAREN  firstOpExpr  COMMA  firstOpExpr  CLOSE_PAREN );
 positionAccess: NAME CHAIN_OP COORDINATE;
 functionCall: functionName  OPEN_PAREN  expression  (COMMA  expression )* CLOSE_PAREN SEMICOLON;
+token: variableName | NEGATIVE_NUMBER | POSITIVE_NUMBER | TRUE | FALSE;
 
 // Misc.
 // lazy hack to make it easier to differentiate between names while preventing using lexer modes
