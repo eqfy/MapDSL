@@ -5,7 +5,7 @@ options { tokenVocab=MapGeneratorLexer; }
 program: (canvasConfiguration)? (definitionBlock )? outputBlock EOF;
 
 // Canvas configuration
-canvasConfiguration: CANVAS_SIZE POSITIVE_NUMBER BY POSITIVE_NUMBER;
+canvasConfiguration: CANVAS_SIZE EQ POSITIVE_NUMBER BY POSITIVE_NUMBER SEMICOLON;
 
 // Defintion Block
 definitionBlock: DEFINITIONS  globalBodyElement+  END_DEFINITION;

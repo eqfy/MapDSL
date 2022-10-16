@@ -1,3 +1,5 @@
+CANVAS_SIZE = 1500 by 1500;
+
 DEFINITIONS
         FUNCTION newTL(position) {
                 CREATE traffic light at position;
