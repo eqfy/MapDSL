@@ -116,6 +116,13 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
 
   visitFunctionCall(n: FunctionCall, t: OutputVisitorContext): OutputVisitorReturnType {
     const fnName = this.getStringTokenValue(n.name, t);
+
+    t.dynamicErrorBuilder.stackFrame.push(fnName);
+    if (t.dynamicErrorBuilder.stackFrame.length > 99) {
+      t.dynamicErrorBuilder.buildError("Function call stack exceeded 99, you may have an infinite recursion", n.range);
+      return;
+    }
+
     const fnDec = t.functionTable.get(fnName);
     if (!fnDec) return;
 
@@ -134,16 +141,20 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
       newVariableTable.set(argName, argExprs[i].accept(this, t));
     }
 
+    const newCtx = {
+      dynamicErrorBuilder: t.dynamicErrorBuilder,
+      createStatementBuilder: t.createStatementBuilder,
+      variableTable: newVariableTable,
+      constantTable: t.constantTable,
+      functionTable: t.functionTable,
+      canvas: t.canvas
+    };
     for (const stmt of fnBody) {
-      stmt.accept(this, {
-        dynamicErrorBuilder: t.dynamicErrorBuilder,
-        createStatementBuilder: t.createStatementBuilder,
-        variableTable: newVariableTable,
-        constantTable: t.constantTable,
-        functionTable: t.functionTable,
-        canvas: t.canvas
-      });
+      stmt.accept(this, newCtx);
+      if (t.dynamicErrorBuilder.errors.length > 0) return;
     }
+
+    t.dynamicErrorBuilder.stackFrame.pop();
   }
 
   visitPosition(n: Position, t: OutputVisitorContext): CreatePosition | void {
@@ -257,7 +268,7 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
     }
     // console.log("expr eval 5", evaluatedValues, evaluatedOperators);
 
-    if (evaluatedOperators.length > 1) {
+    if (evaluatedOperators.length > 0) {
       t.dynamicErrorBuilder.buildError("Expression cannot be fully reduced", n.range);
     }
     return evaluatedValues[0].val;

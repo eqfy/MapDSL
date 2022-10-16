@@ -100,6 +100,12 @@ export class StaticCheckVisitor implements Visitor<StaticCheckVisitorContext, St
 
   visitFunctionCall(n: FunctionCall, t: StaticCheckVisitorContext): StaticCheckVisitorReturnType {
     const fnName = this.getStringTokenValue(n.name, t);
+
+    t.staticErrorBuilder.stackFrame.push(fnName);
+    if (t.staticErrorBuilder.stackFrame.length > 99) {
+      return;
+    }
+
     const fnDec = t.functionTable.get(fnName);
     if (!fnDec) {
       t.staticErrorBuilder.buildError(`Called an undeclared function ${fnName}`, n.range);
@@ -130,14 +136,17 @@ export class StaticCheckVisitor implements Visitor<StaticCheckVisitorContext, St
       newVariableTable.set(argName, argExprs[i].accept(this, t));
     }
 
-    for (const stmt of fnBody) {
-      stmt.accept(this, {
-        staticErrorBuilder: t.staticErrorBuilder,
-        variableTable: newVariableTable,
-        constantTable: t.constantTable,
-        functionTable: t.functionTable
-      });
+    const newCtx = {
+      staticErrorBuilder: t.staticErrorBuilder,
+      variableTable: newVariableTable,
+      constantTable: t.constantTable,
+      functionTable: t.functionTable
     }
+    for (const stmt of fnBody) {
+      stmt.accept(this, newCtx);
+      if (t.staticErrorBuilder.errors.length > 0) return;
+    }
+    t.staticErrorBuilder.stackFrame.pop();
   }
 
   visitPosition(n: Position, t: StaticCheckVisitorContext): CreatePosition | void {
