@@ -40,6 +40,7 @@ export function numOpEvaluator(op: EvaluatedOperator, l: EvaluatedExpression, r:
     case "/": {
       if (rnum.val === 0) {
         errorBuilder.buildError("Cannot divide by 0", range);
+        return;
       }
       return { val: lnum.val / rnum.val, range };
     }
