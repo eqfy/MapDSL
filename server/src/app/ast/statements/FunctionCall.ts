@@ -1,9 +1,9 @@
 import { Visitor } from '../Visitor';
-import TokenNode from './TokenNode';
-import Expression from './Expression';
-import { OperableExpr } from './OperableExpr';
+import TokenNode from '../expressions/TokenNode';
+import Expression from '../expressions/Expression';
 import { Range } from '../../util/Range';
-export default class FunctionCall extends OperableExpr {
+import Statement from './Statement';
+export default class FunctionCall extends Statement {
   readonly name: TokenNode;
   readonly inputValues: Expression[];
 
