@@ -1,5 +1,5 @@
-import Statement from '../statements/Statement';
+import ASTNode from '../ASTNode';
 
-export default abstract class Expression extends Statement {
+export default abstract class Expression extends ASTNode {
   // all functionality is in the subclasses!
 }

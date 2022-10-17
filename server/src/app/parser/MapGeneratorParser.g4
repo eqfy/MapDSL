@@ -14,7 +14,7 @@ functionDeclaration: FUNCTION  functionName  OPEN_PAREN  parameterName  (COMMA  
 
 // Output Block
 outputBlock: OUTPUT statement+ END_OUTPUT;
-statement: (localVariableDeclaration | variableAssignment | createCall | loopBlock | ifElseBlock | expression);
+statement: (localVariableDeclaration | variableAssignment | createCall | loopBlock | ifElseBlock | functionCall);
 
 // Loop Block
 loopBlock: LOOP  expression  TIMES  statement+  END_LOOP;
@@ -36,10 +36,10 @@ polygonOutput: (WATER | BUILDING) AT expression expression expression expression
 
 // Expressions
 // We do not allow operations on position
-expression: (firstOpExpr | opExpr | position);
+expression: (firstOpExpr | position);
 firstOpExpr: opExpr (OPERATOR opExpr)*; // The first op expression does not need parenthesis
-opExpr: OPEN_PAREN opExpr (OPERATOR opExpr)* CLOSE_PAREN | positionAccess | functionCall | token;
-position: (OPEN_PAREN  firstOpExpr  COMMA  firstOpExpr  CLOSE_PAREN );
+opExpr: OPEN_PAREN opExpr (OPERATOR opExpr)* CLOSE_PAREN | positionAccess | token;
+position: OPEN_PAREN  firstOpExpr  COMMA  firstOpExpr  CLOSE_PAREN;
 positionAccess: NAME CHAIN_OP COORDINATE;
 functionCall: functionName  OPEN_PAREN  expression  (COMMA  expression )* CLOSE_PAREN SEMICOLON;
 token: NEGATIVE_NUMBER | POSITIVE_NUMBER | TRUE | FALSE | variableName;
