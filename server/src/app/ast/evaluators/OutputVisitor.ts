@@ -10,7 +10,7 @@ import FunctionDeclaration from '../FunctionDeclaration';
 import LoopBlock from '../statements/LoopBlock';
 import ASTNode from '../ASTNode';
 import VariableDeclaration from '../statements/VariableDeclaration';
-import FunctionCall from '../expressions/FunctionCall';
+import FunctionCall from '../statements/FunctionCall';
 import Program from '../Program';
 import Position from '../expressions/Position';
 import OpExpression from '../expressions/OpExpression';

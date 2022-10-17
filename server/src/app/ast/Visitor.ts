@@ -8,7 +8,7 @@ import VariableDeclaration from './statements/VariableDeclaration';
 import VariableAssignment from './statements/VariableAssignment';
 import CreatePolyline from './statements/CreatePolyline';
 import CreatePolygon from './statements/CreatePolygon';
-import FunctionCall from './expressions/FunctionCall';
+import FunctionCall from './statements/FunctionCall';
 import LoopBlock from './statements/LoopBlock';
 import Position from './expressions/Position';
 import CoordinateAccess from './expressions/CoordinateAccess';
