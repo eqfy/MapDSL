@@ -1,14 +1,7 @@
 {
-  "name": "lsp-sample",
-  "description": "A language server example",
-  "author": "Microsoft Corporation",
-  "license": "MIT",
+  "name": "project_cpsc410",
+  "description": "language server dsl vs code extension",
   "version": "1.0.0",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Microsoft/vscode-extension-samples"
-  },
-  "publisher": "vscode-samples",
   "categories": [
     "Programming Languages"
   ],
