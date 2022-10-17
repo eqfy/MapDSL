@@ -50,7 +50,7 @@ POSITIVE_NUMBER : [0-9]+;
 NEGATIVE_NUMBER: '-' POSITIVE_NUMBER;
 TRUE: 'true';
 FALSE: 'false';
-OPERATOR: [+-/] | '*' | '==' | '>' | '<' | '>=' | '<=' | 'AND' | 'OR';
+OPERATOR: [+-/] | '*' | '==' | '!=' | '>' | '<' | '>=' | '<=' | 'AND' | 'OR';
 BUS_STOP: BUS WS STOP;
 STOP_SIGN: STOP WS SIGN;
 TRAFFIC_LIGHT: TRAFFIC WS LIGHT;

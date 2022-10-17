@@ -55,7 +55,9 @@ export function numOpEvaluator(op: EvaluatedOperator, l: EvaluatedExpression, r:
     case "<=":
       return { val: lnum.val <= rnum.val, range };
     case "==":
-      return { val: lnum.val == rnum.val, range };
+      return { val: lnum.val === rnum.val, range };
+    case "!=":
+      return { val: lnum.val !== rnum.val, range };
     default:
       errorBuilder.buildError("Invalid operator for numbers", { start: op.range.start, end: op.range.end });
   }
@@ -75,7 +77,9 @@ export function booleanOpEvaluator(op: EvaluatedOperator, l: EvaluatedExpression
   const range: Range = { start: l.range.start, end: r.range.end };
   switch (op.val) {
     case "==":
-      return { val: lbool.val == rbool.val, range };
+      return { val: lbool.val === rbool.val, range };
+    case "!=":
+      return { val: lbool.val !== rbool.val, range };
     case "AND":
       return { val: lbool.val && rbool.val, range };
     case "OR":
