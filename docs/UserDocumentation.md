@@ -324,6 +324,8 @@ Defining a canvas size is optional. You can define the canvas size of your map b
 
 When rendering, the canvas size you specified will then be rounded up to fit even number of tiles horizontally and vertically (for example, if you specify 3000 by 3000, the rendered canvas size will be 4096 by 4096, which is 4 by 4 tiles in the default zoom level).
 
+The canvas size you specify will always be rounded up to fit an even number of tiles horizontally and vertically, which will end up being some power of 2 due to restrictions in the Google Maps API (for example, if you specify 3000 by 3000, the rendered canvas size will be 4096 by 4096).
+
 If you do not define a canvas size, the default is 8192 by 4096 - meaning that your x coordinate can go up to 8192, and your y coordinate can go up to 4096.
 
 #### Canvas Size Example:
