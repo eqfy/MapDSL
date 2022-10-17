@@ -35,7 +35,7 @@ import FunctionDeclaration from "../ast/FunctionDeclaration";
 import LoopBlock from "../ast/statements/LoopBlock";
 import Expression from "../ast/expressions/Expression";
 import VariableDeclaration from "../ast/statements/VariableDeclaration";
-import FunctionCall from "../ast/expressions/FunctionCall";
+import FunctionCall from "../ast/statements/FunctionCall";
 import CreatePolyline from "../ast/statements/CreatePolyline";
 import CreatePolygon from '../ast/statements/CreatePolygon';
 import CoordinateAccess from "../ast/expressions/CoordinateAccess";
@@ -172,7 +172,7 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
     const localVariableDeclarationCtx = ctx.localVariableDeclaration();
     const variableAssignmentCtx = ctx.variableAssignment();
     const createCallCtx = ctx.createCall();
-    const expressionCtx = ctx.expression();
+    const functionCallCtx = ctx.functionCall();
     const loopBlockCtx = ctx.loopBlock();
     const ifElseBlockCtx = ctx.ifElseBlock();
 
@@ -188,10 +188,8 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
       value = this.visitLoopBlock(loopBlockCtx);
     } else if (ifElseBlockCtx) {
       value = this.visitIfElseBlock(ifElseBlockCtx);
-    } else if (expressionCtx) {
-      // An expression can also be used in a statement position. The reverse is not true.
-      // Hence, our implementation has expression extend statement.
-      value = this.visitExpression(expressionCtx);
+    } else if (functionCallCtx) {
+      value = this.visitFunctionCall(functionCallCtx);
     } else {
       throw new Error(
         "Impossible - VariableDeclaration, VariableAssignment, CreateCall, and FunctionCall cannot all be undefined (enforced by Parser)"
@@ -393,14 +391,11 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
     // Parser enforces that we only have one of the following
     const positionCtx = ctx.position();
     const firstOpExpr = ctx.firstOpExpr();
-    const opExpr = ctx.opExpr();
 
     if (positionCtx) {
       return this.visitPosition(positionCtx);
     } else if (firstOpExpr) {
       return this.visitFirstOpExpr(firstOpExpr);
-    } else if (opExpr) {
-      return this.visitOpExpr(opExpr);
     } else {
       throw new Error(
         "Impossible - Position, Number, PositionAccess, and VariableName cannot all be undefined (enforced by Parser)"
@@ -444,15 +439,12 @@ export class ParseToASTVisitor extends AbstractParseTreeVisitor<ASTNode> impleme
 
   visitOpExpr(ctx: OpExprContext): OperableExpr {
     const positionAccessCtx = ctx.positionAccess();
-    const functionCall = ctx.functionCall();
     const tokenCtx = ctx.token();
     const opExprs = ctx.opExpr();
     const operators = ctx.OPERATOR();
 
     if (positionAccessCtx) {
       return this.visitPositionAccess(positionAccessCtx);
-    } else if (functionCall) {
-      return this.visitFunctionCall(functionCall);
     } else if (tokenCtx) {
       const positiveNumberCtx = tokenCtx.POSITIVE_NUMBER();
       const negativeNumberCtx = tokenCtx.NEGATIVE_NUMBER();
