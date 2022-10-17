@@ -43,12 +43,28 @@ DEFINITIONS
 
         FUNCTION createCity(northWestPosition, blockSize, addStopLights) {
                 LOOP 3 TIMES
-                        createStreetBlock(northWestPosition, blockSize, addStopLights);
-                        createStreetBlock((northWestPosition.x + blockSize, northWestPosition.y), blockSize, addStopLights);
-                        createStreetBlock((northWestPosition.x + blockSize + blockSize, northWestPosition.y), blockSize, addStopLights);
-                        northWestPosition = (northWestPosition.x, northWestPosition.y - blockSize);
+                        LOOP 3 TIMES
+                                createStreetBlock(northWestPosition, blockSize, addStopLights);
+                                createStreetBlock((northWestPosition.x + blockSize, northWestPosition.y), blockSize, addStopLights);
+                                createStreetBlock((northWestPosition.x + blockSize + blockSize, northWestPosition.y), blockSize, addStopLights);
+                                northWestPosition = (northWestPosition.x, northWestPosition.y - blockSize);
+                        END_LOOP
+                        northWestPosition = (northWestPosition.x, northWestPosition.y + (3 * blockSize));
                 END_LOOP
 
+        }
+
+        FUNCTION createSquareL(size) {
+        VARIABLE posX = 100;
+                        VARIABLE posY =  100;
+                LOOP 3 TIMES
+                        
+                        LOOP 3 TIMES
+                                CREATE traffic light at (posX, posY);
+                                posY = posY + 100;
+                        END_LOOP
+                        posX = posX + 100;
+                END_LOOP
         }
 
         FUNCTION newTL(position) {
@@ -63,4 +79,5 @@ OUTPUT
         createSquare(1, 500, (1000,1000));
         createSquare(2, 100, (1610,985));
         createCity((1600,1000), 128, true);
+        createSquareL(10);
 END_OUTPUT

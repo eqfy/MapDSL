@@ -26,6 +26,7 @@
 9. [Other Features / Things to Know](#other-features--things-to-know)
    - [Comments](#comments)
    - [Recursion / Calling Other Functions](#calling-functions-within-functions-and-recursion)
+   - [Reserved Keywords / Variable Name Restrictions](#reserved-keywords-and-variable-name-restrictions)
    - [Errors](#errors)
    - [Known Bugs](#known-bugs)
 10. [Entire Program Example](#entire-program)
@@ -36,7 +37,14 @@
 
 ## Positions (x,y)
 
-Positions are in the format `(x, y)`, where x and y are any two expressions that evaluate to integers. Their main purpose is to specify positions for [CREATE statements](#create-statements).
+Positions describe locations on the map and take two parameters in a tuple pair representing their "x" and "y" coordinates (format `(x, y)`). Both coordinates x and y can be any two expressions that evaluate to integers. Their main purpose is to specify positions for [CREATE statements](#create-statements) but can also be stored in variables.
+
+In order to render, coordinates in the x-axis should be specified within the range `[0, CANVAS_WIDTH]`. The default `CANVAS_WIDTH` is `8192`.
+
+In order to render, coordinates in the y-axis should be specified within the range `[0, CANVAS_HEIGHT]`. The default `CANVAS_HEIGHT` is `4096`.
+
+Both dimensions of the canvas can be adjusted using the commands specified [here](#defining-a-canvas-size).
+The coordinate system is intuitively set up in a Cartesian style, with "x" coordinates increasing from left to right and "y" coordinates increasing from low to high.
 
 #### Position Usage Examples:
 
@@ -54,7 +62,16 @@ Create statements are what actually puts things (markers, streets, buildings, et
 
 ### Creating Markers
 
-Creating markers can be done by specifying a marker type and a [Position](#positions-xy): `CREATE [bus stop, traffic light, stop sign, or train stop] at (x,y);`
+Creating markers can be done by specifying a marker type and a [Position](#positions-xy):
+
+`CREATE <marker-type> at <position>;`
+
+Where "marker type" may be one of:
+
+- `bus stop`
+- `traffic light`
+- `stop sign`
+- `train stop`
 
 #### CREATE Marker Usage Examples:
 
@@ -68,9 +85,17 @@ Creates the following map:
 
 ### Creating Streets, Highways, and Bridges
 
-Creating streets can be done by specifying a street type, a start [Position](#positions-xy), and an end [Position](#positions-xy): `CREATE [street, highway, or bridge] from (x1,y1) to (x2,y2);`
+Creating streets can be done by specifying a street type as well as both the start and end [Positions](#positions-xy):
 
-#### CREATE Line Usage Examples:
+`CREATE <street-type> from <position-1> to <position-2>;`
+
+Where "street type" may be one of:
+
+- `street`
+- `highway`
+- `bridge`
+
+#### CREATE Street Usage Examples:
 
 This code:
 
@@ -86,15 +111,20 @@ Creating buildings or water can be done by specifying a type and four coordinate
 
 For example, this would start with the top left, go to top right, go to bottom right, then finish with bottom left:
 
-`CREATE [water or building] at NorthWestPosition NorthEastPosition SouthEastPosition SouthWestPosition;`
+`CREATE <polygon type> at NorthWestPosition NorthEastPosition SouthEastPosition SouthWestPosition;`
 
 Another example, this would start with the bottom left, go to bottom right, go to top right, then finish with top left:
 
-`CREATE [water or building] at SouthWestPosition SouthEastPosition NorthEastPosition NorthWestPosition;`
+`CREATE <polygon type> at SouthWestPosition SouthEastPosition NorthEastPosition NorthWestPosition;`
+
+Where "polygon type" may be one of:
+
+- `building`
+- `water`
 
 #### CREATE Polygon Usage Examples:
 
-Note: Code is unnecessarily verbose so that you can understand the documentation better
+Note: Code is unnecessarily verbose so that you can understand the documentation better.
 
 This code:
 
@@ -128,10 +158,11 @@ In this documentation, we will refer to expressions as anything that evaluates t
 ```
 
 ### Operator Precedence
+
 Expressions follow the usual operator precedence. The following table summarizes the operator precedence, from highest precedence (most binding) to lowest precedence (least binding). Operators in the same box have the same precedence. Operators are all binary and evaluate from left to right.
 
 | Operator                         | Description                                         |
-|----------------------------------|-----------------------------------------------------|
+| -------------------------------- | --------------------------------------------------- |
 | `(expressions...)`               | Parenthesized expression                            |
 | `*`, `/`                         | Numbers only: multiplication, division              |
 | `+`, `-`                         | Numbers only: addition, subtraction                 |
@@ -174,7 +205,9 @@ This code:
 
 ### Accessing X and Y Coordinates From Variables/Constants
 
-[Constants and Variables](#variables-and-constants) can hold positions. Sometimes it can be useful to access the x or y position of the coordinate. You can do this simply by append .y or .x to the variable you want to access the coordinate from.
+[Constants and Variables](#variables-and-constants) can hold positions. Sometimes it can be useful to access the x or y position of the coordinate. You can do this simply by appending ".x" or ".y" to the name of the [Position](#positions-xy) variable you want to access the coordinate from.
+
+`myPositionVariable.x` or `myPositionVariable.y`
 
 #### Coordinate Access Examples:
 
@@ -322,6 +355,10 @@ Creates the following map:
 
 ![](mapSamples/recursionMap.png)
 
+### Reserved Keywords and Variable Name Restrictions
+
+Note that variable, constant, or function names must start with a character, and optionally can be followed by a character or a number (1 char minimum). They also cannot be named the same as any keyword listed in this documentation used in commands and structuring (including `FUNCTION`, `VARIABLE`, `CONSTANT`, `LOOP`, `street`, etc.).
+
 ### Errors:
 
 Errors will display as red underlines in your .mg file when you have the editor open. If there are errors in your program, the map will likely still render as much as possible. However, the output will be inaccurate until you fix the errors.
@@ -339,7 +376,17 @@ To sum things up: here is a list of everything that is allowed in each section o
   - FUNCTION declarations
     - Variable Declarations
     - Loops
-    - If/else if/else
+      - Variable Declarations
+      - If/elseif/else
+      - Create statements
+      - Variable reassignments
+      - Loops
+    - If/elseif/else
+      - Variable Declarations
+      - If/elseif/else
+      - Create statements
+      - Variable reassignments
+      - Loops
     - Create statements
     - Variable reassignments
   - CONSTANT declarations
@@ -347,7 +394,17 @@ To sum things up: here is a list of everything that is allowed in each section o
   - Function calls
   - Create statements
   - Loops
-  - If/else if/else
+    - Variable Declarations
+    - If/elseif/else
+    - Create statements
+    - Variable reassignments
+    - Loops
+  - If/elseif/else
+    - Variable Declarations
+    - If/elseif/else
+    - Create statements
+    - Variable reassignments
+    - Loops
   - Variable declarations
   - Variable reassignments
 
