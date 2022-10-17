@@ -39,9 +39,9 @@
 
 Positions describe locations on the map and take two parameters in a tuple pair representing their "x" and "y" coordinates (format `(x, y)`). Both coordinates x and y can be any two expressions that evaluate to integers. Their main purpose is to specify positions for [CREATE statements](#create-statements) but can also be stored in variables.
 
-Coordinates in the x-axis should be specified within the range `[0, CANVAS_WIDTH]`. The default `CANVAS_WIDTH` is `8192`.
+In order to render, coordinates in the x-axis should be specified within the range `[0, CANVAS_WIDTH]`. The default `CANVAS_WIDTH` is `8192`.
 
-Coordinates in the y-axis should be specified within the range `[0, CANVAS_HEIGHT]`. The default `CANVAS_HEIGHT` is `4096`.
+In order to render, coordinates in the y-axis should be specified within the range `[0, CANVAS_HEIGHT]`. The default `CANVAS_HEIGHT` is `4096`.
 
 Both dimensions of the canvas can be adjusted using the commands specified [here](#defining-a-canvas-size).
 The coordinate system is intuitively set up in a Cartesian style, with "x" coordinates increasing from left to right and "y" coordinates increasing from low to high.
@@ -205,7 +205,7 @@ This code:
 
 ### Accessing X and Y Coordinates From Variables/Constants
 
-[Constants and Variables](#variables-and-constants) can hold positions. Sometimes it can be useful to access the x or y position of the coordinate. You can do this simply by appending ".x" or ".y" to the name of the [Position](#position-xy) variable you want to access the coordinate from.
+[Constants and Variables](#variables-and-constants) can hold positions. Sometimes it can be useful to access the x or y position of the coordinate. You can do this simply by appending ".x" or ".y" to the name of the [Position](#positions-xy) variable you want to access the coordinate from.
 
 `myPositionVariable.x` or `myPositionVariable.y`
 
@@ -357,7 +357,7 @@ Creates the following map:
 
 ### Reserved Keywords and Variable Name Restrictions
 
-Note that variable, constant, or function names cannot be the same as any keyword listed in this documentation used in commands and structuring (including `FUNCTION`, `VARIABLE`, `CONSTANT`, `LOOP`, `street`, etc.).
+Note that variable, constant, or function names must start with a character, and optionally can be followed by a character or a number (1 char minimum). They also cannot be named the same as any keyword listed in this documentation used in commands and structuring (including `FUNCTION`, `VARIABLE`, `CONSTANT`, `LOOP`, `street`, etc.).
 
 ### Errors:
 
