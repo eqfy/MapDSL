@@ -1,7 +1,9 @@
 # Map Generator Language (.mg) Documentation
 
 ---
+
 ## Table of contents
+
 1. [Positions](#positions-xy)
 2. [CREATE Statements](#create-statements)
    - [Markers](#creating-markers)
@@ -26,10 +28,8 @@
    - [Errors](#errors)
    - [Known Bugs](#known-bugs)
 10. [Entire Program Example](#entire-program)
+
 ---
-
-
-
 
 #### Note: All code in this file can be found in ./docs/codeSamples and all maps can be found in ./docs/mapExamples
 
@@ -272,7 +272,6 @@ Defining a DEFINITIONS block is optional. If you define a DEFINITIONS block, it 
 
 ![](codeSamples/definitionsBlockCode.png)
 
-
 ### Defining a Canvas Size
 
 Defining a canvas size is optional. You can define the canvas size of your map by including `CANVAS_SIZE = width by height;` at the top of your file, where width and height are both positive numbers. The canvas size you specified will then be rounded up to the nearest power of 2 (for example, if you specify 3000 by 3000, the resulting canvas will be 4096 by 4096). If you do not define a canvas size, the default is 8192 by 4096 - meaning that your x coordinate can go up to 8192, and your y coordinate can go up to 4096.
@@ -317,7 +316,7 @@ Errors will display as red underlines in your .mg file when you have the editor 
 
 ### Known Bugs:
 
-1. 
+1. Sometimes the VS Code editor may stop working as expected. You may notice syntax highlighting stops working, errors are not showing properly, and the map will not load. This is due to an infinite loop or similar bug that seems to be happening within the ANTLR parser, presumably due to the definition of our grammar rules. If this happens, please restart the editor.
 
 ## Entire Program
 
@@ -325,12 +324,12 @@ To sum things up: here is a list of everything that is allowed in each section o
 
 - CANVAS_SIZE (optional)
 - DEFINITIONS block (optional)
-   - FUNCTION declarations
-      - Variable Declarations
-      - Loops
-      - If/else if/else
-      - Create statements
-      - Variable reassignments
+  - FUNCTION declarations
+    - Variable Declarations
+    - Loops
+    - If/else if/else
+    - Create statements
+    - Variable reassignments
   - CONSTANT declarations
 - OUTPUT block
   - Function calls
@@ -342,6 +341,4 @@ To sum things up: here is a list of everything that is allowed in each section o
 
 #### Program example:
 
-```
-
-```
+TO BE IMPLEMENTED
