@@ -67,10 +67,6 @@ export class StaticCheckVisitor implements Visitor<StaticCheckVisitorContext, St
 
   visitVariableDeclaration(n: VariableDeclaration, t: StaticCheckVisitorContext): void {
     const name = this.getStringTokenValue(n.name, t);
-    if (t.constantTable.has(name) || t.variableTable.has(name)) {
-      t.staticErrorBuilder.buildError(`${name} is already declared`, n.range);
-      return;
-    }
     n.isGlobalConstant
       ? t.constantTable.set(name, n.value.accept(this, t))
       : t.variableTable.set(name, n.value.accept(this, t));
@@ -87,7 +83,7 @@ export class StaticCheckVisitor implements Visitor<StaticCheckVisitorContext, St
 
   visitLoopBlock(n: LoopBlock, t: StaticCheckVisitorContext): void {
     const loopNumber = n.loopNumber.accept(this, t);
-    if(!isNumber(loopNumber)) {
+    if (!isNumber(loopNumber)) {
       return;
     }
     for (let i = 0; i < loopNumber; i++) {
@@ -152,7 +148,7 @@ export class StaticCheckVisitor implements Visitor<StaticCheckVisitorContext, St
       variableTable: newVariableTable,
       constantTable: t.constantTable,
       functionTable: t.functionTable
-    }
+    };
     for (const stmt of fnBody) {
       stmt.accept(this, newCtx);
       if (t.staticErrorBuilder.errors.length > 0) return;
@@ -169,9 +165,7 @@ export class StaticCheckVisitor implements Visitor<StaticCheckVisitorContext, St
   }
 
   visitVariableAssignment(n: VariableAssignment, t: StaticCheckVisitorContext): void {
-    const name = this.getStringTokenValue(n.name, t);
-    if (!t.variableTable.has(name)) t.staticErrorBuilder.buildError(`Variable ${name} is undefined`, n.range);
-    if (t.constantTable.has(name)) t.staticErrorBuilder.buildError(`Constant ${name} can not be redefined`, n.range);
+    // nothing to do here
   }
 
   visitCoordinateAccess(n: CoordinateAccess, t: StaticCheckVisitorContext): void {

@@ -1,30 +1,36 @@
-import { Visitor } from "../Visitor";
-import DefinitionBlock from "../DefinitionBlock";
-import TokenNode from "../expressions/TokenNode";
-import OutputBlock from "../OutputBlock";
-import VariableAssignment from "../statements/VariableAssignment";
-import CreatePolyline from "../statements/CreatePolyline";
+import { Visitor } from '../Visitor';
+import DefinitionBlock from '../DefinitionBlock';
+import TokenNode from '../expressions/TokenNode';
+import OutputBlock from '../OutputBlock';
+import VariableAssignment from '../statements/VariableAssignment';
+import CreatePolyline from '../statements/CreatePolyline';
 import CreatePolygon from '../statements/CreatePolygon';
-import CoordinateAccess from "../expressions/CoordinateAccess";
-import FunctionDeclaration from "../FunctionDeclaration";
-import LoopBlock from "../statements/LoopBlock";
-import ASTNode from "../ASTNode";
-import VariableDeclaration from "../statements/VariableDeclaration";
-import FunctionCall from "../expressions/FunctionCall";
-import Program from "../Program";
-import Position from "../expressions/Position";
-import OpExpression from "../expressions/OpExpression";
-import { CreatePosition, isCreatePosition, MarkerCreateStatement, PolygonCreateStatement, PolylineCreateStatement } from "../../CreateStatements/CreateStatementTypes";
-import CreateStatementBuilder from "../../CreateStatements/CreateStatementBuilder";
-import CreateMarker from "../statements/CreateMarker";
-import { isBoolean, isNumber, isString } from "../../util/typeChecking";
-import ErrorBuilder from "../Errors/ErrorBuilder";
-import IfElseBlock from "../statements/IfElseBlock";
-import { booleanOpEvaluator, EvaluatedExpression, EvaluatedOperator, numOpEvaluator } from "./OpExprHelper";
+import CoordinateAccess from '../expressions/CoordinateAccess';
+import FunctionDeclaration from '../FunctionDeclaration';
+import LoopBlock from '../statements/LoopBlock';
+import ASTNode from '../ASTNode';
+import VariableDeclaration from '../statements/VariableDeclaration';
+import FunctionCall from '../expressions/FunctionCall';
+import Program from '../Program';
+import Position from '../expressions/Position';
+import OpExpression from '../expressions/OpExpression';
+import {
+  CreatePosition,
+  isCreatePosition,
+  MarkerCreateStatement,
+  PolygonCreateStatement,
+  PolylineCreateStatement
+} from '../../CreateStatements/CreateStatementTypes';
+import CreateStatementBuilder from '../../CreateStatements/CreateStatementBuilder';
+import CreateMarker from '../statements/CreateMarker';
+import { isBoolean, isNumber, isString } from '../../util/typeChecking';
+import ErrorBuilder from '../Errors/ErrorBuilder';
+import IfElseBlock from '../statements/IfElseBlock';
+import { booleanOpEvaluator, EvaluatedExpression, EvaluatedOperator, numOpEvaluator } from './OpExprHelper';
 import Expression from '../expressions/Expression';
 import { DEFAULT_CANVAS_HEIGHT, DEFAULT_CANVAS_WIDTH, MAX_CANVAS_SIZE } from '../../util/constants';
 import { Range } from '../../util/Range';
-import CanvasConfiguration from "../CanvasConfiguration";
+import CanvasConfiguration from '../CanvasConfiguration';
 
 // This type represents all values allowed in our language
 export type OutputVisitorReturnType = CreatePosition | number | string | boolean | void;
@@ -35,7 +41,7 @@ interface OutputVisitorContext {
   variableTable: Map<string, OutputVisitorReturnType>;
   functionTable: Map<string, FunctionDeclaration>; // always global
   constantTable: Map<string, OutputVisitorReturnType>; // always global
-  canvas: { width: number, height: number }; // canvas dimension
+  canvas: { width: number; height: number }; // canvas dimension
 }
 
 export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisitorReturnType> {
@@ -77,6 +83,10 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
 
   visitVariableDeclaration(n: VariableDeclaration, t: OutputVisitorContext): void {
     const name = this.getStringTokenValue(n.name, t);
+    if (t.constantTable.has(name) || t.variableTable.has(name)) {
+      t.dynamicErrorBuilder.buildError(`${name} is already declared`, n.range);
+      return;
+    }
     n.isGlobalConstant
       ? t.constantTable.set(name, n.value.accept(this, t))
       : t.variableTable.set(name, n.value.accept(this, t));
@@ -89,8 +99,8 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
 
   visitLoopBlock(n: LoopBlock, t: OutputVisitorContext): void {
     const loopNumber = n.loopNumber.accept(this, t);
-    if(!isNumber(loopNumber)) {
-      t.dynamicErrorBuilder.buildError("Loop number does not evaluate to a number", n.loopNumber.range);
+    if (!isNumber(loopNumber)) {
+      t.dynamicErrorBuilder.buildError('Loop number does not evaluate to a number', n.loopNumber.range);
       return;
     }
     for (let i = 0; i < loopNumber; i++) {
@@ -104,7 +114,7 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
     for (const branch of n.branchTable) {
       const branchTruthiness = branch.expression.accept(this, t);
       if (!isBoolean(branchTruthiness)) {
-        t.dynamicErrorBuilder.buildError("If/Else branch predicate should be a boolean", branch.expression.range);
+        t.dynamicErrorBuilder.buildError('If/Else branch predicate should be a boolean', branch.expression.range);
       }
       if (branchTruthiness) {
         for (const statement of branch.statements) {
@@ -123,7 +133,7 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
 
     t.dynamicErrorBuilder.stackFrame.push(fnName);
     if (t.dynamicErrorBuilder.stackFrame.length > 99) {
-      t.dynamicErrorBuilder.buildError("Function call stack exceeded 99, you may have an infinite recursion", n.range);
+      t.dynamicErrorBuilder.buildError('Function call stack exceeded 99, you may have an infinite recursion', n.range);
       return;
     }
 
@@ -137,8 +147,7 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
     if (!argNames || !argExprs) return;
     if (argNames.length !== argExprs.length) return;
 
-    // Create a copy of the variable table for the new scope
-    const newVariableTable = new Map(t.variableTable);
+    const newVariableTable = new Map();
 
     for (let i = 0; i < argNames.length; i++) {
       const argName = this.getStringTokenValue(argNames[i], t);
@@ -168,7 +177,7 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
     if (isCreatePosition(pos)) {
       return pos;
     } else {
-      t.dynamicErrorBuilder.buildError("Invalid position", {
+      t.dynamicErrorBuilder.buildError('Invalid position', {
         start: n.xCoordinate.range.start,
         end: n.yCoordinate.range.end
       });
@@ -185,7 +194,10 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
       if (isNumber(val) || isBoolean(val)) {
         evaluatedValues.push({ val, range: expression.range });
       } else {
-        t.dynamicErrorBuilder.buildError('Expected a boolean or a number for operands, but got something else', expression.range);
+        t.dynamicErrorBuilder.buildError(
+          'Expected a boolean or a number for operands, but got something else',
+          expression.range
+        );
         return;
       }
     }
@@ -209,7 +221,7 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
     let i = 0;
     while (i < evaluatedOperators.length) {
       const operator = evaluatedOperators[i];
-      if (["*", "/"].includes(operator.val)) {
+      if (['*', '/'].includes(operator.val)) {
         const leftValue = evaluatedValues[i];
         const rightValue = evaluatedValues[i + 1];
         const finalVal = numOpEvaluator(operator, leftValue, rightValue, t.dynamicErrorBuilder);
@@ -226,7 +238,7 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
     i = 0;
     while (i < evaluatedOperators.length) {
       const operator = evaluatedOperators[i];
-      if (["+", "-"].includes(operator.val)) {
+      if (['+', '-'].includes(operator.val)) {
         const leftValue = evaluatedValues[i];
         const rightValue = evaluatedValues[i + 1];
         const finalVal = numOpEvaluator(operator, leftValue, rightValue, t.dynamicErrorBuilder);
@@ -274,13 +286,15 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
     // console.log("expr eval 5", evaluatedValues, evaluatedOperators);
 
     if (evaluatedOperators.length > 0) {
-      t.dynamicErrorBuilder.buildError("Expression cannot be fully reduced", n.range);
+      t.dynamicErrorBuilder.buildError('Expression cannot be fully reduced', n.range);
     }
     return evaluatedValues[0].val;
   }
 
   visitVariableAssignment(n: VariableAssignment, t: OutputVisitorContext): void {
     const name = this.getStringTokenValue(n.name, t);
+    if (!t.variableTable.has(name)) t.dynamicErrorBuilder.buildError(`Variable ${name} is undefined`, n.range);
+    if (t.constantTable.has(name)) t.dynamicErrorBuilder.buildError(`Constant ${name} can not be redefined`, n.range);
     if (t.variableTable.has(name)) {
       t.variableTable.set(name, n.value.accept(this, t));
     }
@@ -297,9 +311,9 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
 
     if (isCreatePosition(position)) {
       const coordinate = this.getStringTokenValue(n.coordinate, t);
-      if (coordinate === "x") {
+      if (coordinate === 'x') {
         return position.x;
-      } else if (coordinate === "y") {
+      } else if (coordinate === 'y') {
         return position.y;
       } else {
         t.dynamicErrorBuilder.buildError(`Coordinate was not x or y`, n.coordinate.range);
@@ -313,11 +327,11 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
 
   visitCreateMarker(n: CreateMarker, t: OutputVisitorContext): void {
     const type = this.getStringTokenValue(n.markerType, t);
-    if (type !== "stop sign" && type !== "traffic light" && type !== "bus stop" && type !== "train stop") return;
+    if (type !== 'stop sign' && type !== 'traffic light' && type !== 'bus stop' && type !== 'train stop') return;
 
     const position = n.position.accept(this, t);
     if (!isCreatePosition(position)) {
-      t.dynamicErrorBuilder.buildError("Invalid position", n.position.range);
+      t.dynamicErrorBuilder.buildError('Invalid position', n.position.range);
       return;
     } else if (!this.checkPositionInCanvas(position, t, n.position.range)) {
       return;
@@ -333,12 +347,12 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
   visitCreatePolyline(n: CreatePolyline, t: OutputVisitorContext): void {
     const type = this.getStringTokenValue(n.streetType, t);
 
-    if (type !== "highway" && type !== "street" && type !== "bridge") return;
+    if (type !== 'highway' && type !== 'street' && type !== 'bridge') return;
 
     const startPosition = n.startPosition.accept(this, t);
     const endPosition = n.endPosition.accept(this, t);
     if (!isCreatePosition(startPosition) || !isCreatePosition(endPosition)) {
-      t.dynamicErrorBuilder.buildError("Invalid positions", {
+      t.dynamicErrorBuilder.buildError('Invalid positions', {
         start: n.startPosition.range.start,
         end: n.endPosition.range.end
       });
@@ -370,8 +384,9 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
     for (const expr of n.positions) {
       const position = expr.accept(this, t);
       if (!isCreatePosition(position)) {
-        t.dynamicErrorBuilder.buildError("Invalid positions", {
-          start: n.positions[0].range.start, end: n.positions[n.positions.length - 1].range.end
+        t.dynamicErrorBuilder.buildError('Invalid positions', {
+          start: n.positions[0].range.start,
+          end: n.positions[n.positions.length - 1].range.end
         });
         return;
       }
@@ -379,7 +394,7 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
     }
 
     let valid = false;
-    for (let i = 0; i < positions.length; i ++) {
+    for (let i = 0; i < positions.length; i++) {
       this.checkPositionInCanvas(positions[i], t, n.positions[i].range);
       valid = true;
     }
@@ -389,8 +404,9 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
     }
 
     if (positions.length < 4) {
-      t.dynamicErrorBuilder.buildError("Impossible - CREATE polygon has fewer than 4 positions (enforced by Parser", {
-        start: n.positions[0].range.start, end: n.positions[n.positions.length - 1].range.end
+      t.dynamicErrorBuilder.buildError('Impossible - CREATE polygon has fewer than 4 positions (enforced by Parser', {
+        start: n.positions[0].range.start,
+        end: n.positions[n.positions.length - 1].range.end
       });
       return;
     }
@@ -404,12 +420,12 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
 
   visitTokenNode(n: TokenNode, t: OutputVisitorContext): OutputVisitorReturnType {
     switch (n.targetValueType) {
-      case "string":
+      case 'string':
         return n.tokenValue;
-      case "number":
+      case 'number':
         return Number(n.tokenValue);
-      case "truthValue":
-        return n.tokenValue === "true";
+      case 'truthValue':
+        return n.tokenValue === 'true';
     }
     const name = n.tokenValue;
     if (t.constantTable.has(name)) {
@@ -428,7 +444,7 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
 
   private getStringTokenValue(token: TokenNode, t: OutputVisitorContext): string {
     const str = token.accept(this, t);
-    return !isString(str) ? "" : str;
+    return !isString(str) ? '' : str;
   }
 
   private getNumberTokenValue(token: TokenNode, t: OutputVisitorContext): number {
@@ -440,7 +456,10 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
   private checkPositionInCanvas(pos: CreatePosition, t: OutputVisitorContext, range: Range): boolean {
     if (!pos) return false;
     if (pos.x < 0 || pos.x > t.canvas.width || pos.y < 0 || pos.y > t.canvas.height) {
-      t.dynamicErrorBuilder.buildError(`Position (${pos.x}, ${pos.y}) outside of canvas which is ${t.canvas.width} by ${t.canvas.height}`, range);
+      t.dynamicErrorBuilder.buildError(
+        `Position (${pos.x}, ${pos.y}) outside of canvas which is ${t.canvas.width} by ${t.canvas.height}`,
+        range
+      );
       return false;
     }
     return true;
