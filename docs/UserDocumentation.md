@@ -322,7 +322,7 @@ Defining a DEFINITIONS block is optional. If you define a DEFINITIONS block, it 
 
 Defining a canvas size is optional. You can define the canvas size of your map by including `CANVAS_SIZE = width by height;` at the top of your file, where width and height are both positive numbers no larger than 100000.
 
-When rendering, the canvas size you specified will then be rounded up to fit even number of tiles horizontally and vertically (for example, if you specify 3000 by 3000, the rendered canvas size will be 4096 by 4096, which is 4 by 4 tiles in the default zoom level). If you do not define a canvas size, the default is 8192 by 4096 - meaning that your x coordinate can go up to 8192, and your y coordinate can go up to 4096.
+When rendering, the canvas size you specified will then be rounded up to fit even number of tiles horizontally and vertically (for example, if you specify 3000 by 3000, the rendered canvas size will be 4096 by 4096, which is 4 by 4 tiles in the default zoom level).
 
 If you do not define a canvas size, the default is 8192 by 4096 - meaning that your x coordinate can go up to 8192, and your y coordinate can go up to 4096.
 
