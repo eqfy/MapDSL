@@ -27,8 +27,7 @@ import { isBoolean, isNumber, isString } from '../../util/typeChecking';
 import ErrorBuilder from '../Errors/ErrorBuilder';
 import IfElseBlock from '../statements/IfElseBlock';
 import { booleanOpEvaluator, EvaluatedExpression, EvaluatedOperator, numOpEvaluator } from './OpExprHelper';
-import Expression from '../expressions/Expression';
-import { DEFAULT_CANVAS_HEIGHT, DEFAULT_CANVAS_WIDTH, MAX_CANVAS_SIZE } from '../../util/constants';
+import { DEFAULT_CANVAS_HEIGHT, DEFAULT_CANVAS_WIDTH, MAX_CANVAS_SIZE, MIN_CANVAS_SIZE } from '../../util/constants';
 import { Range } from '../../util/Range';
 import CanvasConfiguration from '../CanvasConfiguration';
 
@@ -59,7 +58,7 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
     } else {
       const width = this.getNumberTokenValue(n.width, t);
       const height = this.getNumberTokenValue(n.height, t);
-      if (width > MAX_CANVAS_SIZE || width <= 0 || height > MAX_CANVAS_SIZE || height <= 0) {
+      if (width > MAX_CANVAS_SIZE || width < MIN_CANVAS_SIZE || height > MAX_CANVAS_SIZE || height < MIN_CANVAS_SIZE) {
         t.canvas.width = DEFAULT_CANVAS_WIDTH;
         t.canvas.height = DEFAULT_CANVAS_HEIGHT;
       } else {

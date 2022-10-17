@@ -74,9 +74,8 @@ DEFINITIONS
 
         FUNCTION createBridge(isWater) {
                 IF (isWater) THEN
-                CREATE bridge from (centerX + threeBlocks, centerY) to (centerX + threeBlocks, centerY - defaultBlockSize);
+                        CREATE bridge from (centerX + threeBlocks, centerY) to (centerX + threeBlocks, centerY - defaultBlockSize);
                 END_IF
-                isWater = false;
         }
 
          FUNCTION createCustomBridge(start, end) {
@@ -92,7 +91,7 @@ DEFINITIONS
         CONSTANT centerY = 1024;
         CONSTANT centerPosition = (centerX, centerY);
         CONSTANT defaultBlockSize = 128;
-        CONSTANT threeBlocks = defaultBlockSize + defaultBlockSize + defaultBlockSize;
+        CONSTANT threeBlocks = defaultBlockSize * 3;
 END_DEFINITIONS
 
 
