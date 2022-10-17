@@ -1,4 +1,5 @@
 CANVAS_SIZE = 4000 by 4000;
+
 DEFINITIONS
         FUNCTION newStopSign(position) {
                 CREATE stop sign at position;
@@ -94,8 +95,6 @@ DEFINITIONS
         CONSTANT threeBlocks = defaultBlockSize * 3;
 END_DEFINITIONS
 
-
-
 OUTPUT
         VARIABLE isWater = false;
         CREATE highway from (0, centerY - defaultBlockSize) to (2048, centerY - defaultBlockSize);
@@ -117,8 +116,6 @@ OUTPUT
                         (2048, 2048)
                         (3072, 2048)
                         (3072, 0);
-
-
 
         VARIABLE busStopX = (2560, 2304);
         newBusStop(busStopX);
