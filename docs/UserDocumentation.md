@@ -37,7 +37,7 @@
 
 Positions are in the format `(x, y)`, where x and y are any two expressions that evaluate to integers. Their main purpose is to specify positions for [CREATE statements](#create-statements).
 
-#### Position Usage Example:
+#### Position Usage Examples:
 
 This code:
 
@@ -55,7 +55,7 @@ Create statements are what actually puts things (markers, streets, buildings, et
 
 Creating markers can be done by specifying a marker type and a [Position](#positions-xy): `CREATE [bus stop, traffic light, stop sign, or train stop] at (x,y);`
 
-#### CREATE Marker Usage Example:
+#### CREATE Marker Usage Examples:
 
 This code:
 
@@ -91,7 +91,7 @@ Another example, this would start with the bottom left, go to bottom right, go t
 
 `CREATE [water or building] at SouthWestPosition SouthEastPosition NorthEastPosition NorthWestPosition;`
 
-#### CREATE Polygon Usage Example:
+#### CREATE Polygon Usage Examples:
 
 Note: Code is unnecessarily verbose so that you can understand the documentation better
 
@@ -136,7 +136,7 @@ You can declare a variable inside [Functions](#functions), or inside the [OUTPUT
 
 They can be declared by : `VARIABLE myVariableName = v` where `v` can be any expression.
 
-#### VARIABLE Declaration Example:
+#### VARIABLE Declaration Examples:
 
 ![](codeSamples/variableDeclarationCode.png)
 
@@ -144,7 +144,7 @@ They can be declared by : `VARIABLE myVariableName = v` where `v` can be any exp
 
 Variables can be reassigned at any point after they have been declared, to any expression, of any type.
 
-#### Variable Reassignment Example:
+#### Variable Reassignment Examples:
 
 ![](codeSamples/variableAssignmentCode.png)
 
@@ -154,7 +154,7 @@ You can declare a constant only inside the [DEFINITIONS block](#definitions-bloc
 
 They can be declared by : `CONSTANT myConstantName = v` where `v` can be any expression.
 
-#### CONSTANT Declaration Example:
+#### CONSTANT Declaration Examples:
 
 This code:
 
@@ -164,7 +164,7 @@ This code:
 
 [Constants and Variables](#variables-and-constants) can hold positions. Sometimes it can be useful to access the x or y position of the coordinate. You can do this simply by append .y or .x to the variable you want to access the coordinate from.
 
-#### Coordinate Access Example:
+#### Coordinate Access Examples:
 
 This code:
 
@@ -180,7 +180,7 @@ Creates the following map:
 
 You can declare a function only inside the [DEFINITIONS block](#definitions-block). Declaring and using functions allow for, most commonly, the quick creation of certain map patterns throughout different locations in the map. Functions do not return a value; instead, they are simply another way of creating things on the map with [CREATE statements](#create-statements). Functions can take in any number of inputs (ie. parameters/arguments), each separated by a comma. Functions can then declare [variables](#variable-declarations), reassign variables, use [loops](#loops), call other functions, and create anything with [CREATE statements](#create-statements).
 
-#### FUNCTION Declaration Example:
+#### FUNCTION Declaration Examples:
 
 ![](codeSamples/functionDeclarationCode.png)
 
@@ -188,7 +188,7 @@ You can declare a function only inside the [DEFINITIONS block](#definitions-bloc
 
 Function calls can be made either within other functions, or within the [OUTPUT block](#output-block).
 
-#### Function Call Example:
+#### Function Call Examples:
 
 This code (with the function declarations above):
 
@@ -238,7 +238,7 @@ ELSE_IF myFirstNumberVariable > mySecondNumberVariable THEN
 END_IF
 ```
 
-#### IF / ELSE_IF / ELSE Example:
+#### IF / ELSE_IF / ELSE Examples:
 
 This code:
 
@@ -339,6 +339,6 @@ To sum things up: here is a list of everything that is allowed in each section o
   - Variable declarations
   - Variable reassignments
 
-#### Program example:
+#### Program Example:
 
 TO BE IMPLEMENTED
