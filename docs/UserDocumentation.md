@@ -4,7 +4,7 @@
 
 Positions are in the format `(x, y)`, where x and y are any two expressions that evaluate to integers. Their main purpose is to specify positions for [CREATE statements](#create-statements).
 
-#### Position Usage Examples:
+#### Position Usage Example:
 
 This code:
 
@@ -15,12 +15,14 @@ Creates the following map:
 ![](./examplePhotos/positionMap.png)
 
 ## CREATE Statements
+
 Create statements are what actually puts things (markers, streets, buildings, etc.) onto the map. They can be used in [Function Declarations](#functions) or the [OUTPUT block](#output-block).
+
 ### Creating Markers
 
 Creating markers can be done by specifying a marker type and a [Position](#positions-xy): `CREATE [bus stop, traffic light, stop sign, or train stop] at (x,y);`
 
-#### CREATE Marker Usage Examples:
+#### CREATE Marker Usage Example:
 
 This code:
 
@@ -52,11 +54,11 @@ For example, this would start with the top left, go to top right, go to bottom r
 
 `CREATE [water or building] at NorthWestPosition NorthEastPosition SouthEastPosition SouthWestPosition;`
 
-Another example, this would start with the bottom left, go to bottom right, go to top right, then finish with top left: 
+Another example, this would start with the bottom left, go to bottom right, go to top right, then finish with top left:
 
 `CREATE [water or building] at SouthWestPosition SouthEastPosition NorthEastPosition NorthWestPosition;`
 
-#### CREATE Polygon Usage Examples:
+#### CREATE Polygon Usage Example:
 
 Note: Code is unnecessarily verbose so that you can understand the documentation better
 
@@ -69,20 +71,22 @@ Creates the following map:
 ![](./examplePhotos/polygonMap.png)
 
 ## Expressions
+
 In this documentation, we will refer to expressions as anything that evaluates to a primitive value. For example, an expression could be a simple number (4 or 1212), a simple boolean (true or false), a [Position](#positions-xy), or any other computation that can be evaluated.
 
 #### Expression Examples:
+
 ```
   // Boolean expression examples
   true
   12 > 5 AND 1 < 10 OR 1 < 2
   myBooleanVariable // where myBooleanVariable holds an expression that evaluates to a boolean
-  
+
   // Number expressions examples
   10
   12 + 2
   myNumberVariable // where myNumberVariable holds an expression that evaluates to a number
-  
+
   // Position expression examples
   (10,10);
   myPositionVariable // where myPositionVariable holds an expression that evaluates to a position
@@ -94,11 +98,12 @@ In this documentation, we will refer to expressions as anything that evaluates t
 Variables and constants are a way to store values that you want to refer to in many locations. Variables can be assigned to any [Expression](#expressions).
 
 ### Variable Declarations
- You can declare a variable inside [Functions](#functions), or inside the [OUTPUT block](#output-block), and they can be used only after they have been declared.  They can be reassigned any time after they are declared.
- 
+
+You can declare a variable inside [Functions](#functions), or inside the [OUTPUT block](#output-block), and they can be used only after they have been declared. They can be reassigned any time after they are declared.
+
 They can be declared by : `VARIABLE myVariableName = v` where `v` can be any expression.
 
-#### VARIABLE Declaration examples:
+#### VARIABLE Declaration Example:
 
 ![](./examplePhotos/variableDeclarationCode.png)
 
@@ -106,7 +111,7 @@ They can be declared by : `VARIABLE myVariableName = v` where `v` can be any exp
 
 Variables can be reassigned at any point after they have been declared, to any expression, of any type.
 
-#### Variable Reassignment example:
+#### Variable Reassignment Example:
 
 ![](./examplePhotos/variableAssignmentCode.png)
 
@@ -116,121 +121,73 @@ You can declare a constant only inside the [DEFINITIONS block](#definitions-bloc
 
 They can be declared by : `CONSTANT myConstantName = v` where `v` can be any expression.
 
-#### CONSTANT Declaration examples:
+#### CONSTANT Declaration Example:
 
-```
-CONSTANT positionVariable = (100,100);
-CONSTANT secondPositionVariable = positionVariable;
-CONSTANT number = 10 + 1000 - positionVariable.x;
-CONSTANT fun = (positionVariable.x + number, number - secondPositionVariable.y);
-```
+This code:
+
+![](./examplePhotos/constantDeclarationCode.png)
 
 ### Accessing X and Y Coordinates From Variables/Constants
 
-Constants and variables can hold positions. Sometimes it can be useful to access the x or y position of the coordinate.
+[Constants and Variables](#variables-and-constants) can hold positions. Sometimes it can be useful to access the x or y position of the coordinate. You can do this simply by append .y or .x to the variable you want to access the coordinate from.
 
-#### Coordinate Access Examples:
+#### Coordinate Access Example:
 
-```
-VARIABLE trafficLightPosition = (100,600 - 500 + 25);
-CREATE traffic light at trafficLightPosition;
-CREATE stop sign at (trafficLightPosition.x, 200 - trafficLightPosition.y);
-```
+This code:
+
+![](./examplePhotos/coordinateAccessCode.png)
 
 Creates the following map:
-![](./examplePhotos/4.png)
+
+![](./examplePhotos/coordinateAccessMap.png)
 
 ## Functions
 
 ### Function Declarations
 
-Declaring functions allow for the quick creation of certain street or marker patterns throughout different locations in the map. Functions do not return a value; instead, they are simply another way of creating things on the map. Functions can take in any number of inputs (ie. parameters/arguments), each separated by a comma. Functions can then declare variables, use loops, call other functions, and create any number of streets or markers.
+You can declare a function only inside the [DEFINITIONS block](#definitions-block). Declaring and using functions allow for, most commonly, the quick creation of certain map patterns throughout different locations in the map. Functions do not return a value; instead, they are simply another way of creating things on the map with [CREATE statements](#create-statements). Functions can take in any number of inputs (ie. parameters/arguments), each separated by a comma. Functions can then declare [variables](#variable-declarations), reassign variables, use [loops](#loops), call other functions, and create anything with [CREATE statements](#create-statements).
 
-#### FUNCTION Declaration examples:
+#### FUNCTION Declaration Example:
 
-```
-FUNCTION newTL(position) {
-        CREATE traffic light at position;
-}
-
-FUNCTION createStreetBlock(northWestPosition, blockSize) {
-        VARIABLE northEastPosition = (northWestPosition.x + blockSize, northWestPosition.y);
-        VARIABLE southEastPosition = (northWestPosition.x + blockSize, northWestPosition.y - blockSize);
-        VARIABLE southWestPosition = (northWestPosition.x, northWestPosition.y - blockSize);
-
-        newTL(northWestPosition);
-        newTL(northEastPosition);
-        newTL(southWestPosition);
-        newTL(southEastPosition);
-
-        CREATE street from northWestPosition to northEastPosition;
-        CREATE street from northEastPosition to southEastPosition;
-        CREATE street from southEastPosition to southWestPosition;
-        CREATE street from southWestPosition to northWestPosition;
-}
-
-FUNCTION createCity(northWestPosition, blockSize) {
-        LOOP 3 TIMES
-                createStreetBlock(northWestPosition, blockSize);
-                createStreetBlock((northWestPosition.x + blockSize, northWestPosition.y), blockSize);
-                createStreetBlock((northWestPosition.x + blockSize + blockSize, northWestPosition.y), blockSize);
-                northWestPosition = (northWestPosition.x, northWestPosition.y - blockSize);
-        END_LOOP
-}
-```
+![](./examplePhotos/functionDeclarationCode.png)
 
 ### Function Calls
 
-Function calls can be made either within other functions, or within the [OUTPUT block](#reassigning-variables).
+Function calls can be made either within other functions, or within the [OUTPUT block](#output-block).
 
-#### Function call examples:
+#### Function Call Example:
 
-```
-newTL((896, 768));
-createCity((1024,1024), 128);
-VARIABLE newBlockLocation = (1024 - 128,1024);
-createStreetBlock(newBlockLocation, 128);
-```
+This code (with the function declarations above):
+
+![](./examplePhotos/functionCallCode.png)
 
 Creates the following map:
-![](./examplePhotos/5.png)
+
+![](./examplePhotos/functionCallMap.png)
 
 ## Control Flow
 
 ### Loops
 
-Loops can be used to execute any number of statements any number of times. You must specify the number of times to loop.
+You can use loops inside [FUNCTION declarations](#functions), or in the [OUTPUT block](#output-block). Loops can be used to execute any number of statements any number of times. You must specify the number of times to loop through any expression that evaluates to a number.
 
-#### LOOP example usage 1:
+#### LOOP Example 1:
 
-```
-VARIABLE defaultBlockSize = 32;
-VARIABLE eastStreetLightPosition = (512,512);
-LOOP 5 TIMES
-	CREATE traffic light at eastStreetLightPosition;
-	eastStreetLightPosition = (eastStreetLightPosition.x + defaultBlockSize, eastStreetLightPosition.y);
-END_LOOP
-```
+This code:
+
+![](./examplePhotos/loop1Code.png)
 
 Creates the following map:
-![](./examplePhotos/6.png)
 
-#### LOOP example usage 2:
+![](./examplePhotos/loop1Map.png)
 
-```
-FUNCTION createCity(northWestPosition, blockSize) {
-        LOOP 3 TIMES
-                createStreetBlock(northWestPosition, blockSize);
-                createStreetBlock((northWestPosition.x + blockSize, northWestPosition.y), blockSize);
-                createStreetBlock((northWestPosition.x + blockSize + blockSize, northWestPosition.y), blockSize);
-                northWestPosition = (northWestPosition.x, northWestPosition.y - blockSize);
-        END_LOOP
-}
-```
+#### LOOP Example 2:
+
+![](./examplePhotos/loop2Code.png)
 
 ### IF / ELSE_IF / ELSE
 
-You can use IF blocks to conditionally preform operations in your program. IF blocks can contain ELSE_IF, as well as ELSE blocks. IF blocks can also be nested.
+You can use loops inside [FUNCTION declarations](#functions), or in the [OUTPUT block](#output-block). You can use IF blocks to conditionally preform operations in your program. IF blocks can contain ELSE_IF, as well as ELSE blocks. IF blocks can also be nested.
 
 #### IF / ELSE_IF / ELSE example usage 1:
 

@@ -181,22 +181,29 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
     const evaluatedValues: EvaluatedExpression[] = [];
     for (const expression of n.expressions) {
       const val = expression.accept(this, t);
-      if (val === undefined) t.dynamicErrorBuilder.buildError("Expected a boolean or a number for operands, but got something else (could be undefined)", expression.range);
+      if (val === undefined) {
+        t.dynamicErrorBuilder.buildError("Expected a boolean or a number for operands, but got something else (could be undefined)", expression.range);
+        return;
+      }
       if (isNumber(val) || isBoolean(val)) {
         evaluatedValues.push({ val, range: expression.range });
       } else {
-        t.dynamicErrorBuilder.buildError("Expected a boolean or a number for operands", expression.range);
+        t.dynamicErrorBuilder.buildError("Expected a boolean or a number for operands, but got something else (could be undefined)", expression.range);
+        return;
       }
     }
     const evaluatedOperators: EvaluatedOperator[] = [];
     for (const operator of n.operators) {
       const val = operator.accept(this, t);
-      if (val === undefined) t.dynamicErrorBuilder.buildError("Expected an operator, but found something else", operator.range);
+      if (val === undefined) {
+        t.dynamicErrorBuilder.buildError("Expected an operator, but found something else", operator.range);
+        return;
+      }
       if (isString(val)) {
         evaluatedOperators.push({ val, range: operator.range });
       } else {
-        // Impossible, parser enforces operator to be a string
-        t.dynamicErrorBuilder.buildError("Expected a string for operator", operator.range);
+        t.dynamicErrorBuilder.buildError("Expected an operator, but found something else", operator.range);
+        return;
       }
     }
 
