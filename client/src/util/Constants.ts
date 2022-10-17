@@ -26,7 +26,7 @@ export class Constants {
   static readonly TRAFFICE_LIGHT_PATH = './traffic_light.svg';
   static readonly TRAIN_STOP_PATH = './train_stop.svg';
 
-  static readonly MARKER_SCALE = 50;
+  static readonly MARKER_SCALE = 40;
   static readonly LEGEND_SCALE = 25;
 
   // PolygonOutput
