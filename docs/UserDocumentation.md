@@ -129,13 +129,13 @@ In this documentation, we will refer to expressions as anything that evaluates t
 #### Operator Precedence
 Expressions follow the usual operator precedence. The following table summarizes the operator precedence, from highest precedence (most binding) to lowest precedence (least binding). Operators in the same box have the same precedence. Operators are all binary and evaluate from left to right.
 
-| Operator                   | Description                                                 |
-|----------------------------|-------------------------------------------------------------|
-| `(expressions...)`         | Parenthesized expression                                    |
-| `*`, `/`                   | Numbers only: multiplication, division                      |
-| `+`, `-`                   | Numbers only: addition, subtraction                         |
-| `>`, `<`, `>=`, `<=`, `==` | Numbers only: comparisons                                   |
-| `==`, `AND`, `OR`          | Booleans only: equality comparison, logical AND, logical OR |
+| Operator                         | Description                                         |
+|----------------------------------|-----------------------------------------------------|
+| `(expressions...)`               | Parenthesized expression                            |
+| `*`, `/`                         | Numbers only: multiplication, division              |
+| `+`, `-`                         | Numbers only: addition, subtraction                 |
+| `>`, `<`, `>=`, `<=`, `==`, `!=` | Numbers only: comparisons                           |
+| `==`, `!=`, `AND`, `OR`          | Booleans only: comparisons, logical AND, logical OR |
 
 ## Variables and Constants
 
