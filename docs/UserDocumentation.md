@@ -43,7 +43,7 @@ In order to render, coordinates in the x-axis should be specified within the ran
 
 In order to render, coordinates in the y-axis should be specified within the range `[0, CANVAS_HEIGHT]`. The default `CANVAS_HEIGHT` is `4096`.
 
-Both dimensions of the canvas can be adjusted using the commands specified [here](#defining-a-canvas-size). If adjusted, note that the range of coordinates should be within your defined canvas size, not how it is actually rendered after rounding to the nearest power of 2.
+Both dimensions of the canvas can be adjusted using the commands specified [here](#defining-a-canvas-size). If adjusted, note that the range of coordinates should be within your defined canvas size, not how it is actually rendered after rounding.
 
 The coordinate system is intuitively set up in a Cartesian style, with "x" coordinates increasing from left to right and "y" coordinates increasing from low to high.
 
@@ -322,7 +322,7 @@ Defining a DEFINITIONS block is optional. If you define a DEFINITIONS block, it 
 
 Defining a canvas size is optional. You can define the canvas size of your map by including `CANVAS_SIZE = width by height;` at the top of your file, where width and height are both positive numbers no larger than 100000.
 
-When rendering, due to restrictions by the Google Maps api, the canvas size you specified will then be rounded up to the nearest power of 2 (for example, if you specify 3000 by 3000, the canvas size will be 4096 by 4096. But you can only render inside 3000 by 3000).
+You'll notice when rendering the map that the canvas size you specified will then be rounded up to to a certain multiple of 256 - this is intentional, and you do not need to worry about it. You may still only use coordinates in your specified canvas size. For example, if you specify a canvas size of 3000 by 3000, you may only render items within 3000 by 3000. But you'll notice the rendered map will be of size 4096 by 4096.
 
 If you do not define a canvas size, the default is 8192 by 4096 - meaning that your x coordinate can go up to 8192, and your y coordinate can go up to 4096.
 
