@@ -37,10 +37,12 @@
 
 ## Positions (x,y)
 
-Positions describe locations on the map and take two parameters in a tuple pair representing their "x" and "y" coordinates (format `(x, y)`). Both coordinates x and y can be any two expressions that evaluate to integers. Their main purpose is to specify positions for [CREATE statements](#create-statements) but can also be stored in variables for use in [Function Declarations](#functions).
+Positions describe locations on the map and take two parameters in a tuple pair representing their "x" and "y" coordinates (format `(x, y)`). Both coordinates x and y can be any two expressions that evaluate to integers. Their main purpose is to specify positions for [CREATE statements](#create-statements) but can also be stored in variables.
 
-Coordinates in the x-axis should be specified within the range `\[0, CANVAS_WIDTH\]`. The default `CANVAS_WIDTH` is `8192`.
-Coordinates in the y-axis should be specified within the range `\[0, CANVAS_HEIGHT\]`. The default `CANVAS_HEIGHT` is `4096`.
+Coordinates in the x-axis should be specified within the range `[0, CANVAS_WIDTH]`. The default `CANVAS_WIDTH` is `8192`.
+
+Coordinates in the y-axis should be specified within the range `[0, CANVAS_HEIGHT]`. The default `CANVAS_HEIGHT` is `4096`.
+
 Both dimensions of the canvas can be adjusted using the commands specified [here](#defining-a-canvas-size).
 The coordinate system is intuitively set up in a Cartesian style, with "x" coordinates increasing from left to right and "y" coordinates increasing from low to high.
 
@@ -60,17 +62,16 @@ Create statements are what actually puts things (markers, streets, buildings, et
 
 ### Creating Markers
 
-Creating markers can be done by specifying a marker type and a [Position](#positions-xy): 
+Creating markers can be done by specifying a marker type and a [Position](#positions-xy):
 
 `CREATE <marker-type> at <position>;`
 
 Where "marker type" may be one of:
-   - `bus stop`
-   - `traffic light`
-   - `stop sign`
-   - `train stop`
 
-
+- `bus stop`
+- `traffic light`
+- `stop sign`
+- `train stop`
 
 #### CREATE Marker Usage Examples:
 
@@ -89,6 +90,7 @@ Creating streets can be done by specifying a street type as well as both the sta
 `CREATE <street-type> from <position-1> to <position-2>;`
 
 Where "street type" may be one of:
+
 - `street`
 - `highway`
 - `bridge`
@@ -109,11 +111,16 @@ Creating buildings or water can be done by specifying a type and four coordinate
 
 For example, this would start with the top left, go to top right, go to bottom right, then finish with bottom left:
 
-`CREATE [water or building] at NorthWestPosition NorthEastPosition SouthEastPosition SouthWestPosition;`
+`CREATE <polygon type> at NorthWestPosition NorthEastPosition SouthEastPosition SouthWestPosition;`
 
 Another example, this would start with the bottom left, go to bottom right, go to top right, then finish with top left:
 
-`CREATE [water or building] at SouthWestPosition SouthEastPosition NorthEastPosition NorthWestPosition;`
+`CREATE <polygon type> at SouthWestPosition SouthEastPosition NorthEastPosition NorthWestPosition;`
+
+Where "polygon type" may be one of:
+
+- `building`
+- `water`
 
 #### CREATE Polygon Usage Examples:
 
@@ -151,10 +158,11 @@ In this documentation, we will refer to expressions as anything that evaluates t
 ```
 
 ### Operator Precedence
+
 Expressions follow the usual operator precedence. The following table summarizes the operator precedence, from highest precedence (most binding) to lowest precedence (least binding). Operators in the same box have the same precedence. Operators are all binary and evaluate from left to right.
 
 | Operator                         | Description                                         |
-|----------------------------------|-----------------------------------------------------|
+| -------------------------------- | --------------------------------------------------- |
 | `(expressions...)`               | Parenthesized expression                            |
 | `*`, `/`                         | Numbers only: multiplication, division              |
 | `+`, `-`                         | Numbers only: addition, subtraction                 |
@@ -198,6 +206,8 @@ This code:
 ### Accessing X and Y Coordinates From Variables/Constants
 
 [Constants and Variables](#variables-and-constants) can hold positions. Sometimes it can be useful to access the x or y position of the coordinate. You can do this simply by appending ".x" or ".y" to the name of the [Position](#position-xy) variable you want to access the coordinate from.
+
+`myPositionVariable.x` or `myPositionVariable.y`
 
 #### Coordinate Access Examples:
 
@@ -347,7 +357,7 @@ Creates the following map:
 
 ### Reserved Keywords and Variable Name Restrictions
 
-Note that variable names cannot be the same as any keyword listed in this documentation used in commands and structuring (including `FUNCTION`, `VARIABLE`, `CONSTANT`, `LOOP`, etc.).
+Note that variable, constant, or function names cannot be the same as any keyword listed in this documentation used in commands and structuring (including `FUNCTION`, `VARIABLE`, `CONSTANT`, `LOOP`, `street`, etc.).
 
 ### Errors:
 
@@ -366,7 +376,17 @@ To sum things up: here is a list of everything that is allowed in each section o
   - FUNCTION declarations
     - Variable Declarations
     - Loops
-    - If/else if/else
+      - Variable Declarations
+      - If/elseif/else
+      - Create statements
+      - Variable reassignments
+      - Loops
+    - If/elseif/else
+      - Variable Declarations
+      - If/elseif/else
+      - Create statements
+      - Variable reassignments
+      - Loops
     - Create statements
     - Variable reassignments
   - CONSTANT declarations
@@ -374,7 +394,17 @@ To sum things up: here is a list of everything that is allowed in each section o
   - Function calls
   - Create statements
   - Loops
-  - If/else if/else
+    - Variable Declarations
+    - If/elseif/else
+    - Create statements
+    - Variable reassignments
+    - Loops
+  - If/elseif/else
+    - Variable Declarations
+    - If/elseif/else
+    - Create statements
+    - Variable reassignments
+    - Loops
   - Variable declarations
   - Variable reassignments
 
