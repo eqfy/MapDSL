@@ -126,6 +126,17 @@ In this documentation, we will refer to expressions as anything that evaluates t
   (myNumberVariable1, myNumberVariable2) // where myNumberVariables evaluate to numbers
 ```
 
+#### Operator Precedence
+Expressions follow the usual operator precedence. The following table summarizes the operator precedence, from highest precedence (most binding) to lowest precedence (least binding). Operators in the same box have the same precedence. Operators are all binary and evaluate from left to right.
+
+| Operator                   | Description                                                 |
+|----------------------------|-------------------------------------------------------------|
+| `(expressions...)`         | Parenthesized expression                                    |
+| `*`, `/`                   | Numbers only: multiplication, division                      |
+| `+`, `-`                   | Numbers only: addition, subtraction                         |
+| `>`, `<`, `>=`, `<=`, `==` | Numbers only: comparisons                                   |
+| `==`, `AND`, `OR`          | Booleans only: equality comparison, logical AND, logical OR |
+
 ## Variables and Constants
 
 Variables and constants are a way to store values that you want to refer to in many locations. Variables can be assigned to any [Expression](#expressions).
