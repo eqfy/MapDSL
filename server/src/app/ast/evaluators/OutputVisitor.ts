@@ -185,7 +185,7 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
       if (isNumber(val) || isBoolean(val)) {
         evaluatedValues.push({ val, range: expression.range });
       } else {
-        t.dynamicErrorBuilder.buildError(`Expected a boolean or a number for operands, but got ${val}`, expression.range);
+        t.dynamicErrorBuilder.buildError('Expected a boolean or a number for operands, but got something else', expression.range);
         return;
       }
     }
@@ -196,7 +196,7 @@ export class OutputVisitor implements Visitor<OutputVisitorContext, OutputVisito
       if (isString(val)) {
         evaluatedOperators.push({ val, range: operator.range });
       } else {
-        t.dynamicErrorBuilder.buildError(`Expected an operator, but got ${val}`, operator.range);
+        t.dynamicErrorBuilder.buildError('Expected an operator, but got got something else', operator.range);
         return;
       }
     }
