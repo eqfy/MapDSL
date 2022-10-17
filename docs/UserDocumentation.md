@@ -26,6 +26,7 @@
 9. [Other Features / Things to Know](#other-features--things-to-know)
    - [Comments](#comments)
    - [Recursion / Calling Other Functions](#calling-functions-within-functions-and-recursion)
+   - [Reserved Keywords / Variable Name Restrictions](#reserved-keywords-and-variable-name-restrictions)
    - [Errors](#errors)
    - [Known Bugs](#known-bugs)
 10. [Entire Program Example](#entire-program)
@@ -36,7 +37,12 @@
 
 ## Positions (x,y)
 
-Positions are in the format `(x, y)`, where x and y are any two expressions that evaluate to integers. Their main purpose is to specify positions for [CREATE statements](#create-statements).
+Positions describe locations on the map and take two parameters in a tuple pair representing their "x" and "y" coordinates (format `(x, y)`). Both coordinates x and y can be any two expressions that evaluate to integers. Their main purpose is to specify positions for [CREATE statements](#create-statements) but can also be stored in variables for use in [Function Declarations](#functions).
+
+Coordinates in the x-axis should be specified within the range `\[0, CANVAS_WIDTH\]`. The default `CANVAS_WIDTH` is `8192`.
+Coordinates in the y-axis should be specified within the range `\[0, CANVAS_HEIGHT\]`. The default `CANVAS_HEIGHT` is `4096`.
+Both dimensions of the canvas can be adjusted using the commands specified [here](#defining-a-canvas-size).
+The coordinate system is intuitively set up in a Cartesian style, with "x" coordinates increasing from left to right and "y" coordinates increasing from low to high.
 
 #### Position Usage Examples:
 
@@ -54,7 +60,17 @@ Create statements are what actually puts things (markers, streets, buildings, et
 
 ### Creating Markers
 
-Creating markers can be done by specifying a marker type and a [Position](#positions-xy): `CREATE [bus stop, traffic light, stop sign, or train stop] at (x,y);`
+Creating markers can be done by specifying a marker type and a [Position](#positions-xy): 
+
+`CREATE <marker-type> at <position>;`
+
+Where "marker type" may be one of:
+   - `bus stop`
+   - `traffic light`
+   - `stop sign`
+   - `train stop`
+
+
 
 #### CREATE Marker Usage Examples:
 
@@ -68,9 +84,16 @@ Creates the following map:
 
 ### Creating Streets, Highways, and Bridges
 
-Creating streets can be done by specifying a street type, a start [Position](#positions-xy), and an end [Position](#positions-xy): `CREATE [street, highway, or bridge] from (x1,y1) to (x2,y2);`
+Creating streets can be done by specifying a street type as well as both the start and end [Positions](#positions-xy):
 
-#### CREATE Line Usage Examples:
+`CREATE <street-type> from <position-1> to <position-2>;`
+
+Where "street type" may be one of:
+- `street`
+- `highway`
+- `bridge`
+
+#### CREATE Street Usage Examples:
 
 This code:
 
@@ -94,7 +117,7 @@ Another example, this would start with the bottom left, go to bottom right, go t
 
 #### CREATE Polygon Usage Examples:
 
-Note: Code is unnecessarily verbose so that you can understand the documentation better
+Note: Code is unnecessarily verbose so that you can understand the documentation better.
 
 This code:
 
@@ -174,7 +197,7 @@ This code:
 
 ### Accessing X and Y Coordinates From Variables/Constants
 
-[Constants and Variables](#variables-and-constants) can hold positions. Sometimes it can be useful to access the x or y position of the coordinate. You can do this simply by append .y or .x to the variable you want to access the coordinate from.
+[Constants and Variables](#variables-and-constants) can hold positions. Sometimes it can be useful to access the x or y position of the coordinate. You can do this simply by appending ".x" or ".y" to the name of the [Position](#position-xy) variable you want to access the coordinate from.
 
 #### Coordinate Access Examples:
 
@@ -321,6 +344,10 @@ This code:
 Creates the following map:
 
 ![](mapSamples/recursionMap.png)
+
+### Reserved Keywords and Variable Name Restrictions
+
+Note that variable names cannot be the same as any keyword listed in this documentation used in commands and structuring (including `FUNCTION`, `VARIABLE`, `CONSTANT`, `LOOP`, etc.).
 
 ### Errors:
 
