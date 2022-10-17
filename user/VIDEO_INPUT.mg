@@ -20,7 +20,6 @@ DEFINITIONS
                 VARIABLE northEastPosition = (northWestPosition.x + blockSize, northWestPosition.y);
                 VARIABLE southEastPosition = (northWestPosition.x + blockSize, northWestPosition.y - blockSize);
                 VARIABLE southWestPosition = (northWestPosition.x, northWestPosition.y - blockSize);
-
                 newTrafficLight(northWestPosition);
                 newTrafficLight(northEastPosition);
                 newTrafficLight(southWestPosition);
@@ -97,7 +96,6 @@ DEFINITIONS
         CONSTANT waterSize = 75;
         CONSTANT centerX = 1024;
         CONSTANT centerY = 1024;
-        CONSTANT isWater = false;
         CONSTANT centerPosition = (centerX, centerY);
         CONSTANT defaultBlockSize = 128;
         CONSTANT threeBlocks = defaultBlockSize + defaultBlockSize + defaultBlockSize;
@@ -106,7 +104,7 @@ END_DEFINITIONS
 
 
 OUTPUT
-        
+        VARIABLE isWater = false;
         CREATE highway from (0, centerY - defaultBlockSize) to (2048, centerY - defaultBlockSize);
         createHighway((2048, centerY - defaultBlockSize), (2048, 2048));
         createHighway((2048, 2048), (3072, 3072));
