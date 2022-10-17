@@ -20,7 +20,7 @@ import { CreatePosition } from '../../CreateStatements/CreateStatementTypes';
 import CreateMarker from '../statements/CreateMarker';
 import { isNumber, isString } from '../../util/typeChecking';
 import IfElseBlock from '../statements/IfElseBlock';
-import { MAX_CANVAS_SIZE } from '../../util/constants';
+import { MAX_CANVAS_SIZE, MIN_CANVAS_SIZE } from '../../util/constants';
 
 // This type represents all values allowed in our language
 export type StaticCheckVisitorReturnType = CreatePosition | number | string | boolean | void;
@@ -44,12 +44,12 @@ export class StaticCheckVisitor implements Visitor<StaticCheckVisitorContext, St
     const width = this.getNumberTokenValue(n.width, t);
     const height = this.getNumberTokenValue(n.height, t);
 
-    if (width > MAX_CANVAS_SIZE || width <= 0) {
-      t.staticErrorBuilder.buildError(`Invalid canvas width: > ${MAX_CANVAS_SIZE} or not positive`, n.width.range);
+    if (width > MAX_CANVAS_SIZE || width < MIN_CANVAS_SIZE) {
+      t.staticErrorBuilder.buildError(`Invalid canvas width: > ${MAX_CANVAS_SIZE} or < ${MIN_CANVAS_SIZE}`, n.width.range);
     }
 
-    if (height > MAX_CANVAS_SIZE || height <= 0) {
-      t.staticErrorBuilder.buildError(`Invalid canvas height: > ${MAX_CANVAS_SIZE} or not positive`, n.height.range);
+    if (height > MAX_CANVAS_SIZE || height < MIN_CANVAS_SIZE) {
+      t.staticErrorBuilder.buildError(`Invalid canvas height: > ${MAX_CANVAS_SIZE} or < ${MIN_CANVAS_SIZE}`, n.height.range);
     }
   }
 
