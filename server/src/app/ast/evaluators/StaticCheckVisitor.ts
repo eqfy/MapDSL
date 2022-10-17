@@ -67,6 +67,10 @@ export class StaticCheckVisitor implements Visitor<StaticCheckVisitorContext, St
 
   visitVariableDeclaration(n: VariableDeclaration, t: StaticCheckVisitorContext): void {
     const name = this.getStringTokenValue(n.name, t);
+    if (t.constantTable.has(name) || t.variableTable.has(name)) {
+      t.staticErrorBuilder.buildError(`${name} is already declared`, n.range);
+      return;
+    }
     n.isGlobalConstant
       ? t.constantTable.set(name, n.value.accept(this, t))
       : t.variableTable.set(name, n.value.accept(this, t));
@@ -74,6 +78,10 @@ export class StaticCheckVisitor implements Visitor<StaticCheckVisitorContext, St
 
   visitFunctionDeclaration(n: FunctionDeclaration, t: StaticCheckVisitorContext): void {
     const name = this.getStringTokenValue(n.name, t);
+    if (t.functionTable.has(name)) {
+      t.staticErrorBuilder.buildError(`Function ${name} is already declared`, n.range);
+      return;
+    }
     t.functionTable.set(name, n);
   }
 
@@ -163,6 +171,7 @@ export class StaticCheckVisitor implements Visitor<StaticCheckVisitorContext, St
   visitVariableAssignment(n: VariableAssignment, t: StaticCheckVisitorContext): void {
     const name = this.getStringTokenValue(n.name, t);
     if (!t.variableTable.has(name)) t.staticErrorBuilder.buildError(`Variable ${name} is undefined`, n.range);
+    if (t.constantTable.has(name)) t.staticErrorBuilder.buildError(`Constant ${name} can not be redefined`, n.range);
   }
 
   visitCoordinateAccess(n: CoordinateAccess, t: StaticCheckVisitorContext): void {

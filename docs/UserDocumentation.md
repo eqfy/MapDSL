@@ -1,119 +1,120 @@
 # Map Generator Language (.mg) Documentation
 
-## The Basics
+## Positions (x,y)
 
-### Positions (x,y)
+Positions are in the format `(x, y)`, where x and y are any two expressions that evaluate to integers. Their main purpose is to specify positions for [CREATE statements](#create-statements).
 
-Positions are in the format `(x, y)`, where x and y are any two expressions that evaluate to integers.
+#### Position Usage Examples:
 
-#### Position Usage examples:
+This code:
 
-```
-CREATE bus stop at (250,200);
-VARIABLE trafficLightPosition = (100,600 - 500 + 25);
-CREATE traffic light at trafficLightPosition;
-CREATE stop sign at (trafficLightPosition.x, 300 - trafficLightPosition.y);
-```
+![](./examplePhotos/positionCode.png)
 
 Creates the following map:
-![](./examplePhotos/1.png)
 
-### Creating markers
+![](./examplePhotos/positionMap.png)
 
-Creating markers can be done by specifying a marker type, and a location like: `CREATE [bus stop, traffic light, stop sign, or train stop] at (x,y);`
+## CREATE Statements
+Create statements are what actually puts things (markers, streets, buildings, etc.) onto the map. They can be used in [Function Declarations](#functions) or the [OUTPUT block](#output-block).
+### Creating Markers
 
-#### CREATE (Marker) Usage examples:
+Creating markers can be done by specifying a marker type and a [Position](#positions-xy): `CREATE [bus stop, traffic light, stop sign, or train stop] at (x,y);`
 
-```
-CREATE bus stop at (500,240);
-VARIABLE trafficLightPosition = (1000,1000);
-CREATE traffic light at trafficLightPosition;
-CREATE stop sign at (trafficLightPosition.x, 1000 - trafficLightPosition.y);
-CREATE train stop at (100,100);
-```
+#### CREATE Marker Usage Examples:
+
+This code:
+
+![](./examplePhotos/markerCode.png)
 
 Creates the following map:
-![](./examplePhotos/2.png)
+
+![](./examplePhotos/markerMap.png)
 
 ### Creating Streets, Highways, and Bridges
 
-Creating streets can be done by specifying a street type, a start location, and an end location: `CREATE [street, highway, or bridge] from (x1,y1) to (x2,y2);`
+Creating streets can be done by specifying a street type, a start [Position](#positions-xy), and an end [Position](#positions-xy): `CREATE [street, highway, or bridge] from (x1,y1) to (x2,y2);`
 
-#### CREATE (Line) Usage examples:
+#### CREATE Line Usage Examples:
 
-```
-CREATE street from (500,500) to (250,250);
-VARIABLE middleY = 500;
-VARIABLE middleX = middleY;
-VARIABLE middlePosition = (middleX,middleY);
-CREATE highway from (0,middleY) to middlePosition;
-CREATE bridge from middlePosition to (middleX, 0);
-```
+This code:
+
+![](./examplePhotos/polylineCode.png)
 
 Creates the following map:
-![](./examplePhotos/3.png)
+
+![](./examplePhotos/polylineMap.png)
 
 ### Creating Buildings and Water
 
-Creating buildings or water can be done by specifying four coordinate positions, in any logical order that creates a rectangle: `CREATE [water or building] at pos1 pos2 pos3 pos4;`
+Creating buildings or water can be done by specifying a type and four coordinate [Positions](#positions-xy). The positions must be stated in rectangular order.
 
-You can think of it like this: `CREATE [water or building] at NorthWestPosition NorthEastPosition SouthEastPosition SouthWestPosition;`
-Or this: `CREATE [water or building] at SouthWestPosition SouthEastPosition NorthEastPosition NorthWestPosition;`
+For example, this would start with the top left, go to top right, go to bottom right, then finish with bottom left:
 
-#### CREATE (Polygon) Usage examples:
+`CREATE [water or building] at NorthWestPosition NorthEastPosition SouthEastPosition SouthWestPosition;`
 
-Note: Code is unnecessary verbose so that you can understand the documentation better
+Another example, this would start with the bottom left, go to bottom right, go to top right, then finish with top left: 
 
-```
-VARIABLE riverWidth = 25;
-VARIABLE riverLength = 1000;
-VARIABLE riverNWPos = (300,300);
-VARIABLE riverNEPos = (riverNWPos.x + riverLength, riverNWPos.y);
-VARIABLE riverSEPos = (riverNWPos.x + riverLength, riverNWPos.y - riverWidth);
-VARIABLE riverSWPos = (riverNWPos.x, riverNWPos.y - riverWidth);
-CREATE water at riverNWPos riverNEPos riverSEPos riverSWPos;
+`CREATE [water or building] at SouthWestPosition SouthEastPosition NorthEastPosition NorthWestPosition;`
 
-VARIABLE buildingSize = 100;
-VARIABLE buildingSWPos = riverNWPos;
-VARIABLE buildingSEPos = (buildingSWPos.x + buildingSize, buildingSWPos.y);
-VARIABLE buildingNEPos = (buildingSEPos.x, buildingSEPos.y + buildingSize);
-VARIABLE buildingNWPos = (buildingSWPos.x, buildingSWPos.y + buildingSize);
-CREATE building at buildingSWPos buildingSEPos buildingNEPos buildingNWPos;
-```
+#### CREATE Polygon Usage Examples:
+
+Note: Code is unnecessarily verbose so that you can understand the documentation better
+
+This code:
+
+![](./examplePhotos/polygonCode.png)
 
 Creates the following map:
-![](./examplePhotos/7.png)
+
+![](./examplePhotos/polygonMap.png)
+
+## Expressions
+In this documentation, we will refer to expressions as anything that evaluates to a primitive value. For example, an expression could be a simple number (4 or 1212), a simple boolean (true or false), a [Position](#positions-xy), or any other computation that can be evaluated.
+
+#### Expression Examples:
+```
+  // Boolean expression examples
+  true
+  12 > 5 AND 1 < 10 OR 1 < 2
+  myBooleanVariable // where myBooleanVariable holds an expression that evaluates to a boolean
+  
+  // Number expressions examples
+  10
+  12 + 2
+  myNumberVariable // where myNumberVariable holds an expression that evaluates to a number
+  
+  // Position expression examples
+  (10,10);
+  myPositionVariable // where myPositionVariable holds an expression that evaluates to a position
+  (myNumberVariable1, myNumberVariable2) // where myNumberVariables evaluate to numbers
+```
 
 ## Variables and Constants
 
-### Variable Declarations
+Variables and constants are a way to store values that you want to refer to in many locations. Variables can be assigned to any [Expression](#expressions).
 
-Variables are a place to store data that you want to refer to in many locations. You can declare a variable inside functions, or inside the [OUTPUT block](#reassigning-variables), and they can be used only after they have been declared. They can be declared by : `VARIABLE myVariableName = v` where `v` can be another variable name, a position, or any other value that evaluates to an integer.
+### Variable Declarations
+ You can declare a variable inside [Functions](#functions), or inside the [OUTPUT block](#output-block), and they can be used only after they have been declared.  They can be reassigned any time after they are declared.
+ 
+They can be declared by : `VARIABLE myVariableName = v` where `v` can be any expression.
 
 #### VARIABLE Declaration examples:
 
-```
-VARIABLE positionVariable = (100,100);
-VARIABLE secondPositionVariable = positionVariable;
-VARIABLE number = 10 + 1000 - positionVariable.x;
-VARIABLE fun = (positionVariable.x + number, number - secondPositionVariable.y);
-```
+![](./examplePhotos/variableDeclarationCode.png)
 
 ### Reassigning Variables
 
-Variables can be reassigned at any point after they have been declared.
+Variables can be reassigned at any point after they have been declared, to any expression, of any type.
 
-Variable Reassignment example:
+#### Variable Reassignment example:
 
-```
-VARIABLE positionVariable = (100,100);
-VARIABLE number = 10 + 1000 - positionVariable.x;
-positionVariable = (positionVariable.x, number);
-```
+![](./examplePhotos/variableAssignmentCode.png)
 
 ### Constant Declarations
 
-Constants are a place to store data that you want to refer to in many locations, anywhere in the program. You can declare a constant only inside the [DEFINITIONS block](#reassigning-variables), and it can be used anywhere in the program. They can be declared by : `CONSTANT myConstantName = v` where `v` can be another variable name, a position, or any other value that evaluates to an integer. Constants can not be reassigned after they are declared.
+You can declare a constant only inside the [DEFINITIONS block](#definitions-block), and they can be used anywhere in your program. They can not be reassigned.
+
+They can be declared by : `CONSTANT myConstantName = v` where `v` can be any expression.
 
 #### CONSTANT Declaration examples:
 
@@ -391,27 +392,32 @@ These are optional. If you define a DEFINITIONS block, it must be above the OUTP
 
 ## Other Features / Things to Know
 
-### Defining a Canvas Size Block
+### Defining a Canvas Size
 
-You can define the canvas size of your map by including ```CANVAS_SIZE = width by height;``` at the top of your file, where width and hieght are both positive numbers. If you do not define a canvas size, the default is 8192 by 4096 - meaning that your x coordinate can go up to 8192, and your y coordinate can go up to 4096.
+You can define the canvas size of your map by including `CANVAS_SIZE = width by height;` at the top of your file, where width and hieght are both positive numbers. If you do not define a canvas size, the default is 8192 by 4096 - meaning that your x coordinate can go up to 8192, and your y coordinate can go up to 4096.
 
 #### Canvas Size Example:
+
 ```
 CANVAS_SIZE = 1000 by 1000;
 ```
+
 ### Comments
 
-You can put a line comment anywhere in your program using the syntax: ```// this is a line comment```.
+You can put a line comment anywhere in your program using the syntax: `// this is a line comment`.
 
 #### Comment Example:
+
 ```
 VARIABLE cityCentreLocation = (100,100); // stores the location of the city centre
 ```
+
 ### Calling Functions Within Functions and Recursion
 
 You have full power to call functions within other functions, or do any type of recursion if necessary. An error will appear if you accidentally have infinite recursion in your code.
 
 #### Recursion vs Loop Example:
+
 ```
 DEFINITIONS
         FUNCTION createNHorizontalTrafficLightsRecursive(numberOfLights, position, gapSize) {
@@ -533,3 +539,7 @@ OUTPUT
 END_OUTPUT
 
 ```
+
+## powers of 2 for canvas
+
+## errors will still render
