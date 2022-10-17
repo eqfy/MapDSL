@@ -30,8 +30,6 @@ DEFINITIONS
                 CREATE street from northEastPosition to southEastPosition;
                 CREATE street from southEastPosition to southWestPosition;
                 CREATE street from southWestPosition to northWestPosition;
-
-               
         }
 
         FUNCTION createCity(northWestPosition, blockSize) {
@@ -44,7 +42,7 @@ DEFINITIONS
                 
         }
 
-        FUNCTION createWater(topLeftCorner) {
+        FUNCTION createWater(topLeftCorner, isWater) {
                 isWater = true;
                 CREATE water at
                         topLeftCorner
@@ -53,7 +51,7 @@ DEFINITIONS
                         (topLeftCorner.x + waterSize, topLeftCorner.y);
         }
 
-        FUNCTION createWaterSize(bottomleft, size) {
+        FUNCTION createWaterSize(bottomleft, size, isWater) {
                 isWater = true;
                 CREATE water at
                         bottomleft
@@ -62,10 +60,10 @@ DEFINITIONS
                         (bottomleft.x + size, bottomleft.y);
         }
 
-        FUNCTION createWaterRow(bottomleft, size) {
+        FUNCTION createWaterRow(bottomleft, size, isWater) {
                 isWater = true;
                 LOOP 3 TIMES
-                        createWaterSize(bottomleft, size);
+                        createWaterSize(bottomleft, size, isWater);
                         bottomleft = (bottomleft.x + size, bottomleft.y);
                 END_LOOP
                 
@@ -78,7 +76,7 @@ DEFINITIONS
                 CREATE building at northWestPosition northEastPosition southEastPosition southWestPosition;
         }
 
-        FUNCTION createBridge(topLeftCorner, isWater) {
+        FUNCTION createBridge(isWater) {
                 IF (isWater) THEN
                 CREATE bridge from (centerX + threeBlocks, centerY) to (centerX + threeBlocks, centerY - defaultBlockSize);
                 END_IF
@@ -99,6 +97,7 @@ DEFINITIONS
         CONSTANT waterSize = 75;
         CONSTANT centerX = 1024;
         CONSTANT centerY = 1024;
+        CONSTANT isWater = false;
         CONSTANT centerPosition = (centerX, centerY);
         CONSTANT defaultBlockSize = 128;
         CONSTANT threeBlocks = defaultBlockSize + defaultBlockSize + defaultBlockSize;
@@ -107,7 +106,7 @@ END_DEFINITIONS
 
 
 OUTPUT
-        VARIABLE isWater = false;
+        
         CREATE highway from (0, centerY - defaultBlockSize) to (2048, centerY - defaultBlockSize);
         createHighway((2048, centerY - defaultBlockSize), (2048, 2048));
         createHighway((2048, 2048), (3072, 3072));
@@ -118,11 +117,11 @@ OUTPUT
         CREATE street from (centerX, centerY - defaultBlockSize) to (centerX + defaultBlockSize, centerY);
         newTrafficLight((centerX, centerY - defaultBlockSize));
         createCity((centerX + defaultBlockSize,centerY + threeBlocks), 128);
-        createWater((1375, 925));
+        createWater((1375, 925), isWater);
         CREATE bridge from (centerX + threeBlocks, centerY) to (centerX + threeBlocks, centerY - defaultBlockSize);
- 
+        createBridge(isWater);
 
-        createWaterRow((0, 0), 880);
+        createWaterRow((0, 0), 880, isWater);
         CREATE water at (2048, 0)
                         (2048, 2048)
                         (3072, 2048)
@@ -137,6 +136,77 @@ OUTPUT
         CREATE street from (2560, 2176) to (2816, 2176);        
         newTrainStop ((2816, 2176));
         createBuilding((2688, 2304), 120);
-       
+
         CREATE bridge from (2048, 1536) to (3072, 1536);
+        newTrafficLight((2048, 1536));
+        newTrafficLight((3072, 1536));
+        newTrafficLight((3072, 3072));
+
+        CREATE street from (2048, 2048) to (1536, 2048);
+        CREATE street from (1536, 2048) to (1280, 2304);
+        CREATE street from (1280, 2304) to (1024, 2048);
+        CREATE street from (1280, 2304) to (1024, 2560);
+        CREATE street from (1280, 2304) to (1536, 2560);
+        newTrafficLight((1280, 2304));
+
+        createBuilding((1024, 2374), 140);
+        createBuilding((1215, 2560), 140);
+        createBuilding((1408, 2380), 140);
+        createBuilding((1210, 2196), 140);
+        newTrainStop ((1024, 2048));
+        newBusStop((1536, 2560));
+        newBusStop((1024, 2560));
+
+        CREATE street from (768, 3072) to (768, 3584);
+        newBusStop((768, 3584));
+
+        createWaterSize((0, 3072), 750, isWater);
+        createWaterSize((0, 3822), 150, isWater);
+        createWaterSize((150, 3822), 150, isWater);
+        createWaterSize((300, 3822), 150, isWater);
+        createWaterSize((450, 3822), 150, isWater);
+        createWaterSize((600, 3822), 150, isWater);
+        createBuilding((1024, 3584), 400);
+        CREATE street from (768, 3456) to (1024,3456);
+
+        createCity((1792,3840), 200);
+        CREATE street from (1500, 3328) to (1792,3328);
+        newTrafficLight((1792,3328));
+        CREATE street from (3072, 3072) to (2390, 3600);
+
+        CREATE street from (2816, 3270) to (2816, 3328);
+        newBusStop((2816, 3328));
+        newStopSign((2816, 3270));
+
+        CREATE street from (3072, 3072) to (3840, 3840);
+        CREATE street from (3840, 3840) to (3840, 500);
+        CREATE street from (3840, 500) to (3500, 500);
+
+        newStopSign((3840, 3840));
+        newBusStop((3840, 3072));
+        newBusStop((3840, 2048));
+        newBusStop((3840, 1024));
+
+        CREATE street from (3840, 500) to (3840, 300);
+        newTrainStop((3840, 300));
+
+        CREATE street from (3840, 1024) to (3328, 1024);
+
+        CREATE street from (3840, 2048) to (3328, 2048);
+
+        CREATE street from (3840, 3072) to (3328, 3072);
+
+        createHighway((512, 3072), (512, 890));
+
+        createBuilding((3328, 3000), 400);
+
+        createBuilding((3328, 2500), 400);
+
+        createBuilding((3328, 2000), 400);
+
+        createBuilding((3328, 1500), 400);
+
+        createBuilding((3328, 950), 400);
+
+        newBusStop((1200, 1024));
 END_OUTPUT
