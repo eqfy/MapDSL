@@ -2,7 +2,7 @@ DEFINITIONS
         FUNCTION isOne(num, isTrue) {
                 IF (-1 + 2 * ((1 * 5) + 2) / 7 + 3 + num * 3 == 1) THEN
                         CREATE stop sign at (0, 0);
-                ELSE IF num > 1 OR isTrue THEN
+                ELSE_IF num > 1 OR isTrue THEN
                         CREATE bus stop at (0, 0);
                 ELSE
                         CREATE train stop at (0, 0);

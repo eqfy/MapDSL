@@ -1,18 +1,61 @@
 # Map Generator Language (.mg) Documentation
 
+---
+
+## Table of contents
+
+1. [Positions](#positions-xy)
+2. [CREATE Statements](#create-statements)
+   - [Markers](#creating-markers)
+   - [Streets/Highways/Bridges](#creating-streets-highways-and-bridges)
+   - [Water/Buildings](#creating-buildings-and-water)
+3. [Expressions](#expressions)
+   - [Operator Precedence](#operator-precedence)
+4. [Variables and Constants](#variables-and-constants)
+   - [Variables](#variable-declarations)
+   - [Constants](#constant-declarations)
+5. [Accessing Coordinates](#accessing-x-and-y-coordinates-from-variablesconstants)
+6. [Functions](#functions)
+7. [Control Flow](#control-flow)
+   - [Loops](#loops)
+   - [IF/ELSE_IF/ELSE](#if--else_if--else)
+8. [Program Structure](#program-structure)
+   - [OUTPUT Block](#output-block)
+   - [DEFINITIONS block](#definitions-block)
+   - [CANVAS_SIZE](#defining-a-canvas-size)
+9. [Other Features / Things to Know](#other-features--things-to-know)
+   - [Comments](#comments)
+   - [Recursion / Calling Other Functions](#calling-functions-within-functions-and-recursion)
+   - [Reserved Keywords / Variable Name Restrictions](#reserved-keywords-and-variable-name-restrictions)
+   - [Errors](#errors)
+   - [Known Bugs](#known-bugs)
+10. [Entire Program Example](#entire-program)
+
+---
+
+#### Note: All code in this file can be found in ./docs/codeSamples and all maps can be found in ./docs/mapExamples
+
 ## Positions (x,y)
 
-Positions are in the format `(x, y)`, where x and y are any two expressions that evaluate to integers. Their main purpose is to specify positions for [CREATE statements](#create-statements).
+Positions describe locations on the map and take two parameters in a tuple pair representing their "x" and "y" coordinates (format `(x, y)`). Both coordinates x and y can be any two expressions that evaluate to integers. Their main purpose is to specify positions for [CREATE statements](#create-statements) but can also be stored in variables.
 
-#### Position Usage Example:
+In order to render, coordinates in the x-axis should be specified within the range `[0, CANVAS_WIDTH]`. The default `CANVAS_WIDTH` is `8192`.
+
+In order to render, coordinates in the y-axis should be specified within the range `[0, CANVAS_HEIGHT]`. The default `CANVAS_HEIGHT` is `4096`.
+
+Both dimensions of the canvas can be adjusted using the commands specified [here](#defining-a-canvas-size). If adjusted, note that the range of coordinates should be within your defined canvas size, not how it is actually rendered after rounding.
+
+The coordinate system is intuitively set up in a Cartesian style, with "x" coordinates increasing from left to right and "y" coordinates increasing from low to high.
+
+#### Position Usage Examples:
 
 This code:
 
-![](./examplePhotos/positionCode.png)
+![](codeSamples/positionCode.png)
 
 Creates the following map:
 
-![](./examplePhotos/positionMap.png)
+![](mapSamples/positionMap.png)
 
 ## CREATE Statements
 
@@ -20,31 +63,48 @@ Create statements are what actually puts things (markers, streets, buildings, et
 
 ### Creating Markers
 
-Creating markers can be done by specifying a marker type and a [Position](#positions-xy): `CREATE [bus stop, traffic light, stop sign, or train stop] at (x,y);`
+Creating markers can be done by specifying a marker type and a [Position](#positions-xy):
 
-#### CREATE Marker Usage Example:
+`CREATE <marker-type> at <position>;`
+
+Where "marker type" may be one of:
+
+- `bus stop`
+- `traffic light`
+- `stop sign`
+- `train stop`
+
+#### CREATE Marker Usage Examples:
 
 This code:
 
-![](./examplePhotos/markerCode.png)
+![](codeSamples/markerCode.png)
 
 Creates the following map:
 
-![](./examplePhotos/markerMap.png)
+![](mapSamples/markerMap.png)
 
 ### Creating Streets, Highways, and Bridges
 
-Creating streets can be done by specifying a street type, a start [Position](#positions-xy), and an end [Position](#positions-xy): `CREATE [street, highway, or bridge] from (x1,y1) to (x2,y2);`
+Creating streets can be done by specifying a street type as well as both the start and end [Positions](#positions-xy):
 
-#### CREATE Line Usage Examples:
+`CREATE <street-type> from <position-1> to <position-2>;`
+
+Where "street type" may be one of:
+
+- `street`
+- `highway`
+- `bridge`
+
+#### CREATE Street Usage Examples:
 
 This code:
 
-![](./examplePhotos/polylineCode.png)
+![](codeSamples/polylineCode.png)
 
 Creates the following map:
 
-![](./examplePhotos/polylineMap.png)
+![](mapSamples/polylineMap.png)
 
 ### Creating Buildings and Water
 
@@ -52,23 +112,28 @@ Creating buildings or water can be done by specifying a type and four coordinate
 
 For example, this would start with the top left, go to top right, go to bottom right, then finish with bottom left:
 
-`CREATE [water or building] at NorthWestPosition NorthEastPosition SouthEastPosition SouthWestPosition;`
+`CREATE <polygon type> at NorthWestPosition NorthEastPosition SouthEastPosition SouthWestPosition;`
 
 Another example, this would start with the bottom left, go to bottom right, go to top right, then finish with top left:
 
-`CREATE [water or building] at SouthWestPosition SouthEastPosition NorthEastPosition NorthWestPosition;`
+`CREATE <polygon type> at SouthWestPosition SouthEastPosition NorthEastPosition NorthWestPosition;`
 
-#### CREATE Polygon Usage Example:
+Where "polygon type" may be one of:
 
-Note: Code is unnecessarily verbose so that you can understand the documentation better
+- `building`
+- `water`
+
+#### CREATE Polygon Usage Examples:
+
+Note: Code is unnecessarily verbose so that you can understand the documentation better.
 
 This code:
 
-![](./examplePhotos/polygonCode.png)
+![](codeSamples/polygonCode.png)
 
 Creates the following map:
 
-![](./examplePhotos/polygonMap.png)
+![](mapSamples/polygonMap.png)
 
 ## Expressions
 
@@ -93,6 +158,18 @@ In this documentation, we will refer to expressions as anything that evaluates t
   (myNumberVariable1, myNumberVariable2) // where myNumberVariables evaluate to numbers
 ```
 
+### Operator Precedence
+
+Expressions follow the usual operator precedence. The following table summarizes the operator precedence, from highest precedence (most binding) to lowest precedence (least binding). Operators in the same box have the same precedence. Operators are all binary and evaluate from left to right.
+
+| Operator                         | Description                                         |
+| -------------------------------- | --------------------------------------------------- |
+| `(expressions...)`               | Parenthesized expression                            |
+| `*`, `/`                         | Numbers only: multiplication, division              |
+| `+`, `-`                         | Numbers only: addition, subtraction                 |
+| `>`, `<`, `>=`, `<=`, `==`, `!=` | Numbers only: comparisons                           |
+| `==`, `!=`, `AND`, `OR`          | Booleans only: comparisons, logical AND, logical OR |
+
 ## Variables and Constants
 
 Variables and constants are a way to store values that you want to refer to in many locations. Variables can be assigned to any [Expression](#expressions).
@@ -103,17 +180,17 @@ You can declare a variable inside [Functions](#functions), or inside the [OUTPUT
 
 They can be declared by : `VARIABLE myVariableName = v` where `v` can be any expression.
 
-#### VARIABLE Declaration Example:
+#### VARIABLE Declaration Examples:
 
-![](./examplePhotos/variableDeclarationCode.png)
+![](codeSamples/variableDeclarationCode.png)
 
 ### Reassigning Variables
 
 Variables can be reassigned at any point after they have been declared, to any expression, of any type.
 
-#### Variable Reassignment Example:
+#### Variable Reassignment Examples:
 
-![](./examplePhotos/variableAssignmentCode.png)
+![](codeSamples/variableAssignmentCode.png)
 
 ### Constant Declarations
 
@@ -121,25 +198,27 @@ You can declare a constant only inside the [DEFINITIONS block](#definitions-bloc
 
 They can be declared by : `CONSTANT myConstantName = v` where `v` can be any expression.
 
-#### CONSTANT Declaration Example:
+#### CONSTANT Declaration Examples:
 
 This code:
 
-![](./examplePhotos/constantDeclarationCode.png)
+![](codeSamples/constantDeclarationCode.png)
 
 ### Accessing X and Y Coordinates From Variables/Constants
 
-[Constants and Variables](#variables-and-constants) can hold positions. Sometimes it can be useful to access the x or y position of the coordinate. You can do this simply by append .y or .x to the variable you want to access the coordinate from.
+[Constants and Variables](#variables-and-constants) can hold positions. Sometimes it can be useful to access the x or y position of the coordinate. You can do this simply by appending ".x" or ".y" to the name of the [Position](#positions-xy) variable you want to access the coordinate from.
 
-#### Coordinate Access Example:
+`myPositionVariable.x` or `myPositionVariable.y`
+
+#### Coordinate Access Examples:
 
 This code:
 
-![](./examplePhotos/coordinateAccessCode.png)
+![](codeSamples/coordinateAccessCode.png)
 
 Creates the following map:
 
-![](./examplePhotos/coordinateAccessMap.png)
+![](mapSamples/coordinateAccessMap.png)
 
 ## Functions
 
@@ -147,23 +226,23 @@ Creates the following map:
 
 You can declare a function only inside the [DEFINITIONS block](#definitions-block). Declaring and using functions allow for, most commonly, the quick creation of certain map patterns throughout different locations in the map. Functions do not return a value; instead, they are simply another way of creating things on the map with [CREATE statements](#create-statements). Functions can take in any number of inputs (ie. parameters/arguments), each separated by a comma. Functions can then declare [variables](#variable-declarations), reassign variables, use [loops](#loops), call other functions, and create anything with [CREATE statements](#create-statements).
 
-#### FUNCTION Declaration Example:
+#### FUNCTION Declaration Examples:
 
-![](./examplePhotos/functionDeclarationCode.png)
+![](codeSamples/functionDeclarationCode.png)
 
 ### Function Calls
 
 Function calls can be made either within other functions, or within the [OUTPUT block](#output-block).
 
-#### Function Call Example:
+#### Function Call Examples:
 
 This code (with the function declarations above):
 
-![](./examplePhotos/functionCallCode.png)
+![](codeSamples/functionCallCode.png)
 
 Creates the following map:
 
-![](./examplePhotos/functionCallMap.png)
+![](mapSamples/functionCallMap.png)
 
 ## Control Flow
 
@@ -175,21 +254,21 @@ You can use loops inside [FUNCTION declarations](#functions), or in the [OUTPUT 
 
 This code:
 
-![](./examplePhotos/loop1Code.png)
+![](codeSamples/loop1Code.png)
 
 Creates the following map:
 
-![](./examplePhotos/loop1Map.png)
+![](mapSamples/loop1Map.png)
 
 #### LOOP Example 2:
 
-![](./examplePhotos/loop2Code.png)
+![](codeSamples/loop2Code.png)
 
 ### IF / ELSE_IF / ELSE
 
 You can use loops inside [FUNCTION declarations](#functions), or in the [OUTPUT block](#output-block). You can use IF blocks to conditionally preform operations in your program. IF blocks can contain ELSE_IF, as well as ELSE blocks. IF blocks can also be nested.
 
-#### IF / ELSE_IF / ELSE example usage 1:
+#### IF / ELSE_IF / ELSE General Usage Examples:
 
 ```
 IF 1 > 2 THEN
@@ -205,159 +284,53 @@ ELSE_IF myFirstNumberVariable > mySecondNumberVariable THEN
 END_IF
 ```
 
-#### IF / ELSE_IF / ELSE example usage 2:
+#### IF / ELSE_IF / ELSE Examples:
 
-```
-DEFINITIONS
-        FUNCTION createSquare(squareType, squareSize, nwPos) {
-                VARIABLE nePos = (nwPos.x + squareSize, nwPos.y);
-                VARIABLE sePos = (nwPos.x + squareSize, nwPos.y - squareSize);
-                VARIABLE swPos = (nwPos.x, nwPos.y - squareSize);
+This code:
 
-                IF squareType == 1 THEN // squareType 1 means water
-                        CREATE water at nwPos nePos sePos swPos;
-                ELSE_IF squareType == 2 THEN // squareType 2 means water
-                        CREATE building at nwPos nePos sePos swPos;
-                END_IF
-        }
-
-        FUNCTION createStreetBlock(northWestPosition, blockSize, addStopLights) {
-
-
-                IF blockSize <= blockSizeLimit THEN
-                        // do nothing, the block size is good!
-                ELSE_IF (blockSize / 2 < blockSizeLimit) THEN
-                        // try to cut the block size in half first
-                        blockSize = blockSize / 2;
-                ELSE
-                        // if cutting in half doesnt work, then just use the blockSizeLimit
-                        blockSize = blockSizeLimit;
-                END_IF
-
-                VARIABLE northEastPosition = (northWestPosition.x + blockSize, northWestPosition.y);
-                VARIABLE southEastPosition = (northWestPosition.x + blockSize, northWestPosition.y - blockSize);
-                VARIABLE southWestPosition = (northWestPosition.x, northWestPosition.y - blockSize);
-
-                IF addStopLights AND addMarkers THEN
-                        newTL(northWestPosition);
-                        newTL(northEastPosition);
-                        newTL(southWestPosition);
-                        newTL(southEastPosition);
-                END_IF
-
-                CREATE street from northWestPosition to northEastPosition;
-                CREATE street from northEastPosition to southEastPosition;
-                CREATE street from southEastPosition to southWestPosition;
-                CREATE street from southWestPosition to northWestPosition;
-        }
-
-        FUNCTION createCity(northWestPosition, blockSize, addStopLights) {
-                LOOP 3 TIMES
-                        createStreetBlock(northWestPosition, blockSize, addStopLights);
-                        createStreetBlock((northWestPosition.x + blockSize, northWestPosition.y), blockSize, addStopLights);
-                        createStreetBlock((northWestPosition.x + blockSize + blockSize, northWestPosition.y), blockSize, addStopLights);
-                        northWestPosition = (northWestPosition.x, northWestPosition.y - blockSize);
-                END_LOOP
-
-        }
-
-        FUNCTION newTL(position) {
-                CREATE traffic light at position;
-        }
-
-        CONSTANT addMarkers = true;
-        CONSTANT blockSizeLimit = 1000;
-END_DEFINITIONS
-
-OUTPUT
-        createSquare(1, 500, (1000,1000));
-        createSquare(2, 100, (1610,985));
-        createCity((1600,1000), 128, true);
-END_OUTPUT
-```
+![](codeSamples/ifelseCode.png)
 
 Creates the following map:
-![](./examplePhotos/8.png)
+
+![](mapSamples/ifelseMap.png)
 
 ## Program Structure
 
 ### OUTPUT Block
 
-These are required. Output blocks contain all of the statements that are meant specifically to build the map. The output block can contain variable declarations, variable reassignments, function calls, and loops.
+Defining a OUTPUT block is required. Output blocks contain all of the statements that are meant specifically to build the map. The output block can contain [CREATE statements](#create-statements), [VARIABLE declarations](#variable-declarations), [variable assignments](#reassigning-variables), [function calls](#function-calls), and [LOOPs](#loops).
 
 #### OUTPUT Block Example:
 
-```
-OUTPUT
-        CREATE street from (500,500) to (250,250);
-        VARIABLE middleY = 500;
-        VARIABLE middleX = middleY;
-        VARIABLE middlePosition = (middleX,middleY);
-        CREATE highway from (0,middleY) to middlePosition;
-        CREATE bridge from middlePosition to (middleX, 0);
-END_OUTPUT
-```
+This code:
+
+![](codeSamples/outputBlockCode.png)
 
 Creates the following map:
-![](./examplePhotos/2.png)
+
+![](mapSamples/polylineMap.png)
 
 ### DEFINITIONS Block
 
-These are optional. If you define a DEFINITIONS block, it must be above the OUTPUT block. Definition blocks contain all of the constant and function declarations.
+Defining a DEFINITIONS block is optional. If you define a DEFINITIONS block, it must be above the OUTPUT block. The DEFINITIONS block contains all the [CONSTANT](#constant-declarations), and [FUNCTION](#functions) declarations.
 
 #### DEFINITIONS Block Example:
 
-```
-DEFINITIONS
-        FUNCTION newTL(position) {
-                CREATE traffic light at position;
-        }
-
-        FUNCTION createStreetBlock(northWestPosition, blockSize) {
-                VARIABLE northEastPosition = (northWestPosition.x + blockSize, northWestPosition.y);
-                VARIABLE southEastPosition = (northWestPosition.x + blockSize, northWestPosition.y - blockSize);
-                VARIABLE southWestPosition = (northWestPosition.x, northWestPosition.y - blockSize);
-
-                newTL(northWestPosition);
-                newTL(northEastPosition);
-                newTL(southWestPosition);
-                newTL(southEastPosition);
-
-                CREATE street from northWestPosition to northEastPosition;
-                CREATE street from northEastPosition to southEastPosition;
-                CREATE street from southEastPosition to southWestPosition;
-                CREATE street from southWestPosition to northWestPosition;
-        }
-
-        FUNCTION createCity(northWestPosition, blockSize) {
-                LOOP 3 TIMES
-                        createStreetBlock(northWestPosition, blockSize);
-                        createStreetBlock((northWestPosition.x + blockSize, northWestPosition.y), blockSize);
-                        createStreetBlock((northWestPosition.x + blockSize + blockSize, northWestPosition.y), blockSize);
-                        northWestPosition = (northWestPosition.x, northWestPosition.y - blockSize);
-                END_LOOP
-        }
-
-        CONSTANT centerPosition = (512,512);
-        CONSTANT defaultBlockSize = 256;
-END_DEFINITIONS
-```
-
-### DEFINITIONS Block
-
-These are optional. If you define a DEFINITIONS block, it must be above the OUTPUT block. Definition blocks contain all of the constant and function declarations.
-
-## Other Features / Things to Know
+![](codeSamples/definitionsBlockCode.png)
 
 ### Defining a Canvas Size
 
-You can define the canvas size of your map by including `CANVAS_SIZE = width by height;` at the top of your file, where width and hieght are both positive numbers. If you do not define a canvas size, the default is 8192 by 4096 - meaning that your x coordinate can go up to 8192, and your y coordinate can go up to 4096.
+Defining a canvas size is optional. You can define the canvas size of your map by including `CANVAS_SIZE = width by height;` at the top of your file, where width and height are both positive numbers no larger than 100000. When rendering, the canvas size you specified will then be rounded up to fit even number of tiles horizontally and vertically (for example, if you specify 3000 by 3000, the rendered canvas size will be 4096 by 4096, which is 4 by 4 tiles in the default zoom level). If you do not define a canvas size, the default is 8192 by 4096 - meaning that your x coordinate can go up to 8192, and your y coordinate can go up to 4096.
 
 #### Canvas Size Example:
 
 ```
 CANVAS_SIZE = 1000 by 1000;
 ```
+
+Would result in a rendered canvas size of 1024 by 1024.
+
+## Other Features / Things to Know
 
 ### Comments
 
@@ -375,40 +348,46 @@ You have full power to call functions within other functions, or do any type of 
 
 #### Recursion vs Loop Example:
 
-```
-DEFINITIONS
-        FUNCTION createNHorizontalTrafficLightsRecursive(numberOfLights, position, gapSize) {
-                IF(numberOfLights > 0) THEN
-                        CREATE traffic light at position;
-                        createNHorizontalTrafficLightsRecursive(numberOfLights - 1, (position.x + gapSize, position.y), gapSize);
-                END_IF
-        }
+This code:
 
-        FUNCTION createNHorizontalTrafficLightsWithLoop(numberOfLights, position, gapSize) {
-                LOOP numberOfLights TIMES
-                        CREATE traffic light at position;
-                        position = (position.x + gapSize, position.y);
-                END_LOOP
-        }
-END_DEFINITIONS
-
-OUTPUT
-        createNHorizontalTrafficLightsRecursive(10, (2000,2000), 100);
-        createNHorizontalTrafficLightsWithLoop(10, (2000,2200), 100);
-END_OUTPUT
-```
+![](codeSamples/recursionCode.png)
 
 Creates the following map:
-![](./examplePhotos/9.png)
+
+![](mapSamples/recursionMap.png)
+
+### Reserved Keywords and Variable Name Restrictions
+
+Note that variable, constant, or function names must start with a character, and optionally can be followed by a character or a number (1 char minimum). They also cannot be named the same as any keyword listed in this documentation used in commands and structuring (including `FUNCTION`, `VARIABLE`, `CONSTANT`, `LOOP`, `street`, etc.).
+
+### Errors:
+
+Errors will display as red underlines in your .mg file when you have the editor open. If there are errors in your program, the map will likely still render as much as possible. However, the output will be inaccurate until you fix the errors.
+
+### Known Bugs:
+
+1. Sometimes the VS Code editor may stop working as expected. You may notice syntax highlighting stops working, errors are not showing properly, and the map will not load. This is due to an infinite loop or similar bug that seems to be happening within the ANTLR parser, presumably due to the definition of our grammar rules. If this happens, please restart the editor.
 
 ## Entire Program
 
 To sum things up: here is a list of everything that is allowed in each section of the program.
 
+- CANVAS_SIZE (optional)
 - DEFINITIONS block (optional)
   - FUNCTION declarations
     - Variable Declarations
     - Loops
+      - Variable Declarations
+      - If/elseif/else
+      - Create statements
+      - Variable reassignments
+      - Loops
+    - If/elseif/else
+      - Variable Declarations
+      - If/elseif/else
+      - Create statements
+      - Variable reassignments
+      - Loops
     - Create statements
     - Variable reassignments
   - CONSTANT declarations
@@ -416,87 +395,20 @@ To sum things up: here is a list of everything that is allowed in each section o
   - Function calls
   - Create statements
   - Loops
+    - Variable Declarations
+    - If/elseif/else
+    - Create statements
+    - Variable reassignments
+    - Loops
+  - If/elseif/else
+    - Variable Declarations
+    - If/elseif/else
+    - Create statements
+    - Variable reassignments
+    - Loops
   - Variable declarations
   - Variable reassignments
 
-#### Program example:
+#### Program Example:
 
-```
-DEFINITIONS
-        FUNCTION createStreetBlock(northWestPosition, blockSize) {
-                VARIABLE northEastPosition = (northWestPosition.x + blockSize, northWestPosition.y);
-                VARIABLE southEastPosition = (northWestPosition.x + blockSize, northWestPosition.y - blockSize);
-                VARIABLE southWestPosition = (northWestPosition.x, northWestPosition.y - blockSize);
-
-                CREATE traffic light at northWestPosition;
-                CREATE traffic light at northEastPosition;
-                CREATE traffic light at southWestPosition;
-                CREATE traffic light at southEastPosition;
-
-                CREATE street from northWestPosition to northEastPosition;
-                CREATE street from northEastPosition to southEastPosition;
-                CREATE street from southEastPosition to southWestPosition;
-                CREATE street from southWestPosition to northWestPosition;
-        }
-
-        FUNCTION createTrafficLight(position) {
-                CREATE traffic light at position;
-        }
-
-        FUNCTION createCity(northWestPosition, blockSize) {
-                LOOP 3 TIMES
-                        createStreetBlock(northWestPosition, blockSize);
-                        createStreetBlock((northWestPosition.x + blockSize, northWestPosition.y), blockSize);
-                        createStreetBlock((northWestPosition.x + blockSize + blockSize, northWestPosition.y), blockSize);
-                        northWestPosition = (northWestPosition.x, northWestPosition.y - blockSize);
-                END_LOOP
-        }
-
-        CONSTANT centerPosition = (512,512);
-        CONSTANT defaultBlockSize = 256;
-END_DEFINITIONS
-
-OUTPUT
-        createStreetBlock(centerPosition, defaultBlockSize);
-        createStreetBlock((centerPosition.x + defaultBlockSize, centerPosition.y), defaultBlockSize);
-
-        createCity((1024,1024), 124);
-        CREATE highway from (0,centerPosition.y) to centerPosition;
-        CREATE bridge from (0,0) to centerPosition;
-
-        createTrafficLight(centerPosition);
-        CREATE stop sign at (512, 256);
-        CREATE bus stop at (768, 384);
-        CREATE train stop at (1024, 384);
-
-        VARIABLE loops= 10;
-
-        VARIABLE eastStreetLightPosition = (centerPosition.x, centerPosition.y);
-
-        LOOP 10 TIMES
-            createTrafficLight(eastStreetLightPosition);
-            eastStreetLightPosition = (eastStreetLightPosition.x + defaultBlockSize, eastStreetLightPosition.y);
-        END_LOOP
-
-        CREATE street from (0,0) to (256,100);
-        VARIABLE middleY = 1024;
-        VARIABLE middleX = middleY;
-        VARIABLE middlePosition = (middleX,middleY);
-        CREATE highway from (0,middleY) to middlePosition;
-        CREATE bridge from middlePosition to (2048, 0);
-        CREATE bus stop at (500,240);
-        VARIABLE trafficLightPosition = (1000,1000);
-        CREATE traffic light at trafficLightPosition;
-        CREATE stop sign at (trafficLightPosition.x, 1000 - trafficLightPosition.y);
-        CREATE train stop at (100,100);
-        VARIABLE positionVariable = (100,100);
-        VARIABLE secondPositionVariable = positionVariable;
-        VARIABLE number = 10 + 1000 - positionVariable.x;
-        VARIABLE fun = (positionVariable.x + number, number - secondPositionVariable.y);
-END_OUTPUT
-
-```
-
-## powers of 2 for canvas
-
-## errors will still render
+TO BE IMPLEMENTED

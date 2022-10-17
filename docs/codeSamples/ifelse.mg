@@ -3,7 +3,7 @@ DEFINITIONS
                 VARIABLE nePos = (nwPos.x + squareSize, nwPos.y);
                 VARIABLE sePos = (nwPos.x + squareSize, nwPos.y - squareSize);
                 VARIABLE swPos = (nwPos.x, nwPos.y - squareSize);
-                 
+
                 IF squareType == 1 THEN // squareType 1 means water
                         CREATE water at nwPos nePos sePos swPos;
                 ELSE_IF squareType == 2 THEN // squareType 2 means water
@@ -16,10 +16,10 @@ DEFINITIONS
 
                 IF blockSize <= blockSizeLimit THEN
                         // do nothing, the block size is good!
-                ELSE_IF (blockSize / 2 < blockSizeLimit) THEN 
+                ELSE_IF (blockSize / 2 < blockSizeLimit) THEN
                         // try to cut the block size in half first
                         blockSize = blockSize / 2;
-                ELSE 
+                ELSE
                         // if cutting in half doesnt work, then just use the blockSizeLimit
                         blockSize = blockSizeLimit;
                 END_IF
@@ -43,28 +43,12 @@ DEFINITIONS
 
         FUNCTION createCity(northWestPosition, blockSize, addStopLights) {
                 LOOP 3 TIMES
-                        LOOP 3 TIMES
-                                createStreetBlock(northWestPosition, blockSize, addStopLights);
-                                createStreetBlock((northWestPosition.x + blockSize, northWestPosition.y), blockSize, addStopLights);
-                                createStreetBlock((northWestPosition.x + blockSize + blockSize, northWestPosition.y), blockSize, addStopLights);
-                                northWestPosition = (northWestPosition.x, northWestPosition.y - blockSize);
-                        END_LOOP
-                        northWestPosition = (northWestPosition.x, northWestPosition.y + (3 * blockSize));
+                        createStreetBlock(northWestPosition, blockSize, addStopLights);
+                        createStreetBlock((northWestPosition.x + blockSize, northWestPosition.y), blockSize, addStopLights);
+                        createStreetBlock((northWestPosition.x + blockSize + blockSize, northWestPosition.y), blockSize, addStopLights);
+                        northWestPosition = (northWestPosition.x, northWestPosition.y - blockSize);
                 END_LOOP
 
-        }
-
-        FUNCTION createSquareL(size) {
-        VARIABLE posX = 100;
-                        VARIABLE posY =  100;
-                LOOP 3 TIMES
-                        
-                        LOOP 3 TIMES
-                                CREATE traffic light at (posX, posY);
-                                posY = posY + 100;
-                        END_LOOP
-                        posX = posX + 100;
-                END_LOOP
         }
 
         FUNCTION newTL(position) {
@@ -79,5 +63,6 @@ OUTPUT
         createSquare(1, 500, (1000,1000));
         createSquare(2, 100, (1610,985));
         createCity((1600,1000), 128, true);
-        createSquareL(10);
 END_OUTPUT
+
+

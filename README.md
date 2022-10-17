@@ -8,7 +8,8 @@ See docs/MILESTONES.md
 
 ```
 /                # Root directory.
-|- docs/         # Documents leveraged and created throughout our project. This includes user documentation.
+|- docs/         # User documentation.
+|- milestones/   # Milestone related documents used throughout the project.
 |- user/         # .mg files that can be used for testing
 |- client/       # Our frontend client and VS Code client
 |- server/       # Our backend server for map generation (handles requests from frontend client), and our language server (handles requests from VS Code extension client)

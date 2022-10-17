@@ -12,6 +12,9 @@ END_DEFINITIONS
 OUTPUT
         VARIABLE defaultBlockSize = 32;
         VARIABLE eastStreetLightPosition = (512,512);
+
+        eastStreetLightPosition = eastStreetLightPosition + 1;
+        
         LOOP 5 TIMES
                 CREATE traffic light at eastStreetLightPosition;
                 eastStreetLightPosition = (eastStreetLightPosition.x + defaultBlockSize, eastStreetLightPosition.y);
